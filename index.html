@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>七上英文 B1 L5 互動測驗卷（適南版）</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', 'Noto Sans TC', sans-serif;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col">
+
+  <header class="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-slate-200 shadow-sm">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <span class="p-2 rounded-xl bg-indigo-600 text-white shadow-indigo-200 shadow-md">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+          </svg>
+        </span>
+        <div>
+          <h1 class="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">國中英文隨堂測驗系統</h1>
+          <p class="text-xs text-slate-500 font-medium">第一份練習卷 · 七上英文 · 適南版 B1 L5上</p>
+        </div>
+      </div>
+      <div class="flex items-center space-x-2">
+        <button id="quick-reset-btn" onclick="resetQuiz()" class="text-xs sm:text-sm px-3 py-1.5 rounded-lg border border-slate-300 text-slate-600 hover:bg-slate-100 transition-colors">
+          清空重測
+        </button>
+        <button onclick="submitQuiz()" class="text-xs sm:text-sm px-4 py-1.5 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 shadow-sm transition-colors">
+          交卷評分
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-grow max-w-5xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6">
+    
+    <!-- Score & Status Dashboard (Hidden by default, shown upon submit) -->
+    <section id="result-dashboard" class="hidden transition-all duration-300">
+      <div class="bg-gradient-to-br from-indigo-900 via-indigo-800 to-blue-900 text-white rounded-2xl p-6 sm:p-8 shadow-xl relative overflow-hidden">
+        <div class="absolute -right-8 -bottom-8 w-44 h-44 bg-indigo-500/20 rounded-full blur-2xl"></div>
+        <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div class="space-y-2">
+            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-400/20 text-indigo-200 border border-indigo-400/30">
+              測驗評量報告
+            </span>
+            <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight">測驗完成！請檢視答題狀況</h2>
+            <p id="result-feedback" class="text-sm text-indigo-200">正在統計分數...</p>
+          </div>
+          
+          <div class="flex items-center gap-6 sm:gap-8 bg-white/10 backdrop-blur-md px-6 py-4 rounded-xl border border-white/15">
+            <div class="text-center">
+              <span class="text-xs uppercase tracking-wider text-indigo-200 font-semibold block">總得分數</span>
+              <span id="score-display" class="text-4xl sm:text-5xl font-black text-amber-300">0</span>
+              <span class="text-xs text-indigo-200">/ 100</span>
+            </div>
+            <div class="h-10 w-px bg-white/20"></div>
+            <div class="text-center">
+              <span class="text-xs uppercase tracking-wider text-indigo-200 font-semibold block">答對率</span>
+              <span id="accuracy-display" class="text-2xl sm:text-3xl font-bold text-white">0%</span>
+              <span id="correct-count-display" class="text-xs text-indigo-200 block">0 / 32 小題</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quiz Intro Card -->
+    <div class="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div>
+        <h2 class="text-base sm:text-lg font-bold text-slate-800">Unit 5 現在進行式與代名詞練習</h2>
+        <p class="text-sm text-slate-500 mt-0.5">本卷包含文法單選 (15題)、依提示作答 (6題)、翻譯 (3題) 及綜合填空 (8格)，共 32 評分點。</p>
+      </div>
+      <div class="flex items-center space-x-2 text-xs font-semibold text-slate-600 bg-slate-100 px-3 py-2 rounded-xl border border-slate-200">
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span>系統已支援大小寫與標點智慧容錯</span>
+      </div>
+    </div>
+
+    <!-- Forms for Quiz Questions -->
+    <form id="quiz-form" onsubmit="event.preventDefault(); submitQuiz();" class="space-y-8">
+      
+      <!-- ================= SECTION 1: 文法測驗 ================= -->
+      <div class="bg-white border border-slate-200 rounded-2xl p-5 sm:p-7 shadow-sm space-y-6">
+        <div class="border-b border-slate-100 pb-4 flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <span class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center text-sm">一</span>
+            <h3 class="text-lg font-bold text-slate-900">文法測驗（共 15 題，每題 2.5 分）</h3>
+          </div>
+          <span class="text-xs font-medium text-slate-500">單選題</span>
+        </div>
+
+        <div id="section-1-container" class="space-y-6 divide-y divide-slate-100">
+          <!-- Populated by JS for clean data binding -->
+        </div>
+      </div>
+
+      <!-- ================= SECTION 2: 依提示回答問題 ================= -->
+      <div class="bg-white border border-slate-200 rounded-2xl p-5 sm:p-7 shadow-sm space-y-6">
+        <div class="border-b border-slate-100 pb-4 flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <span class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center text-sm">二</span>
+            <h3 class="text-lg font-bold text-slate-900">依提示回答問題（共 6 題，每題 4 分）</h3>
+          </div>
+          <span class="text-xs font-medium text-slate-500">簡答 / 句子改寫</span>
+        </div>
+
+        <div id="section-2-container" class="space-y-6 divide-y divide-slate-100">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- ================= SECTION 3: 整句式翻譯 ================= -->
+      <div class="bg-white border border-slate-200 rounded-2xl p-5 sm:p-7 shadow-sm space-y-6">
+        <div class="border-b border-slate-100 pb-4 flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <span class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center text-sm">三</span>
+            <h3 class="text-lg font-bold text-slate-900">整句式翻譯（共 3 題，每題 4 分）</h3>
+          </div>
+          <span class="text-xs font-medium text-slate-500">中翻英</span>
+        </div>
+
+        <div id="section-3-container" class="space-y-6 divide-y divide-slate-100">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- ================= SECTION 4: 填充 ================= -->
+      <div class="bg-white border border-slate-200 rounded-2xl p-5 sm:p-7 shadow-sm space-y-6">
+        <div class="border-b border-slate-100 pb-4 flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <span class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center text-sm">四</span>
+            <h3 class="text-lg font-bold text-slate-900">填充題（共 8 格，每格 3.25 分）</h3>
+          </div>
+          <span class="text-xs font-medium text-slate-500">字詞填空</span>
+        </div>
+
+        <div id="section-4-container" class="space-y-6 divide-y divide-slate-100">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <div class="pt-4 pb-12 flex flex-col sm:flex-row items-center justify-end gap-3">
+        <button type="button" onclick="resetQuiz()" class="w-full sm:w-auto px-6 py-3 rounded-xl border border-slate-300 font-semibold text-slate-700 hover:bg-slate-100 active:scale-95 transition-all text-sm">
+          重置填寫內容
+        </button>
+        <button type="submit" class="w-full sm:w-auto px-8 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold shadow-lg shadow-indigo-200 active:scale-95 transition-all text-sm flex items-center justify-center space-x-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <span>立即交卷並查看解析</span>
+        </button>
+      </div>
+
+    </form>
+  </main>
+
+  <script>
+    // 測驗題庫完整資料庫（結合考卷與解析卷內容）
+    const quizData = {
+      section1: [
+        {
+          id: "s1_1",
+          question: "A：Are Ben and Peggy your students?<br>B：Yes, I’m ＿＿＿ English teacher.",
+          options: ["(A) their", "(B) her", "(C) his", "(D) they"],
+          answer: "A",
+          explanation: "表示「Ben 和 Peggy 兩人」的所有格用 their（他們的），故選 (A)。"
+        },
+        {
+          id: "s1_2",
+          question: "A：＿＿＿ she eating some pineapple cakes?<br>B：Yes.",
+          options: ["(A) Are", "(B) What’s", "(C) Is", "(D) Who’s"],
+          answer: "C",
+          explanation: "由答句可知，此為 Yes / No 問句，第三人稱單數主詞須搭配 be 動詞 is，故選 (C)。"
+        },
+        {
+          id: "s1_3",
+          question: "Look! The teacher ＿＿＿. Let’s go into the classroom.",
+          options: ["(A) come", "(B) coming", "(C) is come", "(D) is coming"],
+          answer: "D",
+          explanation: "Look! 之後的句子常用現在進行式，表示「現在正看到的動作或事件」，其句型為「be＋V-ing」，故選 (D)。"
+        },
+        {
+          id: "s1_4",
+          question: "Kevin and Peter ＿＿＿ playing basketball now. Let’s join（加入）them.",
+          options: ["(A) is", "(B) are", "(C) am", "(D) be"],
+          answer: "B",
+          explanation: "第三人稱複數主詞（Kevin and Peter），用 be 動詞 are，故選 (B)。"
+        },
+        {
+          id: "s1_5",
+          question: "A：What are you doing?<br>B：I ＿＿＿ talking with Joe on the phone.",
+          options: ["(A) is", "(B) are", "(C) am", "(D) be"],
+          answer: "C",
+          explanation: "第一人稱單數主詞 I，用 be 動詞 am，故選 (C)。"
+        },
+        {
+          id: "s1_6",
+          question: "Kate is listening to music in her room, but her brothers ＿＿＿.",
+          options: ["(A) is", "(B) isn’t", "(C) aren’t", "(D) are"],
+          answer: "C",
+          explanation: "兩子句中間由表相反語意的連接詞 but（但是）連接，可知後句語意和前句相反（前句為肯定，後句為否定），且後句主詞 her brothers 為第三人稱複數，故選 (C) aren't。"
+        },
+        {
+          id: "s1_7",
+          question: "My sister is not ＿＿＿ with her pet or ＿＿＿ TV in the living room now. She’s in her bedroom now.",
+          options: ["(A) playing; watching", "(B) play; watch", "(C) play; watching", "(D) playing; watch"],
+          answer: "A",
+          explanation: "由 now 可知應用現在進行式，且連接詞 or 前後連接的動詞時態必須一致，故應填入 playing 與 watching。"
+        },
+        {
+          id: "s1_8",
+          question: "A：＿＿＿ Bob and Jim reading?<br>B：They’re reading a storybook.",
+          options: ["(A) What is", "(B) What are", "(C) How is", "(D) How are"],
+          answer: "B",
+          explanation: "回答在閱讀故事書，表示詢問正在閱讀「什麼」，用疑問詞 What；答句為現在進行式，問句也須為現在進行式，由於主詞 Bob and Jim 為第三人稱複數，be 動詞須用 are，故選 (B)。"
+        },
+        {
+          id: "s1_9",
+          question: "A：Where are Tom and John?<br>B：＿＿＿ washing ＿＿＿ dog outside the house.",
+          options: ["(A) He’s; the", "(B) They’re; their", "(C) They’re; them", "(D) He’s; a"],
+          answer: "B",
+          explanation: "主詞 Tom 和 John 為第三人稱複數，代名詞須用 They，而且須搭配 be 動詞 are（縮寫為 They're）；第二格修飾名詞 dog，所有格為 their，故選 (B)。"
+        },
+        {
+          id: "s1_10",
+          question: "A：Who is that tall girl?<br>B：That’s Mr. and Mrs. Smith’s daughter. ＿＿＿ name is Helen.",
+          options: ["(A) Her", "(B) She’s", "(C) She", "(D) His"],
+          answer: "A",
+          explanation: "主詞為第三人稱單數女性（daughter），故空格內修飾名詞 name 應填入女性所有格 Her。"
+        },
+        {
+          id: "s1_11",
+          question: "A：＿＿＿ John ＿＿＿ on the sports field?<br>B：Yes, he is.",
+          options: ["(A) What’s; doing", "(B) Is; run", "(C) What’s; do", "(D) Is; running"],
+          answer: "D",
+          explanation: "由答句 Yes, he is. 可知是 Yes / No 問句，主詞 John 為單數，須用 be 動詞 Is 開頭；且進行式動詞須用 V-ing（run 重複字尾加 ing 成 running），故選 (D)。"
+        },
+        {
+          id: "s1_12",
+          question: "A：Who is singing with your sister?<br>B：Ted is singing with ＿＿＿.",
+          options: ["(A) her", "(B) she", "(C) him", "(D) his"],
+          answer: "A",
+          explanation: "介系詞 with 後面要接受格代名詞，因為 your sister 是第三人稱單數女性，所以受格用 her，故選 (A)。"
+        },
+        {
+          id: "s1_13",
+          question: "A：＿＿＿ is Jason ＿＿＿?<br>B：He’s dancing at the park.",
+          options: ["(A) Where; dance", "(B) What; dancing", "(C) What; doing", "(D) Where; drawing"],
+          answer: "C",
+          explanation: "由答句「正在公園跳舞」可知問句詢問正在「做什麼」，問句為「What is Jason doing?」，故選 (C)。"
+        },
+        {
+          id: "s1_14",
+          question: "Those girls are ＿＿＿ TV. Let’s watch TV with ＿＿＿.",
+          options: ["(A) watching; us", "(B) watch; us", "(C) watching; them", "(D) watch; them"],
+          answer: "C",
+          explanation: "第一格前面有 be 動詞 are，動詞應填入 V-ing 形式 watching。主詞為複數 those girls，介系詞 with 之後須接複數受格 them，故選 (C)。"
+        },
+        {
+          id: "s1_15",
+          question: "A：Are you ＿＿＿ the bed?<br>B：No, I ＿＿＿ not.",
+          options: ["(A) sleep; am", "(B) making; am", "(C) make; are", "(D) sleeping; are"],
+          answer: "B",
+          explanation: "問句以 be 動詞開頭，時態是現在進行式，動詞須用 V-ing（making）；答句第一人稱單數 I 搭配 am；「make the bed」片語表「整理床鋪」，故選 (B)。"
+        }
+      ],
+
+      section2: [
+        {
+          id: "s2_1",
+          prompt: "my parents / be / sit / on sofa / in / living room（完成句子）",
+          // 支援可接受的解答集合
+          acceptable: [
+            "My parents are sitting on the sofa in the living room.",
+            "My parents are sitting on a sofa in the living room."
+          ],
+          standard: "My parents are sitting on the sofa in the living room.",
+          explanation: "主詞 my parents 是複數，be 動詞要用 are；sit 的現在分詞須重複字尾加 ing（sitting）；坐在「沙發上」要用 on the sofa；「在客廳裡」要用 in the living room。"
+        },
+        {
+          id: "s2_2",
+          prompt: "be / you / wash / your car（完成句子）",
+          acceptable: [
+            "Are you washing your car?",
+            "Are you washing your car"
+          ],
+          standard: "Are you washing your car?",
+          explanation: "主詞是 you，現在進行式疑問句 be 動詞要用 Are 提問；wash 直接加 ing 成為 washing。"
+        },
+        {
+          id: "s2_3",
+          prompt: "Iris is reading in her bedroom.（依畫線部分「reading」造原問句）",
+          acceptable: [
+            "What is Iris doing in her bedroom?",
+            "What's Iris doing in her bedroom?"
+          ],
+          standard: "What is Iris doing in her bedroom?",
+          explanation: "動作（reading）為詢問焦點，疑問詞要用 What，問句以現在進行式造句：「What is Iris doing in her bedroom?」。"
+        },
+        {
+          id: "s2_4",
+          prompt: "What is the girl doing?（以「跳舞」回答）",
+          acceptable: [
+            "She is dancing.",
+            "She's dancing.",
+            "The girl is dancing."
+          ],
+          standard: "She is dancing.",
+          explanation: "dance 的現在分詞要去 e 再加 ing（dancing）；代名詞主詞用 She is / She's dancing。"
+        },
+        {
+          id: "s2_5",
+          prompt: "Aren’t the girls dancing at the school gym?（以「打籃球」詳答）",
+          acceptable: [
+            "No, they are playing basketball at the school gym.",
+            "No, they're playing basketball at the school gym.",
+            "No, they are playing basketball.",
+            "No, they're playing basketball."
+          ],
+          standard: "No, they are playing basketball (at the school gym).",
+          explanation: "否定疑問句的回答邏輯與一般肯定問句相同：事實非跳舞，故回答用 No。主詞代名詞為 they，接著回答正在打籃球 playing basketball。"
+        },
+        {
+          id: "s2_6",
+          prompt: "Mom is preparing some gifts. / The gifts are for her students.（合併句子）",
+          acceptable: [
+            "Mom is preparing some gifts for her students."
+          ],
+          standard: "Mom is preparing some gifts for her students.",
+          explanation: "運用片語「prepare sth for sb（為某人準備某物）」將兩句合而為一。"
+        }
+      ],
+
+      section3: [
+        {
+          id: "s3_1",
+          prompt: "1. Nicole 和她的堂妹正在公園跑步。",
+          acceptable: [
+            "Nicole and her cousin are running in the park.",
+            "Nicole and her cousin are running at the park."
+          ],
+          standard: "Nicole and her cousin are running in the park.",
+          explanation: "主詞「Nicole and her cousin」為複數，搭配 are；run 需重複字尾加 ing 成為 running；「在公園」可用 in the park。"
+        },
+        {
+          id: "s3_2",
+          prompt: "2. 我妹妹正在圖書館看一本故事書(storybook)。",
+          acceptable: [
+            "My sister is reading a storybook in the library.",
+            "My younger sister is reading a storybook in the library."
+          ],
+          standard: "My sister is reading a storybook in the library.",
+          explanation: "主詞 My sister 為第三人稱單數，搭配 is；看書使用 reading；「在圖書館」使用 in the library。"
+        },
+        {
+          id: "s3_3",
+          prompt: "3. 那位女士正在尋找什麼？",
+          acceptable: [
+            "What is that lady looking for?",
+            "What is that woman looking for?",
+            "What's that lady looking for?",
+            "What's that woman looking for?"
+          ],
+          standard: "What is that lady looking for?",
+          explanation: "疑問詞為 What；尋找的片語為 look for，現在進行式為 is looking for。"
+        }
+      ],
+
+      section4: [
+        {
+          id: "s4_1",
+          title: "1. Andrew 和他太太正坐在樹下嗎？",
+          textBefore: "Is Andrew ",
+          input1_key: "s4_1_a",
+          acceptable1: ["sitting"],
+          textMiddle: " under the tree ",
+          input2_key: "s4_1_b",
+          acceptable2: ["with"],
+          textAfter: " his wife?",
+          explanation: "動詞 sit 字尾為「單一短母音＋單一子音」，現在分詞需重複字尾 t 再加 ing（sitting）；「和…一起」介系詞用 with。"
+        },
+        {
+          id: "s4_2",
+          title: "2. 填入正確的動詞形式",
+          subItems: [
+            {
+              id: "s4_2_1",
+              label: "(1) Grandfather is ",
+              postLabel: " (sit) on the old sofa in front of the TV.",
+              acceptable: ["sitting"],
+              explanation: "動詞 sit 形成現在分詞 V-ing 時要重複字尾 t 加上 ing（sitting）。"
+            },
+            {
+              id: "s4_2_2",
+              label: "(2) Let’s ",
+              postLabel: " (make) an apple cake for Leo’s birthday.",
+              acceptable: ["make"],
+              explanation: "「Let’s…」為祈使句句型，後面必須接原形動詞（make）。"
+            },
+            {
+              id: "s4_2_3",
+              label: "(3) Don’t ",
+              postLabel: " (shout) in the classroom.",
+              acceptable: ["shout"],
+              explanation: "否定祈使句「Don’t…」之後須接原形動詞（shout）。"
+            }
+          ]
+        },
+        {
+          id: "s4_3",
+          title: "3. 填入適當的 be 動詞",
+          subItems: [
+            {
+              id: "s4_3_1",
+              label: "(1) I ",
+              postLabel: " cooking lunch now.",
+              acceptable: ["am"],
+              explanation: "主詞 I 為第一人稱單數，搭配「am + V-ing」表示現在進行式。"
+            },
+            {
+              id: "s4_3_2",
+              label: "(2) Mr. Chen ",
+              postLabel: " standing at the door now.",
+              acceptable: ["is"],
+              explanation: "主詞 Mr. Chen 為第三人稱單數，搭配「is + V-ing」表示現在進行式。"
+            },
+            {
+              id: "s4_3_3",
+              label: "(3) ",
+              postLabel: " you reading a storybook now?",
+              acceptable: ["Are", "are"],
+              explanation: "主詞 you 為第二人稱，在疑問句中應以 be 動詞「Are」提問（句首大寫）。"
+            }
+          ]
+        }
+      ]
+    };
+
+    function renderQuestions() {
+      // 1. 文法題
+      const s1Container = document.getElementById("section-1-container");
+      s1Container.innerHTML = quizData.section1.map((q, idx) => `
+        <div class="pt-5 first:pt-0" id="card-${q.id}">
+          <div class="flex items-start space-x-2">
+            <span class="font-bold text-slate-700 min-w-[28px]">${idx + 1}.</span>
+            <div class="flex-1 space-y-3">
+              <p class="text-slate-900 font-medium leading-relaxed">${q.question}</p>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                ${q.options.map((opt, oIdx) => {
+                  const optLetter = ["A", "B", "C", "D"][oIdx];
+                  return `
+                    <label class="relative flex items-center p-3 rounded-xl border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50/40 cursor-pointer transition-all option-label" data-qid="${q.id}" data-opt="${optLetter}">
+                      <input type="radio" name="${q.id}" value="${optLetter}" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-slate-300">
+                      <span class="ml-3 text-sm font-medium text-slate-700">${opt}</span>
+                    </label>
+                  `;
+                }).join('')}
+              </div>
+              <!-- Feedback slot -->
+              <div id="feedback-${q.id}" class="hidden mt-3 p-3.5 rounded-xl text-sm leading-relaxed"></div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      // 2. 依提示回答問題
+      const s2Container = document.getElementById("section-2-container");
+      s2Container.innerHTML = quizData.section2.map((q, idx) => `
+        <div class="pt-5 first:pt-0" id="card-${q.id}">
+          <div class="flex items-start space-x-2">
+            <span class="font-bold text-slate-700 min-w-[28px]">${idx + 1}.</span>
+            <div class="flex-1 space-y-2.5">
+              <p class="text-slate-900 font-medium">${q.prompt}</p>
+              <div class="relative">
+                <input type="text" name="${q.id}" autocomplete="off" spellcheck="false" placeholder="請輸入完整英文句子..." class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none text-sm transition-all">
+              </div>
+              <div id="feedback-${q.id}" class="hidden p-3.5 rounded-xl text-sm leading-relaxed"></div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      // 3. 整句式翻譯
+      const s3Container = document.getElementById("section-3-container");
+      s3Container.innerHTML = quizData.section3.map((q, idx) => `
+        <div class="pt-5 first:pt-0" id="card-${q.id}">
+          <div class="flex items-start space-x-2">
+            <span class="font-bold text-slate-700 min-w-[28px]">${idx + 1}.</span>
+            <div class="flex-1 space-y-2.5">
+              <p class="text-slate-900 font-medium">${q.prompt}</p>
+              <div class="relative">
+                <input type="text" name="${q.id}" autocomplete="off" spellcheck="false" placeholder="請輸入英文翻譯..." class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none text-sm transition-all">
+              </div>
+              <div id="feedback-${q.id}" class="hidden p-3.5 rounded-xl text-sm leading-relaxed"></div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      // 4. 填充題
+      const s4Container = document.getElementById("section-4-container");
+      // 題 1
+      const item1 = quizData.section4[0];
+      let s4Html = `
+        <div class="pt-5 first:pt-0" id="card-${item1.id}">
+          <p class="font-semibold text-slate-800 mb-2">${item1.title}</p>
+          <div class="bg-slate-50 border border-slate-200/80 rounded-xl p-4 flex flex-wrap items-center gap-2 text-sm leading-loose">
+            <span>${item1.textBefore}</span>
+            <input type="text" name="${item1.input1_key}" class="w-28 px-2.5 py-1 text-center font-medium bg-white rounded-lg border border-slate-300 focus:border-indigo-500 outline-none">
+            <span>${item1.textMiddle}</span>
+            <input type="text" name="${item1.input2_key}" class="w-24 px-2.5 py-1 text-center font-medium bg-white rounded-lg border border-slate-300 focus:border-indigo-500 outline-none">
+            <span>${item1.textAfter}</span>
+          </div>
+          <div id="feedback-${item1.id}" class="hidden mt-2 p-3.5 rounded-xl text-sm leading-relaxed"></div>
+        </div>
+      `;
+
+      // 題 2
+      const item2 = quizData.section4[1];
+      s4Html += `
+        <div class="pt-5" id="card-s4_2">
+          <p class="font-semibold text-slate-800 mb-3">${item2.title}</p>
+          <div class="space-y-3">
+            ${item2.subItems.map((sub, sIdx) => `
+              <div class="bg-slate-50 border border-slate-200/80 rounded-xl p-3 flex flex-wrap items-center gap-2 text-sm">
+                <span>${sub.label}</span>
+                <input type="text" name="${sub.id}" class="w-24 px-2.5 py-1 text-center font-medium bg-white rounded-lg border border-slate-300 focus:border-indigo-500 outline-none">
+                <span>${sub.postLabel}</span>
+              </div>
+              <div id="feedback-${sub.id}" class="hidden p-3 rounded-xl text-sm leading-relaxed"></div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+
+      // 題 3
+      const item3 = quizData.section4[2];
+      s4Html += `
+        <div class="pt-5" id="card-s4_3">
+          <p class="font-semibold text-slate-800 mb-3">${item3.title}</p>
+          <div class="space-y-3">
+            ${item3.subItems.map((sub, sIdx) => `
+              <div class="bg-slate-50 border border-slate-200/80 rounded-xl p-3 flex flex-wrap items-center gap-2 text-sm">
+                <span>${sub.label}</span>
+                <input type="text" name="${sub.id}" class="w-20 px-2.5 py-1 text-center font-medium bg-white rounded-lg border border-slate-300 focus:border-indigo-500 outline-none">
+                <span>${sub.postLabel}</span>
+              </div>
+              <div id="feedback-${sub.id}" class="hidden p-3 rounded-xl text-sm leading-relaxed"></div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+
+      s4Container.innerHTML = s4Html;
+    }
+
+    // 字串標準化函式：去除前後空白、連續空格收攏為一格、移除末端句號/問號、大小寫寬鬆比對
+    function normalizeText(text) {
+      if (!text) return "";
+      return text
+        .trim()
+        .toLowerCase()
+        // 去除多重空白
+        .replace(/\s+/g, ' ')
+        // 標準化常見縮寫標點
+        .replace(/’/g, "'")
+        // 移除非關鍵的結尾句號或問號
+        .replace(/[.?]+$/, '');
+    }
+
+    function checkAnswerMatch(userVal, acceptedList) {
+      const cleanUser = normalizeText(userVal);
+      if (!cleanUser) return false;
+      return acceptedList.some(acc => normalizeText(acc) === cleanUser);
+    }
+
+    function submitQuiz() {
+      let correctCount = 0;
+      const totalPoints = 32; // 15 + 6 + 3 + (2 + 3 + 3) = 32 小題/空格
+
+      // 1. 批改第一大題：文法測驗
+      quizData.section1.forEach((q) => {
+        const checkedRadio = document.querySelector(`input[name="${q.id}"]:checked`);
+        const userAns = checkedRadio ? checkedRadio.value : "";
+        const isCorrect = userAns === q.answer;
+        if (isCorrect) correctCount++;
+
+        const fbBox = document.getElementById(`feedback-${q.id}`);
+        fbBox.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-900', 'border-emerald-200', 'bg-rose-50', 'text-rose-900', 'border-rose-200');
+        
+        if (isCorrect) {
+          fbBox.classList.add('bg-emerald-50', 'text-emerald-900', 'border', 'border-emerald-200');
+          fbBox.innerHTML = `
+            <div class="flex items-start space-x-2">
+              <span class="text-emerald-600 font-bold">✓ 答對了！</span>
+              <span class="text-slate-600 text-xs">正確解答：(${q.answer})</span>
+            </div>
+            <p class="mt-1 text-xs text-slate-700 font-normal"><span class="font-semibold text-slate-800">解析：</span>${q.explanation}</p>
+          `;
+        } else {
+          fbBox.classList.add('bg-rose-50', 'text-rose-900', 'border', 'border-rose-200');
+          fbBox.innerHTML = `
+            <div class="flex items-center space-x-2">
+              <span class="text-rose-600 font-bold">✗ 答錯了</span>
+              <span class="text-xs bg-rose-200/70 text-rose-800 px-2 py-0.5 rounded font-bold">正確解答：(${q.answer})</span>
+            </div>
+            <p class="mt-1.5 text-xs text-slate-700 font-normal"><span class="font-semibold text-slate-800">解析：</span>${q.explanation}</p>
+          `;
+        }
+      });
+
+      // 2. 批改第二大題：依提示回答問題
+      quizData.section2.forEach((q) => {
+        const input = document.querySelector(`input[name="${q.id}"]`);
+        const userVal = input ? input.value : "";
+        const isCorrect = checkAnswerMatch(userVal, q.acceptable);
+        if (isCorrect) correctCount++;
+
+        const fbBox = document.getElementById(`feedback-${q.id}`);
+        fbBox.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-900', 'border-emerald-200', 'bg-rose-50', 'text-rose-900', 'border-rose-200');
+
+        if (isCorrect) {
+          fbBox.classList.add('bg-emerald-50', 'text-emerald-900', 'border', 'border-emerald-200');
+          fbBox.innerHTML = `
+            <span class="text-emerald-600 font-bold">✓ 答對了！</span>
+            <p class="mt-1 text-xs text-slate-700"><span class="font-semibold">參考範例：</span>${q.standard}</p>
+            <p class="mt-0.5 text-xs text-slate-600"><span class="font-semibold">解析說明：</span>${q.explanation}</p>
+          `;
+        } else {
+          fbBox.classList.add('bg-rose-50', 'text-rose-900', 'border', 'border-rose-200');
+          fbBox.innerHTML = `
+            <div class="flex items-center space-x-2">
+              <span class="text-rose-600 font-bold">✗ 答錯了或有缺漏</span>
+            </div>
+            <p class="mt-1 text-xs font-medium text-rose-950"><span class="font-bold text-rose-800">標準解答：</span>${q.standard}</p>
+            <p class="mt-1 text-xs text-slate-700"><span class="font-semibold">重點解析：</span>${q.explanation}</p>
+          `;
+        }
+      });
+
+      // 3. 批改第三大題：整句式翻譯
+      quizData.section3.forEach((q) => {
+        const input = document.querySelector(`input[name="${q.id}"]`);
+        const userVal = input ? input.value : "";
+        const isCorrect = checkAnswerMatch(userVal, q.acceptable);
+        if (isCorrect) correctCount++;
+
+        const fbBox = document.getElementById(`feedback-${q.id}`);
+        fbBox.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-900', 'border-emerald-200', 'bg-rose-50', 'text-rose-900', 'border-rose-200');
+
+        if (isCorrect) {
+          fbBox.classList.add('bg-emerald-50', 'text-emerald-900', 'border', 'border-emerald-200');
+          fbBox.innerHTML = `
+            <span class="text-emerald-600 font-bold">✓ 答對了！</span>
+            <p class="mt-1 text-xs text-slate-700"><span class="font-semibold">參考譯文：</span>${q.standard}</p>
+            <p class="mt-0.5 text-xs text-slate-600"><span class="font-semibold">解析：</span>${q.explanation}</p>
+          `;
+        } else {
+          fbBox.classList.add('bg-rose-50', 'text-rose-900', 'border', 'border-rose-200');
+          fbBox.innerHTML = `
+            <span class="text-rose-600 font-bold">✗ 翻譯不完整或有誤</span>
+            <p class="mt-1 text-xs font-medium text-rose-950"><span class="font-bold text-rose-800">參考答案：</span>${q.standard}</p>
+            <p class="mt-1 text-xs text-slate-700"><span class="font-semibold">文法重點：</span>${q.explanation}</p>
+          `;
+        }
+      });
+
+      // 4. 批改第四大題：填充
+      // 4-1
+      const item1 = quizData.section4[0];
+      const val1_a = document.querySelector(`input[name="${item1.input1_key}"]`)?.value || "";
+      const val1_b = document.querySelector(`input[name="${item1.input2_key}"]`)?.value || "";
+      const is1_a = checkAnswerMatch(val1_a, item1.acceptable1);
+      const is1_b = checkAnswerMatch(val1_b, item1.acceptable2);
+      if (is1_a) correctCount++;
+      if (is1_b) correctCount++;
+
+      const fbBox4_1 = document.getElementById(`feedback-${item1.id}`);
+      fbBox4_1.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-900', 'border-emerald-200', 'bg-rose-50', 'text-rose-900', 'border-rose-200');
+      if (is1_a && is1_b) {
+        fbBox4_1.classList.add('bg-emerald-50', 'text-emerald-900', 'border', 'border-emerald-200');
+        fbBox4_1.innerHTML = `<span class="text-emerald-600 font-bold">✓ 兩格皆答對！</span> (sitting; with)<p class="mt-1 text-xs text-slate-600">${item1.explanation}</p>`;
+      } else {
+        fbBox4_1.classList.add('bg-rose-50', 'text-rose-900', 'border', 'border-rose-200');
+        fbBox4_1.innerHTML = `<span class="text-rose-600 font-bold">✗ 答錯或部分有誤</span> 正確答案為：<strong>sitting</strong> ; <strong>with</strong><p class="mt-1 text-xs text-slate-600">${item1.explanation}</p>`;
+      }
+
+      // 4-2
+      const item2 = quizData.section4[1];
+      item2.subItems.forEach((sub) => {
+        const val = document.querySelector(`input[name="${sub.id}"]`)?.value || "";
+        const isMatch = checkAnswerMatch(val, sub.acceptable);
+        if (isMatch) correctCount++;
+
+        const fbSub = document.getElementById(`feedback-${sub.id}`);
+        fbSub.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-900', 'border-emerald-200', 'bg-rose-50', 'text-rose-900', 'border-rose-200');
+        if (isMatch) {
+          fbSub.classList.add('bg-emerald-50', 'text-emerald-900', 'border', 'border-emerald-200');
+          fbSub.innerHTML = `<span class="text-emerald-600 font-bold">✓ 答對！</span> (${sub.acceptable[0]}) - <span class="text-xs text-slate-600">${sub.explanation}</span>`;
+        } else {
+          fbSub.classList.add('bg-rose-50', 'text-rose-900', 'border', 'border-rose-200');
+          fbSub.innerHTML = `<span class="text-rose-600 font-bold">✗ 答錯！</span> 正確填入：<strong>${sub.acceptable[0]}</strong> - <span class="text-xs text-slate-600">${sub.explanation}</span>`;
+        }
+      });
+
+      // 4-3
+      const item3 = quizData.section4[2];
+      item3.subItems.forEach((sub) => {
+        const val = document.querySelector(`input[name="${sub.id}"]`)?.value || "";
+        const isMatch = checkAnswerMatch(val, sub.acceptable);
+        if (isMatch) correctCount++;
+
+        const fbSub = document.getElementById(`feedback-${sub.id}`);
+        fbSub.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-900', 'border-emerald-200', 'bg-rose-50', 'text-rose-900', 'border-rose-200');
+        if (isMatch) {
+          fbSub.classList.add('bg-emerald-50', 'text-emerald-900', 'border', 'border-emerald-200');
+          fbSub.innerHTML = `<span class="text-emerald-600 font-bold">✓ 答對！</span> (${sub.acceptable[0]}) - <span class="text-xs text-slate-600">${sub.explanation}</span>`;
+        } else {
+          fbSub.classList.add('bg-rose-50', 'text-rose-900', 'border', 'border-rose-200');
+          fbSub.innerHTML = `<span class="text-rose-600 font-bold">✗ 答錯！</span> 正確填入：<strong>${sub.acceptable[0]}</strong> - <span class="text-xs text-slate-600">${sub.explanation}</span>`;
+        }
+      });
+
+      // 計算總得分
+      const score = Math.round((correctCount / totalPoints) * 100);
+      const accuracy = Math.round((correctCount / totalPoints) * 100);
+
+      // 更新頂部儀表板
+      const dashboard = document.getElementById("result-dashboard");
+      dashboard.classList.remove("hidden");
+      document.getElementById("score-display").innerText = score;
+      document.getElementById("accuracy-display").innerText = `${accuracy}%`;
+      document.getElementById("correct-count-display").innerText = `${correctCount} / ${totalPoints} 小題`;
+
+      const feedbackText = document.getElementById("result-feedback");
+      if (score === 100) {
+        feedbackText.innerText = "太棒了！全部答對，概念非常清楚！🌟";
+      } else if (score >= 80) {
+        feedbackText.innerText = "表現很優秀！請特別注意下方紅色標示的題目解析。👍";
+      } else if (score >= 60) {
+        feedbackText.innerText = "及格了，但現在進行式與人稱代名詞規則仍有些混淆，仔細閱讀解析再試一次！💪";
+      } else {
+        feedbackText.innerText = "需要再加強基礎喔！請仔細閱讀每題的文法重點說明後，點擊「清空重測」重新練習。📖";
+      }
+
+      // 平滑捲動至成績卡片
+      dashboard.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function resetQuiz() {
+      // 重置表單
+      document.getElementById("quiz-form").reset();
+      
+      // 隱藏儀表板
+      document.getElementById("result-dashboard").classList.add("hidden");
+
+      // 隱藏所有反饋框
+      const feedbacks = document.querySelectorAll("[id^='feedback-']");
+      feedbacks.forEach(el => {
+        el.classList.add('hidden');
+        el.innerHTML = "";
+      });
+
+      // 捲動回頂部
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // 初始化頁面
+    window.addEventListener("DOMContentLoaded", () => {
+      renderQuestions();
+    });
+  </script>
+</body>
+</html>
