@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>八上數學 一段範圍複習測驗（全版本）</title>
+  <style>
+    :root {
+      --primary: #4338ca;
+      --primary-hover: #3730a3;
+      --bg: #eef2ff;
+      --card: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --border: #c7d2fe;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding: 16px; line-height: 1.6; }
+    .container { max-width: 860px; margin: 0 auto; }
+
+    .nav-bar { margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
+    .nav-btn { text-decoration: none; color: var(--primary); font-weight: 600; font-size: 0.95rem; }
+    .badge { font-size: 0.8rem; padding: 3px 10px; border-radius: 999px; background: #e0e7ff; color: #4338ca; font-weight: 600; }
+
+    header { background: var(--card); padding: 22px; border-radius: 14px; border: 1px solid var(--border); margin-bottom: 20px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.03); }
+    header h1 { font-size: 1.5rem; color: #312e81; margin-bottom: 6px; }
+    header p { font-size: 0.9rem; color: var(--text-muted); }
+
+    .score-banner {
+      display: none;
+      background: #e0e7ff;
+      border: 1px solid #a5b4fc;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    .score-banner h2 { font-size: 2.2rem; color: var(--primary); margin-bottom: 6px; }
+
+    .card { background: var(--card); padding: 20px; border-radius: 14px; border: 1px solid #e2e8f0; margin-bottom: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+    .q-title { font-size: 1.05rem; font-weight: 600; margin-bottom: 12px; color: #1e293b; line-height: 1.6; }
+    .svg-diagram { width: 100%; max-width: 320px; display: block; margin: 12px auto; background: #ffffff; border-radius: 8px; border: 1px solid #cbd5e1; }
+
+    .input-box { width: 100%; max-width: 340px; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 1rem; color: #0f172a; margin-top: 6px; }
+    .input-box:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(67, 56, 202, 0.15); }
+
+    .explanation { display: none; margin-top: 14px; padding: 12px 16px; border-radius: 8px; font-size: 0.92rem; line-height: 1.5; }
+    .exp-correct { background-color: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; }
+    .exp-wrong { background-color: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
+
+    .btn-group { display: flex; gap: 12px; margin: 28px 0 50px; }
+    .btn { flex: 1; padding: 14px; border-radius: 10px; border: none; font-size: 1rem; font-weight: 700; cursor: pointer; }
+    .btn-submit { background: var(--primary); color: #fff; }
+    .btn-submit:hover { background: var(--primary-hover); }
+    .btn-reset { background: #e2e8f0; color: var(--text); }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="nav-bar">
+    <a href="../index.html" class="nav-btn">⬅ 返回首頁儀表板</a>
+    <span class="badge">全版本 八上數學 一段複習</span>
+  </div>
+
+  <header>
+    <h1>八上數學－第一次段考全單元計算複習卷</h1>
+    <p>全卷共 25 題計算題（每題 4 分，滿分 100 分）。完成後請點選下方交卷按鈕。</p>
+  </header>
+
+  <div class="score-banner" id="scoreBanner">
+    <h2 id="finalScore">0 分</h2>
+    <p id="scoreMsg">測驗完成！成績已自動儲存至儀表板。</p>
+  </div>
+
+  <div id="quiz-container"></div>
+
+  <div class="btn-group">
+    <button class="btn btn-submit" onclick="submitExam()">送出交卷</button>
+    <button class="btn btn-reset" onclick="resetExam()">重新測驗</button>
+  </div>
+</div>
+
+<script>
+const quizData = [
+  {
+    q: "1. 如圖，在一張邊長為 13.5 公分的正方形色紙，剪去兩個腰長為 3.5 公分的等腰直角三角形，求剩下的色紙面積。（平方公分）",
+    svg: `<svg class="svg-diagram" viewBox="0 0 160 160">
+      <rect x="20" y="20" width="120" height="120" fill="#fbcfe8" stroke="#000"/>
+      <polygon points="110,20 140,20 140,50" fill="#fff" stroke="#000" stroke-dasharray="2,2"/>
+      <polygon points="20,110 20,140 50,140" fill="#fff" stroke="#000" stroke-dasharray="2,2"/>
+      <text x="115" y="15" font-size="10">3.5</text>
+      <text x="142" y="38" font-size="10">3.5</text>
+      <text x="25" y="155" font-size="10">3.5</text>
+      <text x="3" y="130" font-size="10">3.5</text>
+    </svg>`,
+    valid: ["170", "170平方公分"],
+    exp: "剪去兩個等腰直角三角形可拼成邊長 3.5 的正方形。面積 = 13.5² - 3.5² = (13.5 + 3.5)(13.5 - 3.5) = 17 × 10 = 170 平方公分[cite: 31]。"
+  },
+  {
+    q: "2. 如圖，三角板是一個腰長為 10.5 公分的等腰直角三角形，其內部中空部分是一個腰長為 4.5 公分的等腰直角三角形，求此三角板不含中空部分的面積。（平方公分）",
+    svg: `<svg class="svg-diagram" viewBox="0 0 160 160">
+      <polygon points="30,20 30,140 150,140" fill="#fef08a" stroke="#000"/>
+      <polygon points="55,80 55,125 100,125" fill="#fff" stroke="#000"/>
+      <text x="5" y="85" font-size="10">10.5</text>
+      <text x="65" y="138" font-size="10">4.5</text>
+    </svg>`,
+    valid: ["45", "45平方公分"],
+    exp: "面積 = 1/2 × (10.5² - 4.5²) = 1/2 × (10.5 + 4.5)(10.5 - 4.5) = 1/2 × 15 × 6 = 45 平方公分[cite: 31]。"
+  },
+  {
+    q: "3. 志玲原有 m 件上衣與 n 件褲子，雙11添購了 5 件上衣與 4 件褲子，收到衣物後會增加多少種穿搭方式？（以含 m、n 的式子表示）",
+    valid: ["4m+5n+20", "5n+4m+20", "20+4m+5n"],
+    exp: "(m + 5)(n + 4) - mn = mn + 4m + 5n + 20 - mn = 4m + 5n + 20 種[cite: 31]。"
+  },
+  {
+    q: "4. 計算 (x² - 6) + (3x² + 5x) + (5x² - 7x + 2)。",
+    valid: ["9x^2-2x-4", "9x²-2x-4", "9x^2 - 2x - 4"],
+    exp: "(1 + 3 + 5)x² + (5 - 7)x + (-6 + 2) = 9x² - 2x - 4[cite: 31]。"
+  },
+  {
+    q: "5. 比較 3√2 與 2√3 的大小關係。（以 > 或 < 表示）",
+    valid: ["3√2>2√3", "3*sqrt(2)>2*sqrt(3)", "3√2 > 2√3", "3根號2>2根號3"],
+    exp: "3√2 = √18，2√3 = √12，因 18 > 12，故 3√2 > 2√3[cite: 31]。"
+  },
+  {
+    q: "6. 若 -7 是 2x + 39 的負平方根，求 x 的值。",
+    valid: ["5"],
+    exp: "2x + 39 = (-7)² = 49 ➔ 2x = 10 ➔ x = 5[cite: 31]。"
+  },
+  {
+    q: "7. 利用質因數分解，化簡 √30.25。（以小數或分數表示）",
+    valid: ["5.5", "11/2"],
+    exp: "√30.25 = √(3025/100) = √(55²/10²) = 55/10 = 5.5（或 11/2）[cite: 31]。"
+  },
+  {
+    q: "8. 化簡 (x - 1)(x + 2)(x - 5)。",
+    valid: ["x^3-4x^2-7x+10", "x³-4x²-7x+10"],
+    exp: "(x² + x - 2)(x - 5) = x³ - 5x² + x² - 5x - 2x + 10 = x³ - 4x² - 7x + 10[cite: 31]。"
+  },
+  {
+    q: "9. 若 A + (3x² + x - 8) = 4x²，且 (5x² - 6x + 2) - B = 7x² - 3x + 6，求 A - B = ？",
+    valid: ["3x^2+2x+12", "3x²+2x+12"],
+    exp: "A = 4x² - (3x² + x - 8) = x² - x + 8；B = (5x² - 6x + 2) - (7x² - 3x + 6) = -2x² - 3x - 4。A - B = (x² - x + 8) - (-2x² - 3x - 4) = 3x² + 2x + 12[cite: 31]。"
+  },
+  {
+    q: "10. 若多項式 14x² - 19x 除以多項式 A，得商式為 2x - 3，餘式為 3，則多項式 A 為多少？",
+    valid: ["7x+1", "7x + 1"],
+    exp: "A × (2x - 3) = 14x² - 19x - 3 ➔ A = (14x² - 19x - 3) ÷ (2x - 3) = 7x + 1[cite: 31]。"
+  },
+  {
+    q: "11. 已知 √7 ≒ 2.65，求 √700 與 √0.28 的近似值。（請填寫兩數，例：26.5, 0.53）",
+    valid: ["26.5,0.53", "26.5、0.53", "26.5與0.53", "26.5, 0.53"],
+    exp: "√700 = 10√7 ≒ 26.5；√0.28 = 2√7/10 = √7/5 ≒ 2.65/5 = 0.53[cite: 31]。"
+  },
+  {
+    q: "12. 利用和的平方公式展開 (a + b + c)²。",
+    valid: [
+      "a^2+b^2+c^2+2ab+2bc+2ac",
+      "a^2+b^2+c^2+2ab+2ac+2bc",
+      "a²+b²+c²+2ab+2bc+2ac",
+      "a²+b²+c²+2ab+2ca+2bc"
+    ],
+    exp: "[(a + b) + c]² = (a + b)² + 2(a + b)c + c² = a² + b² + c² + 2ab + 2bc + 2ac[cite: 31]。"
+  },
+  {
+    q: "13. 計算 (5x - 4 - 6x²) - (-2x² + 2 + 5x)。",
+    valid: ["-4x^2-6", "-4x²-6", "-4x^2 - 6"],
+    exp: "(-6x² + 5x - 4) - (-2x² + 5x + 2) = (-6 - (-2))x² + (5 - 5)x + (-4 - 2) = -4x² - 6[cite: 31]。"
+  },
+  {
+    q: "14. 在多項式除法 (8x² + ax + d) ÷ (bx + 3) = (2x + 3) ... -2 中，求 a + b + c + d + e + f = ？",
+    valid: ["61"],
+    exp: "bx × 2x = 8x² ➔ b = 4, c = 8；3 × bx = 12x ➔ e = f = 12；a = 6 + 12 = 18；d - 9 = -2 ➔ d = 7。總和 = 18 + 4 + 8 + 7 + 12 + 12 = 61[cite: 31]。"
+  },
+  {
+    q: "15. 若 a = √12 + √7，b = √11 + √8，求 b² - a² 的化簡值。",
+    valid: ["4√22-4√21", "4*sqrt(22)-4*sqrt(21)", "4√22 - 4√21", "2√88-2√84"],
+    exp: "b² = 11 + 8 + 2√88 = 19 + 2√88；a² = 12 + 7 + 2√84 = 19 + 2√84。b² - a² = 2√88 - 2√84 = 4√22 - 4√21[cite: 31]。"
+  },
+  {
+    q: "16. 計算 3(x² + 3x + 5) + 2(-2x + 4x² + 1) - (2x² + 3x + 6)。",
+    valid: ["9x^2+2x+11", "9x²+2x+11"],
+    exp: "(3x² + 9x + 15) + (8x² - 4x + 2) - (2x² + 3x + 6) = (3 + 8 - 2)x² + (9 - 4 - 3)x + (15 + 2 - 6) = 9x² + 2x + 11[cite: 31]。"
+  },
+  {
+    q: "17. 已知多項式 x² + 4x - 3 減去一個多項式後的差為 -3x² + 2x + 9，求此多項式。",
+    valid: ["4x^2+2x-12", "4x²+2x-12"],
+    exp: "(x² + 4x - 3) - (-3x² + 2x + 9) = 4x² + 2x - 12[cite: 31]。"
+  },
+  {
+    q: "18. 設 a = (2 + √7)/√3，b = (2 - √7)/√3，求 (a - b)² + (a + b)² = ？（分數請以 a/b 表示）",
+    valid: ["44/3", "14又2/3"],
+    exp: "(a - b)² + (a + b)² = 2(a² + b²)。a - b = 2√7/√3 ➔ (a - b)² = 28/3；a + b = 4/√3 ➔ (a + b)² = 16/3。和 = 28/3 + 16/3 = 44/3[cite: 31]。"
+  },
+  {
+    q: "19. 展開 (x⁸ + 1)(x⁴ + 1)(x² + 1)(x + 1)(x - 1)。",
+    valid: ["x^16-1", "x¹⁶-1", "x^16 - 1"],
+    exp: "由後往前逐次利用平方差公式：(x² - 1) ➔ (x⁴ - 1) ➔ (x⁸ - 1) ➔ (x¹⁶ - 1)[cite: 31]。"
+  },
+  {
+    q: "20. 已知 a、b 為正整數，若 √(72×a) 與 √(96/b) 皆為正整數，求 a、b 的最小值分別為何？（請填寫：a=2, b=6）",
+    valid: ["a=2,b=6", "a=2, b=6", "2,6", "2、6"],
+    exp: "72 = 2³ × 3² ➔ a 最小為 2（此時根式值為 12）；96 = 2⁵ × 3 ➔ b 最小為 2 × 3 = 6（此時根式值為 4）[cite: 31]。"
+  },
+  {
+    q: "21. 求附圖多邊形紫色區域的周長及面積。（以含 x 的式子表示，填寫如：周長4x+28, 面積2x+114）",
+    svg: `<svg class="svg-diagram" viewBox="0 0 220 160">
+      <polygon points="20,70 120,70 120,20 180,20 180,130 60,130 60,145 20,145" fill="#e0e7ff" stroke="#4338ca" stroke-width="2"/>
+      <text x="145" y="15" font-size="10">6</text>
+      <text x="185" y="80" font-size="10">10</text>
+      <text x="125" y="45" font-size="10">x-3</text>
+      <text x="60" y="65" font-size="10">x+3</text>
+      <text x="80" y="125" font-size="10">12</text>
+      <text x="65" y="140" font-size="10">x-5</text>
+    </svg>`,
+    valid: [
+      "4x+28,2x+114",
+      "周長4x+28,面積2x+114",
+      "周長為4x+28,面積為2x+114",
+      "4x+28, 2x+114"
+    ],
+    exp: "周長 = 2[(x + 3) + 6] + 2[(x - 5) + 10] = 4x + 28。面積經切割補齊計算為 2x + 114[cite: 31]。"
+  },
+  {
+    q: "22. 若 a = √17 + √3，b = √13 + √7，c = √15 + √5，比較 a、b、c 的大小關係。",
+    valid: ["b>c>a", "a<c<b"],
+    exp: "平方後比較交叉項：a² = 20 + 2√51，b² = 20 + 2√91，c² = 20 + 2√75。因 91 > 75 > 51，故 b > c > a[cite: 31]。"
+  },
+  {
+    q: "23. 已知 2C + 3D = 4x² + 6x - 3，且 C - 2D = 2x² - 4x + 2，求 C ÷ D 的商式與餘式。（請填：商式x+1/2, 餘式1/2）",
+    valid: [
+      "商式x+1/2,餘式1/2",
+      "商式x+1/2, 餘式1/2",
+      "商式為x+1/2,餘式為1/2",
+      "x+1/2,1/2",
+      "x+0.5,0.5"
+    ],
+    exp: "解聯立得 D = 2x - 1，C = 2x²。2x² ÷ (2x - 1) = (x + 1/2) ... 餘 1/2[cite: 31]。"
+  },
+  {
+    q: "24. 計算 (1 - 1/2²)(1 - 1/3²)(1 - 1/4²) ... (1 - 1/10²) 的值。（請以最簡分數表示）",
+    valid: ["11/20"],
+    exp: "利用平方差拆開對消：(1/2 × 3/2)(2/3 × 4/3) ... (9/10 × 11/10) = 1/2 × 11/10 = 11/20[cite: 31]。"
+  },
+  {
+    q: "25. 甲圖是邊長 82 正方形剪去 4 個邊長 9 正方形；乙圖是邊長 84 正方形剪去 1 個邊長 20 正方形。比較兩圖面積大小。（以「甲<乙」或「甲>乙」或中文表示）",
+    valid: ["甲<乙", "甲小於乙", "甲圖面積<乙圖面積", "甲圖面積小於乙圖面積", "乙>甲"],
+    exp: "甲面積 = 82² - 4×9² = 82² - 18² = (82+18)(82-18) = 100 × 64 = 6400；乙面積 = 84² - 20² = (84+20)(84-20) = 104 × 64 = 6656。故甲圖面積 < 乙圖面積[cite: 31]。"
+  }
+];
+
+function cleanMath(str) {
+  return (str || '')
+    .toLowerCase()
+    .replace(/\s+/g, '')
+    .replace(/[，、與]/g, ',')
+    .replace(/²/g, '^2')
+    .replace(/³/g, '^3')
+    .replace(/¹⁶/g, '^16')
+    .replace(/√/g, 'sqrt')
+    .replace(/根號/g, 'sqrt')
+    .trim();
+}
+
+function render() {
+  const container = document.getElementById('quiz-container');
+  container.innerHTML = quizData.map((d, i) => `
+    <div class="card" id="q_card_${i}">
+      <div class="q-title">${d.q}</div>
+      ${d.svg || ''}
+      <div>
+        <input type="text" class="input-box" id="ans_${i}" placeholder="請在此輸入答案...">
+      </div>
+      <div class="explanation" id="exp_${i}"></div>
+    </div>
+  `).join('');
+}
+
+function submitExam() {
+  let score = 0;
+  let unfilled = 0;
+
+  quizData.forEach((d, i) => {
+    const rawVal = document.getElementById(`ans_${i}`).value;
+    const cleanVal = cleanMath(rawVal);
+    const expBox = document.getElementById(`exp_${i}`);
+    expBox.style.display = 'block';
+
+    if (!cleanVal) unfilled++;
+
+    const isCorrect = d.valid.some(v => cleanMath(v) === cleanVal);
+    if (isCorrect) {
+      score += 4;
+      expBox.className = 'explanation exp-correct';
+      expBox.innerHTML = `✓ <strong>答對！</strong><br>解析：${d.exp}`;
+    } else {
+      expBox.className = 'explanation exp-wrong';
+      expBox.innerHTML = `✗ <strong>需訂正</strong>。正確答案：${d.valid[0]}<br>解析：${d.exp}`;
+    }
+  });
+
+  if (unfilled > 0) {
+    if (!confirm(`尚有 ${unfilled} 題未填寫答案，確定要送出交卷嗎？`)) return;
+  }
+
+  const banner = document.getElementById('scoreBanner');
+  const finalScoreEl = document.getElementById('finalScore');
+  banner.style.display = 'block';
+  finalScoreEl.textContent = `${score} 分`;
+  finalScoreEl.style.color = score >= 60 ? 'var(--primary)' : 'var(--danger)';
+
+  // 儲存至 LocalStorage (對應首頁八年級數學)
+  const record = {
+    score: score,
+    date: new Date().toLocaleDateString('zh-TW', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+  };
+  localStorage.setItem('quiz_g8_math', JSON.stringify(record));
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function resetExam() {
+  if (confirm('確定要清除目前所有答案並重新測驗嗎？')) {
+    location.reload();
+  }
+}
+
+render();
+</script>
+</body>
+</html>

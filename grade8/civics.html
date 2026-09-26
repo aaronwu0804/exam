@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>八上公民 一段範圍複習測驗（適翰、南版）</title>
+  <style>
+    :root {
+      --primary: #0284c7;
+      --primary-hover: #0369a1;
+      --bg: #f0f9ff;
+      --card: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --border: #bae6fd;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding: 16px; line-height: 1.6; }
+    .container { max-width: 840px; margin: 0 auto; }
+
+    .nav-bar { margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
+    .nav-btn { text-decoration: none; color: var(--primary); font-weight: 600; font-size: 0.95rem; }
+    .badge { font-size: 0.8rem; padding: 3px 10px; border-radius: 999px; background: #e0f2fe; color: #0369a1; font-weight: 600; }
+
+    header { background: var(--card); padding: 22px; border-radius: 14px; border: 1px solid var(--border); margin-bottom: 20px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.03); }
+    header h1 { font-size: 1.5rem; color: #075985; margin-bottom: 6px; }
+    header p { font-size: 0.9rem; color: var(--text-muted); }
+
+    .score-banner {
+      display: none;
+      background: #e0f2fe;
+      border: 1px solid #7dd3fc;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    .score-banner h2 { font-size: 2.2rem; color: var(--primary); margin-bottom: 6px; }
+
+    .card { background: var(--card); padding: 20px; border-radius: 14px; border: 1px solid #e2e8f0; margin-bottom: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+    .q-title { font-size: 1.05rem; font-weight: 600; margin-bottom: 12px; color: #0f172a; line-height: 1.6; }
+    .news-box { background: #f8fafc; border-left: 4px solid var(--primary); padding: 12px 16px; margin: 10px 0 14px; font-size: 0.95rem; color: #334155; border-radius: 0 8px 8px 0; }
+    .svg-diagram { width: 100%; max-width: 440px; display: block; margin: 12px auto; background: #ffffff; border-radius: 8px; border: 1px solid #cbd5e1; }
+
+    .options { display: flex; flex-direction: column; gap: 8px; }
+    .opt-label { display: flex; align-items: flex-start; padding: 10px 14px; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer; font-size: 0.95rem; transition: background 0.15s; }
+    .opt-label:hover { background-color: #f0f9ff; }
+    .opt-label input { margin-right: 12px; margin-top: 4px; }
+
+    .explanation { display: none; margin-top: 14px; padding: 12px 16px; border-radius: 8px; font-size: 0.92rem; line-height: 1.5; }
+    .exp-correct { background-color: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; }
+    .exp-wrong { background-color: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
+
+    .btn-group { display: flex; gap: 12px; margin: 28px 0 50px; }
+    .btn { flex: 1; padding: 14px; border-radius: 10px; border: none; font-size: 1rem; font-weight: 700; cursor: pointer; }
+    .btn-submit { background: var(--primary); color: #fff; }
+    .btn-submit:hover { background: var(--primary-hover); }
+    .btn-reset { background: #e2e8f0; color: var(--text); }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="nav-bar">
+    <a href="../index.html" class="nav-btn">⬅ 返回首頁儀表板</a>
+    <span class="badge">適翰、南版 八上公民 一段複習</span>
+  </div>
+
+  <header>
+    <h1>八上公民－一段範圍複習練習卷</h1>
+    <p>全卷共 25 題單選題，每題 4 分，滿分 100 分。完成後請點選下方送出交卷。</p>
+  </header>
+
+  <div class="score-banner" id="scoreBanner">
+    <h2 id="finalScore">0 分</h2>
+    <p id="scoreMsg">測驗完成！成績已自動儲存至儀表板。</p>
+  </div>
+
+  <div id="quiz-container"></div>
+
+  <div class="btn-group">
+    <button class="btn btn-submit" onclick="submitQuiz()">送出交卷</button>
+    <button class="btn btn-reset" onclick="resetQuiz()">重新測驗</button>
+  </div>
+</div>
+
+<script>
+const quizData = [
+  {
+    q: "在政治學上「國家」狹義而言，為一定範圍內的人群所形成的共同體，其主要功能會隨時代改變，而國家最主要的功能為何？",
+    opts: ["推動國際貿易合作", "保護人民安全", "擴大國家領土範圍", "壯大軍事力量"],
+    ans: 1, // B
+    exp: "國家成立與存在最原始且最主要的核心功能，在於對內維持秩序、對外抵禦侵略，以保護人民的生命與財產安全。"
+  },
+  {
+    q: "臺中市政府環保局向環保署申請補助裝設 30 臺「水盒子」，於魚群死亡好發處與高汙染潛勢區下游設置，即時監控水質溫度、溶氧、導電度及 pH 值狀況，以維護水體環境品質。請問上文內容是在保障哪一項人權？",
+    opts: ["平等權", "環境權", "多元文化權", "健康照護權"],
+    ans: 1, // B
+    exp: "水質監測以維護水體品質，保障人民享有健康、乾淨生活環境的權利，屬於第三代人權中的「環境權」。"
+  },
+  {
+    q: "行政院配合組織改造，特於院內成立「性別平等處」，為我國第一個推動性別平等工作的專責機制。此項措施與人民的何種基本權利最相關？",
+    opts: ["受益權", "自由權", "平等權", "參政權"],
+    ans: 2, // C
+    exp: "性別平等處旨在落實男女平權與消除性別歧視，保障《憲法》第 7 條所賦予人民無分男女在法律上一律平等的「平等權」。"
+  },
+  {
+    q: "內政部對我國固有國籍之認定取得，由原本的「父系血統主義」修法放寬為「父母雙系血統主義」，以保障女性同胞權利及其對子女的親權行使。上述修正保障了人民的哪一項基本權利？",
+    opts: ["平等權", "自由權", "受益權", "參政權"],
+    ans: 0, // A
+    exp: "取消僅依父親血統認定的性別不平等規範，使母系享有相同權益，符合男女法律地位平等的「平等權」。"
+  },
+  {
+    q: "四位同學在討論《憲法》的內涵，下列何人的說明最正確？",
+    opts: [
+      "阿雅：制定《憲法》是為補充法律的不足",
+      "阿雄：內容規範包含基本人權、政府組織",
+      "阿惠：對人民的權利義務做細節性規定",
+      "阿國：依據法律授權詳訂行政措施步驟"
+    ],
+    ans: 1, // B
+    exp: "憲法為國家根本大法，核心內容主要規範「人民的基本權利義務」與「政府中央及地方組織之運作權限」；細節性與行政措施由法律及命令規定。"
+  },
+  {
+    q: "胤泰參加校內法律知識競賽，面對題目：「《憲法》為何被稱為『人民權利的保障書』？」他應該選擇下列何者才能贏得勝利？",
+    opts: [
+      "條文最多，用於約束政府施政",
+      "規定人民的權利，可提高保障的效力",
+      "規定最詳盡，鉅細靡遺無疏漏",
+      "制定程序最簡易，可隨時修正"
+    ],
+    ans: 1, // B
+    exp: "憲法位階最高、修改程序嚴格，將基本人權明定於憲法中能大幅提高法律保障效力，防止政府以普通法律任意侵害。"
+  },
+  {
+    q: "地方政府基於財政經費考量，決定廢除多所偏遠地區小學。民間教育團體認為此舉已嚴重損害偏鄉學童受教育的權利。新聞報導中所提及受損害的權利屬於下列何者？",
+    opts: ["參政權", "受益權", "平等權", "自由權"],
+    ans: 1, // B
+    exp: "接受國民教育或請求國家提供教育資源與補助，屬於憲法所保障的教育上「受益權」。"
+  },
+  {
+    q: "阿靜與家人聊天提到：「如果修憲內容獲得各黨團共識，我應該會提案修正《憲法》的相關條文。」依此對話內容推論，阿靜上班的地點應在下列哪一個政府機關？",
+    svg: `<svg class="svg-diagram" viewBox="0 0 320 120">
+      <rect x="20" y="15" width="280" height="50" rx="8" fill="#f8fafc" stroke="#64748b"/>
+      <text x="35" y="36" font-size="12" fill="#1e293b">「如果修憲內容獲得各黨團共識，</text>
+      <text x="45" y="54" font-size="12" fill="#1e293b">我應該會提案修正《憲法》相關條文。」</text>
+      <circle cx="160" cy="90" r="16" fill="#bae6fd"/>
+      <text x="148" y="95" font-size="12" font-weight="bold">阿靜</text>
+    </svg>`,
+    opts: ["行政院", "司法院", "監察院", "立法院"],
+    ans: 3, // D
+    exp: "依我國現行憲法增修條文規定，修憲案須由「立法院」立法委員提案並經立法院表決通過後，再交由公民投票複決，故阿靜身分為立法委員，任職於立法院。"
+  },
+  {
+    q: "如附圖海域劃分示意圖，我國在下列哪一個區域範圍內擁有完整的「軍事管轄權」與國家主權？",
+    svg: `<svg class="svg-diagram" viewBox="0 0 340 130">
+      <rect x="10" y="10" width="320" height="110" rx="8" fill="#e0f2fe"/>
+      <ellipse cx="140" cy="65" rx="55" ry="30" fill="#bbf7d0" stroke="#16a34a"/>
+      <text x="125" y="68" font-size="11" font-weight="bold">領陸</text>
+      <ellipse cx="140" cy="65" rx="85" ry="42" fill="none" stroke="#0284c7" stroke-width="2" stroke-dasharray="3,3"/>
+      <text x="195" y="45" font-size="10" fill="#0284c7" font-weight="bold">領海(12浬)</text>
+      <ellipse cx="140" cy="65" rx="125" ry="50" fill="none" stroke="#2563eb"/>
+      <text x="235" y="80" font-size="10" fill="#2563eb">經濟海域(200浬)</text>
+      <text x="275" y="110" font-size="11" fill="#475569">公海</text>
+    </svg>`,
+    opts: ["領海（領海基線向外 12 浬）", "公海", "專屬經濟海域", "以上皆非"],
+    ans: 0, // A
+    exp: "國家的領海屬於領土之一部分，國家在領海（基線外 12 浬範圍）內擁有與陸地相同之主權及完整軍事管轄權。"
+  },
+  {
+    q: "幾位同學正在討論「責任政治」的涵義，下列何人舉出的例子最適當？",
+    opts: [
+      "小郁：防疫政策失敗，內閣總理辭職下臺",
+      "小蘋：在野黨組成聯盟，監督執政黨施政",
+      "小津：捷運路線規畫定案，重視民意需求",
+      "小頤：政府舉辦公聽會，與民眾取得共識"
+    ],
+    ans: 0, // A
+    exp: "責任政治指執政者對民意及政策成敗負責，若政策失誤須承擔政治責任甚至辭職下臺；(B)為政黨政治；(C)(D)為民意政治。"
+  },
+  {
+    q: "我國《憲法》第 130 條規定：「中華民國國民年滿二十歲者，有依法選舉之權……」而具體選舉辦法另立《公職人員選舉罷免法》等加以詳細規範。上述說明憲法具備何種特色？",
+    opts: ["最高性", "固定性", "原則性", "成文性"],
+    ans: 2, // C
+    exp: "憲法只針對國家根本體制與核心權益作綱領與方向性之規範，不宜繁瑣，細節由普通法律補充，此為憲法之「原則性」。"
+  },
+  {
+    q: "幾位同學正在區分「國家」與「政府」各面向的差異，下列何人的說明完全正確？",
+    opts: [
+      "艾杭：國家是政府構成要素之一，範圍較小",
+      "澄琪：國家容易隨著制度變遷而改變",
+      "珈彤：國家的權力對外具有最高性，對內具有獨立性",
+      "勳祐：政府為國家的決策單位，以公權力執行政策"
+    ],
+    ans: 3, // D
+    exp: "(A)政府是國家四要素之一，政府範圍小於國家；(B)政府會隨政黨輪替或選舉更替，國家具有持續性；(C)主權對內最高、對外獨立；(D)政府是替國家行使統治權與政策執行之代理機構。"
+  },
+  {
+    q: "公民闖關活動主題為「國家組成要素」，關主提示要素之一為「主權」，各小隊要另外列出其餘三個要素（人民、領土、政府）的實例。下列哪一小隊能成功過關？",
+    opts: [
+      "青春小隊：國歌與國旗、戰力強大的軍隊、行政院與國會",
+      "可愛小隊：萬里河山、易守難攻的城池、物產豐富的島嶼",
+      "活力小隊：家庭十萬戶、忠誠度高的人民、十萬住民",
+      "健康小隊：十萬住民（人民）、物產豐富的島嶼（領土）、行政院與國會（政府）"
+    ],
+    ans: 3, // D
+    exp: "國家組成四要素為：人民、領土、政府、主權。健康小隊同時涵蓋了住民（人民）、島嶼（領土）、行政與立法機構（政府）。"
+  },
+  {
+    q: "小品大學畢業後，報名參加考試院舉辦的公務人員特種考試，以取得司法官或公務員資格。請問：應考試、服公職屬於憲法賦予人民的何種基本權利？",
+    opts: ["平等權", "自由權", "受益權", "參政權"],
+    ans: 3, // D
+    exp: "憲法第 18 條明定：「人民有應考試、服公職之權」，屬於人民參與國家治理之「參政權」。"
+  },
+  {
+    q: "國家統治權所能有效管轄支配的地理區域，包含領陸、領水與領空，這是國家的哪一項組成要素？",
+    opts: ["人民", "政府", "主權", "領土"],
+    ans: 3, // D
+    exp: "國家主權所及之空間與地理範圍稱為「領土」。"
+  },
+  {
+    q: "會議中與會者討論：「執政黨施行的勞工政策嚴重損害人民權益，本黨必須更嚴格監督執政黨施政！」由對話內容最能看出民主政治的何項特色？",
+    svg: `<svg class="svg-diagram" viewBox="0 0 320 100">
+      <rect x="15" y="10" width="135" height="45" rx="6" fill="#f1f5f9" stroke="#94a3b8"/>
+      <text x="25" y="28" font-size="10">本黨必須更嚴格</text>
+      <text x="25" y="44" font-size="10">監督執政黨施政。</text>
+      <rect x="170" y="10" width="135" height="45" rx="6" fill="#f1f5f9" stroke="#94a3b8"/>
+      <text x="180" y="28" font-size="10">執政黨施行政策，</text>
+      <text x="180" y="44" font-size="10">嚴重損害人民權益。</text>
+    </svg>`,
+    opts: ["民意政治", "法治政治", "責任政治", "政黨政治"],
+    ans: 3, // D
+    exp: "在野黨發揮制衡與監督執政黨施政缺失之功能，充分展現「政黨政治」之內涵。"
+  },
+  {
+    q: "附圖顯示政黨間透過定期選舉互相轉換角色（原執政黨變為在野黨，原在野黨勝選成為執政黨）。請問此圖最適合用以說明下列何種概念？",
+    svg: `<svg class="svg-diagram" viewBox="0 0 320 110">
+      <circle cx="80" cy="55" r="35" fill="#93c5fd"/>
+      <path d="M 80,20 A 35 35 0 0 1 115 55 L 80 55 Z" fill="#86efac"/>
+      <text x="60" y="58" font-size="10" font-weight="bold">原執政黨</text>
+      <text x="145" y="58" font-size="18" fill="#475569">➔</text>
+      <circle cx="240" cy="55" r="35" fill="#86efac"/>
+      <path d="M 240,20 A 35 35 0 0 1 275 55 L 240 55 Z" fill="#93c5fd"/>
+      <text x="220" y="58" font-size="10" font-weight="bold">成為執政黨</text>
+    </svg>`,
+    opts: ["主權在民", "政黨政治", "定期選舉", "政黨輪替"],
+    ans: 3, // D
+    exp: "政黨經由民主選舉平和轉移政權、輪流執政，此現象稱為「政黨輪替」。"
+  },
+  {
+    q: "大學水土保持系與獸醫學系畢業生在國家高、普考與獸醫師專技高考中錄取率名列前茅。請問參加公務人員高普考試，是國家確保人民行使何項憲法基本權利？",
+    opts: ["平等權", "參政權", "自由權", "受益權"],
+    ans: 1, // B
+    exp: "參加國家考試以取得公務人員任用資格，屬於憲法第 18 條所賦予之「參政權」。"
+  },
+  {
+    q: "民主國家必須依法行政，政府若無法律根據，便不能任意增加人民負擔或限制自由權利。上述內容所展現的民主政治特色，與下列何者理念相同？",
+    opts: [
+      "政策若失敗，政務官員須承擔政治責任辭職下臺",
+      "立法院舉辦民法成年年齡修法公聽會以廣納各界意見",
+      "政府依《嚴重特殊傳染性肺炎防治特別條例》要求落實防疫，否則開罰",
+      "各政黨公平參與總統大選，贏者組閣、敗者監督"
+    ],
+    ans: 2, // C
+    exp: "題幹敘述為「法治政治」（依法行政、法律保留）。(C)政府依特別條例之明文授權進行防疫管制與裁罰，同屬法治政治之體現。"
+  },
+  {
+    q: "政府宣布自明年元旦起開放含瘦肉精豬肉進口，在野黨立法院黨團就此召開多場公聽會及記者會，要求執政團隊出面說明政策。上述做法主要展現出何種民主政治特色？<br>(甲)民意政治 (乙)法治政治 (丙)責任政治 (丁)政黨政治",
+    opts: ["甲乙", "乙丙", "丙丁", "甲丁"],
+    ans: 3, // D
+    exp: "在野黨立院黨團召開會議監督執政黨展現了(丁)政黨政治；透過舉辦公聽會與記者會彙集各界心聲向政府反映展現了(甲)民意政治，故選甲丁。"
+  },
+  {
+    q: "下列針對「國家」與「政府」概念之比較說明，何者完全正確？",
+    opts: [
+      "政府的治理公權力由國家主權所賦予",
+      "國家的主體穩定性容易受到定期選舉更替影響",
+      "政府屬於永續持續存在的政治法人實體",
+      "國家為代理人組織，負責具體制定與執行政策"
+    ],
+    ans: 0, // A
+    exp: "國家具有持續性與主權；政府是依憲法組成之治理代理機構，其治理權限源於國家主權之賦予，故 (A) 正確。"
+  },
+  {
+    q: "快樂國的佑興收到幸福國友人傳訊：「我國與貴國已簽署『孕產婦及嬰兒保健計畫協定』，有助改善兩國醫療環境。」兩國間能平等簽署官方對外協定，展現了哪一項國家組成要素的重要性？",
+    svg: `<svg class="svg-diagram" viewBox="0 0 280 110">
+      <rect x="25" y="10" width="230" height="90" rx="8" fill="#f8fafc" stroke="#64748b"/>
+      <text x="35" y="30" font-size="11" font-weight="bold">佑興：</text>
+      <text x="35" y="50" font-size="10">我國與貴國已簽署「孕產婦及</text>
+      <text x="35" y="68" font-size="10">嬰兒保健計畫協定」，有助於</text>
+      <text x="35" y="86" font-size="10">改善兩國醫療環境。  霖憶</text>
+    </svg>`,
+    opts: ["政府", "人民", "領土", "主權"],
+    ans: 3, // D
+    exp: "國家具有「主權」，對外享有獨立自主、平等與他國建交、簽署條約及協定之權利。"
+  },
+  {
+    q: "旅美兩年的曉芬因疫情無法回國，向戶政單位詢問後得到回覆：「出境未在國內居住依《戶籍法》辦理遷出登記，此僅為戶籍管理制度，未影響其為中華民國國民之身分；但健保須返國恢復戶籍滿 6 個月後重新加保。」由此回覆可推知下列何者正確？",
+    opts: [
+      "曉芬必須重新申請國籍才能成為我國人民",
+      "曉芬已喪失受我國法律保護之人身安全權益",
+      "待重新取得國籍後才能恢復社會福利資格",
+      "以上戶籍遷出規定並未影響到我國國民（人民）的法定身分與數量"
+    ],
+    ans: 3, // D
+    exp: "戶籍遷出僅屬行政管理登記，其「中華民國國籍」依然有效保留，因此並未改變其國民身分或減少國家人民總數。"
+  },
+  {
+    q: "我國 2004 年與 2008 年兩次總統大選結果（2004 年民進黨陳水扁當選；2008 年國民黨馬英九當選），根據統計圖分析，下列敘述何者正確？",
+    svg: `<svg class="svg-diagram" viewBox="0 0 320 110">
+      <circle cx="80" cy="55" r="35" fill="#86efac"/>
+      <path d="M 80,20 A 35 35 0 0 1 115 55 L 80 55 Z" fill="#93c5fd"/>
+      <text x="50" y="58" font-size="9" font-weight="bold">2004扁呂勝</text>
+      <circle cx="240" cy="55" r="35" fill="#93c5fd"/>
+      <path d="M 240,20 A 35 35 0 0 1 275 55 L 240 55 Z" fill="#86efac"/>
+      <text x="210" y="58" font-size="9" font-weight="bold">2008馬蕭勝</text>
+    </svg>`,
+    opts: [
+      "總統大選的舉行，落實責任政治的特色",
+      "兩次選舉結果不同政黨勝選輪替，展現政黨政治之公平競爭特色",
+      "2008 年選舉結果政黨更替，代表國家主權發生移轉",
+      "只有實施總統直選的國家，才具備民主國家的資格"
+    ],
+    ans: 1, // B
+    exp: "政黨經由公平選舉程序爭取選民支持、輪流執政，為政黨政治的核心特色；執政更迭主權依然在民。"
+  },
+  {
+    q: "老師在課堂解說：「實行內閣制的國家，多由國會最大多數黨組閣主導政府施政，其他政黨負責監督。若施政無法滿足人民期待，下次國會大選失利便會喪失執政機會。」上述情形與民主政治的何項特徵「最不相關」？",
+    opts: ["民意政治", "法治政治", "責任政治", "政黨政治"],
+    ans: 1, // B
+    exp: "最大黨組閣與政黨競爭監督為「政黨政治」；表現須符合人民期待為「民意政治」；施政不佳下臺交出政權為「責任政治」。全文未提及政府依法行政或人民守法之「法治政治」規範。"
+  }
+];
+
+function renderQuiz() {
+  const container = document.getElementById('quiz-container');
+  container.innerHTML = quizData.map((item, idx) => `
+    <div class="card" id="q_card_${idx}">
+      <div class="q-title">${idx + 1}. ${item.q}</div>
+      ${item.news ? `<div class="news-box">${item.news}</div>` : ''}
+      ${item.svg || ''}
+      <div class="options">
+        ${item.opts.map((opt, oIdx) => `
+          <label class="opt-label" id="label_${idx}_${oIdx}">
+            <input type="radio" name="q_${idx}" value="${oIdx}">
+            <span>(${['A','B','C','D'][oIdx]})${opt}</span>
+          </label>
+        `).join('')}
+      </div>
+      <div class="explanation" id="exp_${idx}"></div>
+    </div>
+  `).join('');
+}
+
+function submitQuiz() {
+  let score = 0;
+  let unanswered = 0;
+
+  quizData.forEach((item, idx) => {
+    const selected = document.querySelector(`input[name="q_${idx}"]:checked`);
+    const expBox = document.getElementById(`exp_${idx}`);
+    expBox.style.display = 'block';
+
+    if (!selected) {
+      unanswered++;
+      expBox.className = 'explanation exp-wrong';
+      expBox.innerHTML = `⚠️ <strong>未作答</strong>。正確答案為 <strong>(${['A','B','C','D'][item.ans]})</strong>。<br>解析：${item.exp}`;
+    } else if (parseInt(selected.value) === item.ans) {
+      score += 4;
+      expBox.className = 'explanation exp-correct';
+      expBox.innerHTML = `✓ <strong>回答正確！</strong><br>解析：${item.exp}`;
+    } else {
+      expBox.className = 'explanation exp-wrong';
+      expBox.innerHTML = `✗ <strong>回答錯誤</strong>。正確答案為 <strong>(${['A','B','C','D'][item.ans]})</strong>。<br>解析：${item.exp}`;
+    }
+  });
+
+  if (unanswered > 0) {
+    if (!confirm(`您還有 ${unanswered} 題尚未作答，確定要送出交卷嗎？`)) return;
+  }
+
+  const banner = document.getElementById('scoreBanner');
+  const finalScoreEl = document.getElementById('finalScore');
+  banner.style.display = 'block';
+  finalScoreEl.textContent = `${score} 分`;
+  finalScoreEl.style.color = score >= 60 ? 'var(--primary)' : 'var(--danger)';
+
+  // 儲存至 LocalStorage (對應首頁八年級公民)
+  const record = {
+    score: score,
+    date: new Date().toLocaleDateString('zh-TW', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+  };
+  localStorage.setItem('quiz_g8_civics', JSON.stringify(record));
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function resetQuiz() {
+  if (confirm('確定要清除目前答案並重新作答嗎？')) {
+    location.reload();
+  }
+}
+
+renderQuiz();
+</script>
+</body>
+</html>

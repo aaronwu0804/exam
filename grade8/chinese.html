@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>八上國文 詞性複習測驗（全版本）</title>
+  <style>
+    :root {
+      --primary: #dc2626;
+      --primary-hover: #b91c1c;
+      --bg: #fef2f2;
+      --card: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --border: #fee2e2;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding: 16px; line-height: 1.6; }
+    .container { max-width: 840px; margin: 0 auto; }
+
+    .nav-bar { margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
+    .nav-btn { text-decoration: none; color: var(--primary); font-weight: 600; font-size: 0.95rem; }
+    .badge { font-size: 0.8rem; padding: 3px 10px; border-radius: 999px; background: #fee2e2; color: #b91c1c; font-weight: 600; }
+
+    header { background: var(--card); padding: 22px; border-radius: 14px; border: 1px solid var(--border); margin-bottom: 20px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.03); }
+    header h1 { font-size: 1.5rem; color: #991b1b; margin-bottom: 6px; }
+    header p { font-size: 0.9rem; color: var(--text-muted); }
+
+    .score-banner {
+      display: none;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    .score-banner h2 { font-size: 2.2rem; color: var(--primary); margin-bottom: 6px; }
+
+    .card { background: var(--card); padding: 20px; border-radius: 14px; border: 1px solid #e2e8f0; margin-bottom: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+    .q-title { font-size: 1.05rem; font-weight: 600; margin-bottom: 12px; color: #0f172a; line-height: 1.6; }
+
+    .options { display: flex; flex-direction: column; gap: 8px; }
+    .opt-label { display: flex; align-items: flex-start; padding: 10px 14px; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer; font-size: 0.95rem; transition: background 0.15s; }
+    .opt-label:hover { background-color: #fef2f2; }
+    .opt-label input { margin-right: 12px; margin-top: 4px; }
+
+    .explanation { display: none; margin-top: 14px; padding: 12px 16px; border-radius: 8px; font-size: 0.92rem; line-height: 1.5; }
+    .exp-correct { background-color: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; }
+    .exp-wrong { background-color: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
+
+    .btn-group { display: flex; gap: 12px; margin: 28px 0 50px; }
+    .btn { flex: 1; padding: 14px; border-radius: 10px; border: none; font-size: 1rem; font-weight: 700; cursor: pointer; }
+    .btn-submit { background: var(--primary); color: #fff; }
+    .btn-submit:hover { background: var(--primary-hover); }
+    .btn-reset { background: #e2e8f0; color: var(--text); }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="nav-bar">
+    <a href="../index.html" class="nav-btn">⬅ 返回首頁儀表板</a>
+    <span class="badge">全版本 八上國文 詞性篇</span>
+  </div>
+
+  <header>
+    <h1>八上國文－詞性全單元精選複習卷</h1>
+    <p>全卷共 25 題單選題，每題 4 分，滿分 100 分。作答完畢後請點選下方送出交卷。</p>
+  </header>
+
+  <div class="score-banner" id="scoreBanner">
+    <h2 id="finalScore">0 分</h2>
+    <p id="scoreMsg">測驗完成！成績已自動儲存至儀表板。</p>
+  </div>
+
+  <div id="quiz-container"></div>
+
+  <div class="btn-group">
+    <button class="btn btn-submit" onclick="submitQuiz()">送出交卷</button>
+    <button class="btn btn-reset" onclick="resetQuiz()">重新測驗</button>
+  </div>
+</div>
+
+<script>
+const quizData = [
+  {
+    q: "下列「」中字的詞性，何者說明完全正確？",
+    opts: [
+      "一「枚」又大又亮的銀幣——形容詞",
+      "大家正在討「論」郊遊的事宜——副詞",
+      "留蚊「於」素帳——助詞",
+      "「唉」！我不知何時再能與他相見——嘆詞"
+    ],
+    ans: 3, // D
+    exp: "(A)量詞；(B)動詞（討論為並列複合動詞）；(C)介詞（於＝在）；(D)嘆詞無誤[cite: 27]。"
+  },
+  {
+    q: "下列哪一個字，「不能」獨立成「詞」表達完整意義？",
+    opts: ["濃", "播", "吳", "螳"],
+    ans: 3, // D
+    exp: "「螳」為聯綿詞（衍聲複詞）語素，須與「螂」合為「螳螂」才能成詞獨立表義[cite: 27]。"
+  },
+  {
+    q: "下列各選項的「獨」字，何者詞性與其他三者「不同」？",
+    opts: [
+      "予「獨」愛蓮",
+      "「獨」善其身",
+      "行事「獨」斷",
+      "家中「獨」子"
+    ],
+    ans: 3, // D
+    exp: "(A)(B)(C)中的「獨」皆修飾後方動詞（愛、善、斷），為「副詞」；(D)「獨」修飾名詞「子」，為「形容詞」[cite: 27]。"
+  },
+  {
+    q: "下列各選項中的「短」字，何者詞性與「楚人以晏子短，為小門於大門之側而延晏子」中的「短」字相同？",
+    opts: [
+      "自有旁人說「短」長",
+      "每日生意盈虧不定，但截長補「短」仍可維生",
+      "兩方「短」兵相接，死傷無數",
+      "家人不該為闖禍的孩子護「短」"
+    ],
+    ans: 2, // C
+    exp: "題幹「晏子短」之「短」指身材矮小，為「形容詞」。(C)「短兵」指短小兵器，為「形容詞」；(A)(B)(D)皆作「名詞」（缺點、不足之處）[cite: 27]。"
+  },
+  {
+    q: "下列文句「」中的量詞，何者使用最恰當？",
+    opts: [
+      "此地人口外移嚴重，只剩幾「道」人家留下",
+      "這「間」城市在兩三年間繁榮起來",
+      "在信封上貼上一「枚」郵票後寄出",
+      "南下火車故障，一「輛」車廂傾倒在鐵軌上"
+    ],
+    ans: 2, // C
+    exp: "(A)宜改為幾「戶」人家；(B)宜改為這「座」城市；(C)郵票、硬幣、徽章以「枚」計量，使用恰當；(D)火車車廂宜用一「節」[cite: 27]。"
+  },
+  {
+    q: "下列各選項「」中的詞語，何者前後「詞性相同」？",
+    opts: [
+      "「蜿蜒」的山徑旁，有許多小路「蜿蜒」著",
+      "即使我一再「道歉」，他還是不接受我的「道歉」",
+      "別問我怎麼為你「塑造」，你的「塑造」就是你的詩",
+      "「溫暖」的陽光，一如你「溫暖」的關懷"
+    ],
+    ans: 3, // D
+    exp: "(A)形容詞／動詞；(B)動詞／名詞；(C)動詞／名詞；(D)兩者皆為修飾名詞（陽光、關懷）之「形容詞」[cite: 27]。"
+  },
+  {
+    q: "「小、深、蜻、白、琶、躇」以上哪些字「不能」單獨獨立成詞？",
+    opts: [
+      "小、白、深",
+      "蜻、琶、躇",
+      "小、深、琶",
+      "白、蜻、躇"
+    ],
+    ans: 1, // B
+    exp: "「蜻（蜻蜓）」、「琶（琵琶）」、「躇（躊躇）」皆屬於聯綿詞之音節語素，單字無法獨立表義[cite: 27]。"
+  },
+  {
+    q: "下列各文句中的「而」字，何者屬於「介詞」？",
+    opts: [
+      "自豪「而」不屈",
+      "揖讓「而」升，下「而」飲",
+      "從今「而」後",
+      "任重「而」道遠"
+    ],
+    ans: 2, // C
+    exp: "(A)(B)(D)之「而」皆為連接詞；(C)「從今而後」之「而」相當於「以」（從今以後），為「介詞」[cite: 27]。"
+  },
+  {
+    q: "下列哪一個國字單獨存在時「沒有」獨立意義？",
+    opts: ["缺", "滿", "遠", "尷"],
+    ans: 3, // D
+    exp: "「尷」必須與「尬」合成「尷尬」才能成詞表義，單字無獨立詞彙意義[cite: 27]。"
+  },
+  {
+    q: "文句「一個朋友」中的「一個」在語法上是什麼詞性？",
+    opts: ["副詞", "數量詞", "名詞", "代詞"],
+    ans: 1, // B
+    exp: "由數詞「一」與量詞「個」複合而成，詞性為「數量詞」[cite: 27]。"
+  },
+  {
+    q: "從下列文句去判讀「」中的字，何者為「動詞」？",
+    opts: [
+      "項為「之」強",
+      "不戚戚「於」貧賤",
+      "而「錢」不溼",
+      "唯「見」長江天際流"
+    ],
+    ans: 3, // D
+    exp: "(A)代詞（代指蚊群）；(B)介詞（對、在）；(C)名詞；(D)動詞（看見）[cite: 27]。"
+  },
+  {
+    q: "「必」和「須」都是「一定」的意思，「必須」兩字字義相同稱為「同義複詞」。下列各「」中的詞語，何者「不是」同義複詞？",
+    opts: [
+      "「貪婪」的人容易受騙",
+      "花之「富貴」者也",
+      "北風已「停息」",
+      "「聆聽」那美妙動人的音樂"
+    ],
+    ans: 1, // B
+    exp: "「富」指財產資產多，「貴」指社會身分地位高，二者意義不同，為偏義/並列詞，非同義複詞[cite: 27]。"
+  },
+  {
+    q: "下列各組「」中語詞的涵義，何者前後完全相同？〔97.第一次基測〕",
+    opts: [
+      "瞧瞧她這張「嫩臉」，真是吹彈可破／誰叫你「臉嫩」，換做是我早就不客氣開罵了",
+      "沙漠中的商隊「行旅」，在夕陽下緩行如蟻／三天兩夜的畢業「旅行」，令我永生難忘",
+      "同業以高薪遊說她跳槽，令她「心動」不已／百貨公司的超低折扣讓人很難不「動心」",
+      "他出身「官宦」人家，飽讀詩書／東漢末年朝政敗壞，「宦官」肆意弄權"
+    ],
+    ans: 2, // C
+    exp: "(A)細嫩皮膚／害羞面薄；(B)旅行者行列／出遊活動；(C)「心動」與「動心」皆指內心意念受到牽動吸引，涵義相同；(D)做官之人／太監[cite: 27]。"
+  },
+  {
+    q: "下列「」中的「上」字，何者作為「動詞」使用？",
+    opts: [
+      "世「上」只有媽媽好",
+      "更「上」一層樓",
+      "「上」個月的發票",
+      "站在高崗「上」"
+    ],
+    ans: 1, // B
+    exp: "(A)(D)名詞（位置上方、界限）；(B)動詞（登臨、向上攀登）；(C)副詞/形容詞（時間在前的）[cite: 27]。"
+  },
+  {
+    q: "下列成語的詞性結構，何組「兩兩完全相同」？",
+    opts: [
+      "海闊天空／紅花綠葉",
+      "心曠神怡／山明水秀",
+      "手舞足蹈／脣紅齒白",
+      "落花流水／開門見山"
+    ],
+    ans: 1, // B
+    exp: "(A)名形名形／形名形名；(B)「心曠神怡」與「山明水秀」皆為【名詞＋形容詞＋名詞＋形容詞】；(C)名動名動／名形名形；(D)形名形名／動名動名[cite: 27]。"
+  },
+  {
+    q: "有些詞必須由兩個或兩個以上的字合起來才能表達意義（不可拆解），如「徘徊」、「葡萄」。下列哪一詞語與此性質相同？",
+    opts: ["琵琶", "彈簧", "身軀", "消逝"],
+    ans: 0, // A
+    exp: "「琵琶」為單純詞（聯綿詞），拆開各自無獨立意義。(B)(C)(D)拆開後各字皆有意義[cite: 27]。"
+  },
+  {
+    q: "下列哪一個成語的詞性結構是「動詞＋名詞＋動詞＋名詞」？",
+    opts: ["推己及人", "夙興夜寐", "深居簡出", "鳳毛麟角"],
+    ans: 0, // A
+    exp: "(A)推(動)己(名)及(動)人(名)；(B)名動名動；(C)副動副動；(D)形名形名[cite: 27]。"
+  },
+  {
+    q: "下列文句「」中的量詞，何者使用最為恰當？",
+    opts: [
+      "小明在家具展中，選購了一「座」立燈",
+      "雨後的天空，出現了一「條」美麗的彩虹",
+      "一「輛」火車正緩緩駛向月臺",
+      "森林公園中的那一「派」綠草修剪得很整齊"
+    ],
+    ans: 0, // A
+    exp: "(A)高大直立家具可用「座」；(B)彩虹宜用一「道」；(C)整列火車宜用一「列」；(D)整片草坪宜用一「片」[cite: 27]。"
+  },
+  {
+    q: "在語法結構中，由兩個或兩個以上的字合起來才能表達意義（拆開不成詞），這種詞稱為「衍聲複詞（聯綿詞）」。下列哪一組詞語兩者「皆符合」此條件？",
+    opts: [
+      "睡蓮、滂沱",
+      "揶揄、蹣跚",
+      "輿論、彷彿",
+      "朝暾、瀟灑"
+    ],
+    ans: 1, // B
+    exp: "「揶揄」（雙聲疊韻譏嘲詞）與「蹣跚」（走路搖擺狀）拆開字面皆無法獨立表義，兩者皆為標準衍聲複詞[cite: 27]。"
+  },
+  {
+    q: "關於中文語法中「詞」的分類與說明，下列何者敘述完全正確？",
+    opts: [
+      "中文詞類分為「虛詞」和「實詞」兩大類",
+      "虛詞包含形容詞、連詞、助詞、嘆詞",
+      "實詞包含動詞、副詞、數量詞、介詞",
+      "「詞」是指記錄語言的最小音節單位"
+    ],
+    ans: 0, // A
+    exp: "(A)正確；(B)形容詞屬於「實詞」；(C)介詞屬於「虛詞」；(D)記錄語言的最小「意義」單位，非音節單位[cite: 27]。"
+  },
+  {
+    q: "「對於父母的教誨，我一刻也不敢忘記。」句中「忘記」在語意上只偏重「忘」的意思，稱為「偏義複詞」。下列文句「」內的詞語，何者也屬於此類？〔98.第二次基測〕",
+    opts: [
+      "這篇社論「臧否」人物的部分，精準透闢",
+      "面對「黑白」不分亂找碴的人，真是有理說不清",
+      "一句真心關懷的話語，往往可以拉近「彼此」的距離",
+      "為了維護自由，將士們早已抱定「生死」無悔的決心"
+    ],
+    ans: 3, // D
+    exp: "(A)(B)(C)二字皆具意義（反義複合詞）；(D)抱定「生死」無悔，實際語意偏重於「死」，為偏義複詞[cite: 27]。"
+  },
+  {
+    q: "下列各文句「」中的詞語，何者「不是」偏義複詞？",
+    opts: [
+      "憂成敗、憂「得失」，是人之常情",
+      "物有本末，事有「緩急」，不可倒置",
+      "你往哪裡去了，這「早晚」才來",
+      "朱門「恩怨」造成彼此嫌隙，屢有所聞"
+    ],
+    ans: 1, // B
+    exp: "(A)偏「失」；(B)事情有緩有急，兩字皆具實義，非偏義；(C)「早晚」偏指「晚」；(D)「恩怨」偏指「怨」[cite: 27]。"
+  },
+  {
+    q: "下列「」中的文言虛字，哪一項屬於「實詞」？",
+    opts: [
+      "大去之期不遠「矣」",
+      "舌一吐「而」二蟲盡為所吞",
+      "為「之」怡然稱快",
+      "不戚戚「於」貧賤"
+    ],
+    ans: 2, // C
+    exp: "(A)句末語氣助詞（虛詞）；(B)承接連詞（虛詞）；(C)代名詞（代指景象），代詞在漢語語法中列入「實詞」；(D)介詞（虛詞）[cite: 27]。"
+  },
+  {
+    q: "「忙碌了幾天，正期待著滿園的花團錦簇，但是，陽光下，卻是遍地的殘枝斷葉」中的轉折連詞「但是」，「不適合」用下列何者來取代？",
+    opts: ["然而", "沒想到", "意外地", "無疑地"],
+    ans: 3, // D
+    exp: "原句為語意轉折對比，「無疑地」表示肯定毫無疑問，無法呈現語氣轉折效果[cite: 27]。"
+  },
+  {
+    q: "下列成語中，何者的詞性結構與「畫龍點睛（動＋名＋動＋名）」完全相同？",
+    opts: ["去蕪存菁", "海闊天空", "繁弦急管", "心直口快"],
+    ans: 0, // A
+    exp: "題幹「畫(動)龍(名)點(動)睛(名)」；(A)去(動)蕪(名)存(動)菁(名)，完全相同；(B)(D)名形名形；(C)形名形名[cite: 27]。"
+  }
+];
+
+function renderQuiz() {
+  const container = document.getElementById('quiz-container');
+  container.innerHTML = quizData.map((item, idx) => `
+    <div class="card" id="q_card_${idx}">
+      <div class="q-title">${idx + 1}. ${item.q}</div>
+      <div class="options">
+        ${item.opts.map((opt, oIdx) => `
+          <label class="opt-label" id="label_${idx}_${oIdx}">
+            <input type="radio" name="q_${idx}" value="${oIdx}">
+            <span>(${['A','B','C','D'][oIdx]})${opt}</span>
+          </label>
+        `).join('')}
+      </div>
+      <div class="explanation" id="exp_${idx}"></div>
+    </div>
+  `).join('');
+}
+
+function submitQuiz() {
+  let score = 0;
+  let unanswered = 0;
+
+  quizData.forEach((item, idx) => {
+    const selected = document.querySelector(`input[name="q_${idx}"]:checked`);
+    const expBox = document.getElementById(`exp_${idx}`);
+    expBox.style.display = 'block';
+
+    if (!selected) {
+      unanswered++;
+      expBox.className = 'explanation exp-wrong';
+      expBox.innerHTML = `⚠️ <strong>未作答</strong>。正確答案為 <strong>(${['A','B','C','D'][item.ans]})</strong>。<br>解析：${item.exp}`;
+    } else if (parseInt(selected.value) === item.ans) {
+      score += 4;
+      expBox.className = 'explanation exp-correct';
+      expBox.innerHTML = `✓ <strong>回答正確！</strong><br>解析：${item.exp}`;
+    } else {
+      expBox.className = 'explanation exp-wrong';
+      expBox.innerHTML = `✗ <strong>回答錯誤</strong>。正確答案為 <strong>(${['A','B','C','D'][item.ans]})</strong>。<br>解析：${item.exp}`;
+    }
+  });
+
+  if (unanswered > 0) {
+    if (!confirm(`您還有 ${unanswered} 題尚未作答，確定要送出交卷嗎？`)) return;
+  }
+
+  const banner = document.getElementById('scoreBanner');
+  const finalScoreEl = document.getElementById('finalScore');
+  banner.style.display = 'block';
+  finalScoreEl.textContent = `${score} 分`;
+  finalScoreEl.style.color = score >= 60 ? 'var(--primary)' : 'var(--danger)';
+
+  // 儲存至 LocalStorage (對應首頁八年級國文)
+  const record = {
+    score: score,
+    date: new Date().toLocaleDateString('zh-TW', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+  };
+  localStorage.setItem('quiz_g8_chinese', JSON.stringify(record));
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function resetQuiz() {
+  if (confirm('確定要清除目前答案並重新作答嗎？')) {
+    location.reload();
+  }
+}
+
+renderQuiz();
+</script>
+</body>
+</html>

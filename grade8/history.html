@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>八上歷史 一段範圍複習測驗（全版本）</title>
+  <style>
+    :root {
+      --primary: #9a3412;
+      --primary-hover: #7c2d12;
+      --bg: #fff7ed;
+      --card: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --border: #fed7aa;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding: 16px; line-height: 1.6; }
+    .container { max-width: 840px; margin: 0 auto; }
+
+    .nav-bar { margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
+    .nav-btn { text-decoration: none; color: var(--primary); font-weight: 600; font-size: 0.95rem; }
+    .badge { font-size: 0.8rem; padding: 3px 10px; border-radius: 999px; background: #ffedd5; color: #9a3412; font-weight: 600; }
+
+    header { background: var(--card); padding: 22px; border-radius: 14px; border: 1px solid var(--border); margin-bottom: 20px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.03); }
+    header h1 { font-size: 1.5rem; color: #7c2d12; margin-bottom: 6px; }
+    header p { font-size: 0.9rem; color: var(--text-muted); }
+
+    .score-banner {
+      display: none;
+      background: #ffedd5;
+      border: 1px solid #fdba74;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    .score-banner h2 { font-size: 2.2rem; color: var(--primary); margin-bottom: 6px; }
+
+    .card { background: var(--card); padding: 20px; border-radius: 14px; border: 1px solid #e2e8f0; margin-bottom: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+    .q-title { font-size: 1.05rem; font-weight: 600; margin-bottom: 12px; color: #0f172a; line-height: 1.6; }
+    .quote-box { background: #f8fafc; border-left: 4px solid var(--primary); padding: 12px 16px; margin: 10px 0 14px; font-size: 0.95rem; color: #334155; border-radius: 0 8px 8px 0; }
+    .svg-diagram { width: 100%; max-width: 440px; display: block; margin: 12px auto; background: #ffffff; border-radius: 8px; border: 1px solid #cbd5e1; }
+
+    .options { display: flex; flex-direction: column; gap: 8px; }
+    .opt-label { display: flex; align-items: flex-start; padding: 10px 14px; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer; font-size: 0.95rem; transition: background 0.15s; }
+    .opt-label:hover { background-color: #fff7ed; }
+    .opt-label input { margin-right: 12px; margin-top: 4px; }
+
+    .explanation { display: none; margin-top: 14px; padding: 12px 16px; border-radius: 8px; font-size: 0.92rem; line-height: 1.5; }
+    .exp-correct { background-color: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; }
+    .exp-wrong { background-color: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
+
+    .btn-group { display: flex; gap: 12px; margin: 28px 0 50px; }
+    .btn { flex: 1; padding: 14px; border-radius: 10px; border: none; font-size: 1rem; font-weight: 700; cursor: pointer; }
+    .btn-submit { background: var(--primary); color: #fff; }
+    .btn-submit:hover { background: var(--primary-hover); }
+    .btn-reset { background: #e2e8f0; color: var(--text); }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="nav-bar">
+    <a href="../index.html" class="nav-btn">⬅ 返回首頁儀表板</a>
+    <span class="badge">全版本 八上歷史 一段複習</span>
+  </div>
+
+  <header>
+    <h1>八上歷史－一段範圍複習練習卷</h1>
+    <p>全卷共 25 題單選題，每題 4 分，滿分 100 分。完成後請點選下方送出交卷。</p>
+  </header>
+
+  <div class="score-banner" id="scoreBanner">
+    <h2 id="finalScore">0 分</h2>
+    <p id="scoreMsg">測驗完成！成績已自動儲存至儀表板。</p>
+  </div>
+
+  <div id="quiz-container"></div>
+
+  <div class="btn-group">
+    <button class="btn btn-submit" onclick="submitQuiz()">送出交卷</button>
+    <button class="btn btn-reset" onclick="resetQuiz()">重新測驗</button>
+  </div>
+</div>
+
+<script>
+const quizData = [
+  {
+    q: "大臣認為：「古有天皇，有地皇，有泰皇，泰皇最貴。」因而尊稱這位統治者為「泰皇」。但這位統治者把「泰」字去掉，取「皇」，採用上古時「帝」位號，稱「皇帝」。自此開創帝制，後世依次為「二世、三世至於萬世，傳之無窮」。上述這位統治者是下列何人？",
+    opts: ["北魏孝文帝", "唐太宗", "漢武帝", "秦始皇"],
+    ans: 3, // D
+    exp: "西元前 221 年，秦王嬴政兼併六國統一天下，認為自己德兼三皇、功過五帝，採用「皇帝」為新稱號，自稱「始皇帝」[cite: 34]。"
+  },
+  {
+    q: "唐代的選才制度主要有「明經」與「進士」兩科，明經科考經書的學問，進士科因為兼試策論與詩賦，難度較高，最被社會重視，而有「三十老明經，五十少進士」的諺語。上述應為哪個選才制度下的諺語？",
+    opts: ["察舉制度", "貴族世襲", "科舉制度", "九品官人之法"],
+    ans: 2, // C
+    exp: "隋唐時期廢除九品官人之法改行「科舉制度」，士人公開報考，以進士科最受士人與社會追捧[cite: 34]。"
+  },
+  {
+    q: "歷史老師很喜歡看中國古裝戲，例如在《羋月傳》結局時提到：「羋月過世後的第十八年，十三歲的嬴政登基，在他繼位後的第二十六年，統一整個中國。」上文中統一中國的為何人？",
+    opts: ["漢武帝", "唐太宗", "北魏孝文帝", "秦始皇"],
+    ans: 3, // D
+    exp: "秦王嬴政統一天下，自稱「始皇帝」，史稱秦始皇[cite: 34]。"
+  },
+  {
+    q: "大豐參加話劇演出，飾演一位在唐代希望成為官員的讀書人，若話劇內容須合於史實，下列何者最可能是他在劇中成為官員的方式？",
+    opts: [
+      "因為孝順父母而獲得地方長官的推薦成為官吏",
+      "依照自身的封建身分等級，受封土地以及官位",
+      "被中正官評定為九品人才而受到重視成為官員",
+      "認真讀書與寫作，參加科舉考試取得任官資格"
+    ],
+    ans: 3, // D
+    exp: "隋唐推行科舉，打破門閥世襲壟斷，士人憑藉苦讀應試取得作官資格[cite: 34]。(A)為漢代察舉；(B)為周代封建；(C)為魏晉九品官人法。"
+  },
+  {
+    q: "西藏人嗜茶成風，甚至有「寧可三日無油鹽，不可一日無茶」的說法。藏人喝茶的歷史淵源，可以推溯自唐代哪一位公主下嫁吐蕃（贊普松贊干布）？",
+    opts: ["太平公主", "文成公主", "安樂公主", "平陽公主"],
+    ans: 1, // B
+    exp: "唐太宗時文成公主入藏與松贊干布和親，將茶葉、醫藥、天文、農技等文化帶入西藏吐蕃[cite: 34]。"
+  },
+  {
+    q: "中國歷代選用人才的方式各有不同，「九品官人」之法在魏晉南北朝實施了三百多年，它對當時造成何種社會影響？〔97.第一次基測修訂〕",
+    opts: [
+      "出現布衣卿相，平民百姓獲得重用",
+      "鞏固世族地位，社會階層缺乏流動",
+      "建立書院制度，名儒講學蔚為風尚",
+      "形成士紳階級，文人競相獵取功名"
+    ],
+    ans: 1, // B
+    exp: "九品官人法之評定權多被世家大族中正官把持，只看家世門第不重才能，形成「上品無寒門，下品無世族」，使世族地位鞏固、階層流動停滯[cite: 34]。"
+  },
+  {
+    q: "佛教傳入中國後，於哪一個朝代發展鼎盛，並轉為中國化的佛教（如禪宗），成為中國人思想與生活的重要內容？",
+    opts: ["漢代", "唐代", "元代", "清代"],
+    ans: 1, // B
+    exp: "佛教在唐代發展達到顛峰，各宗派（如天台、華嚴、禪宗、淨土等）相繼創立並高度中國化[cite: 34]。"
+  },
+  {
+    q: "學者介紹：「這是一種列土（分封土地）而治的政治制度，是政治上有一統的觀念，實際上卻力有未逮的狀況，因此需要列國分治。它又與宗法制度結合，形成一種政治社會的秩序。」上述學者介紹的是下列哪一制度？",
+    opts: ["封建制度", "郡縣制度", "察舉制度", "科舉制度"],
+    ans: 0, // A
+    exp: "西周實施「封建制度」，天子分封宗室、功臣與先代貴族為諸侯，並結合宗法制度維持政治社會秩序[cite: 34]。"
+  },
+  {
+    q: "美玲到日本旅遊看見招牌日文與漢字很類似，導遊說：「日文是模仿中國文字而製成。」請問這與哪一時期日本積極學習中國文化有關？",
+    opts: ["秦代", "漢代", "魏晉南北朝", "唐代"],
+    ans: 3, // D
+    exp: "唐代時日本積極派遣遣唐使，推動「大化革新」展開唐化運動，並參照唐代漢字楷書草書創造平假名與片假名[cite: 34]。"
+  },
+  {
+    q: "佛教於何時經由西域正式傳入中國？",
+    opts: ["商周時期", "漢代", "西晉", "東晉"],
+    ans: 1, // B
+    exp: "張騫通西域後東西交通大開，佛教約於西漢末年至東漢初年（西元 1 世紀前後）經絲路傳入中國[cite: 34]。"
+  },
+  {
+    q: "「士之子恆為士，工之子恆為工，商之子恆為商，農之子恆為農。」這種階級身分嚴密且代代世襲的現象，最可能存在於哪一個時代？",
+    opts: ["西周", "東周", "漢代", "唐代"],
+    ans: 0, // A
+    exp: "西周實行貴族封建制度，社會階級壁壘分明，身分世代世襲，平民與奴隸難以翻身流動[cite: 34]。"
+  },
+  {
+    q: "牧野之戰是中國信史可考的關鍵王朝決戰，由周武王聯合各方國部隊打敗商紂王軍隊，周朝正式建立。牧野之戰反映出商代統治權力的何種特性？",
+    opts: [
+      "商王與大多數諸侯保持緊密合作關係",
+      "商王的共主地位並不穩固，對地方方國控制力有限",
+      "商王已能全面有效控制天下的所有諸侯",
+      "商朝為一個高度中央集權的君主專制國家"
+    ],
+    ans: 1, // B
+    exp: "商代為各方國部落結盟的共主體系，商王對地方控制力薄弱鬆散，故周武王能聯合諸部隊迅速推翻商朝[cite: 34]。"
+  },
+  {
+    q: "報告結語提及：「總而言之，這個朝代是中國最具世界主義色彩的朝代。政治上，皇帝打敗東突厥被尊為國際盟主（天可汗）；社會上，＿＿＿＿＿＿；宗教上，包容各種外來宗教傳入。」文中缺空處最適合填入哪一段敘述？〔99.第一次基測〕",
+    opts: [
+      "朝廷宣揚漢人文化，積極推行各種改革措施，如斷北語、通婚姻",
+      "朝廷對於各種族一視同仁，許多留學生與外國人前來長安學習、定居任官",
+      "朝廷為了方便管理，將人民區分為四個不同階級，訂定各種規範",
+      "朝廷有感於西方國家科技先進產業發達，禮聘外國人士來華指導"
+    ],
+    ans: 1, // B
+    exp: "唐代開放包容，採胡漢一視同仁的開明族群政策，長安成為國際大都會，吸引新羅、日本遣唐使與西亞胡人留學貿易任官[cite: 34]。(A)為北魏孝文帝；(C)為元代蒙古人統治政策。"
+  },
+  {
+    q: "歷史小說《風塵三俠》述說李靖、紅拂女及虯髯客，幫助李世民打下江山、奪取天下的故事。請問故事的時代歷史背景為何時？",
+    opts: ["東漢末年", "南北朝時期", "隋末唐初", "五代十國"],
+    ans: 2, // C
+    exp: "李世民為唐高祖李淵之次子、後來的唐太宗，其起兵奪天下之歷史背景為「隋末唐初」群雄割據之際[cite: 34]。"
+  },
+  {
+    q: "日本文字中的「片假名」（如：ア、イ、ウ、エ、オ）是採取中國漢字哪一種字體的「偏旁」簡化創製而來？",
+    svg: `<svg class="svg-diagram" viewBox="0 0 340 120">
+      <rect x="20" y="15" width="290" height="90" fill="#f8fafc" stroke="#64748b"/>
+      <text x="35" y="40" font-size="12" font-weight="bold">阿 ➔ ア (取左耳偏旁)</text>
+      <text x="35" y="65" font-size="12" font-weight="bold">伊 ➔ イ (取單人旁偏旁)</text>
+      <text x="35" y="90" font-size="11" fill="#475569">片假名：採「楷書」偏旁；平假名：採「草書」字形</text>
+    </svg>`,
+    opts: ["楷書", "隸書", "篆書", "草書"],
+    ans: 0, // A
+    exp: "日本片假名是擷取漢字「楷書」的偏旁省筆創製而成；平假名則是由漢字「草書」演化而來[cite: 34]。"
+  },
+  {
+    q: "唐代對外主要貿易路線圖中，陸上絲路向西直抵西亞與波斯灣。圖中位於西亞、與盛唐發生過「怛羅斯之役」且貿易極為繁盛的強權「甲」為何國？",
+    svg: `<svg class="svg-diagram" viewBox="0 0 340 120">
+      <ellipse cx="60" cy="50" rx="35" ry="25" fill="#fed7aa" stroke="#c2410c"/>
+      <text x="45" y="55" font-size="12" font-weight="bold" fill="#7c2d12">甲</text>
+      <path d="M 95,50 Q 180,60 250,55" fill="none" stroke="#2563eb" stroke-width="2"/>
+      <ellipse cx="250" cy="55" rx="50" ry="30" fill="#bbf7d0" stroke="#16a34a"/>
+      <text x="235" y="60" font-size="12" font-weight="bold" fill="#14532d">唐帝國</text>
+    </svg>`,
+    opts: ["吐蕃", "大食（阿拉伯帝國）", "天竺（印度）", "新羅"],
+    ans: 1, // B
+    exp: "唐代稱興起於西亞阿拉伯半島的伊斯蘭阿拉伯帝國為「大食」[cite: 34]。"
+  },
+  {
+    q: "在中國古代四大發明當中，「造紙術」是最早西傳的發明。造紙術西傳歐亞西方世界的直接契機為何？",
+    opts: ["學術交流", "商旅往來", "戰爭因素（怛羅斯之役俘虜）", "宗教傳播"],
+    ans: 2, // C
+    exp: "西元 751 年唐朝大將高仙芝與大食（阿拉伯帝國）爆發「怛羅斯之役」，唐軍戰敗，被俘的唐軍工匠將造紙技術帶入阿拉伯世界後傳入歐洲[cite: 34]。"
+  },
+  {
+    q: "俗語說：「禮不下庶人，刑不上大夫。」此為古代統治者以「禮」來彰顯階級等級之劃分。請問下列何者「最不符合」古代「禮」的制度意涵及作法？",
+    opts: [
+      "封建國家的統治者以「禮」來彰顯社會身分區別",
+      "平民日常可以使用的物品或舉辦的儀式都有嚴格細緻的禮法規定",
+      "比起爭取平民人權，更著重於維護統治貴族階級的特權與利益",
+      "平民與貴族有不同的權利義務和法律上的差別對待"
+    ],
+    ans: 1, // B
+    exp: "「禮」是專屬於貴族統治階級的行為規範與等級禮儀（衣食住行葬祭等），平民庶人並無資格與能力行周禮，故 (B) 敘述錯誤[cite: 34]。"
+  },
+  {
+    q: "大約自何時開始（東周春秋時期），黃河流域中下游各諸侯國開始以「華夏」自居，將周邊四裔非我族類稱為「蠻夷戎狄」？",
+    opts: ["西元前 15 世紀", "西元前 8 世紀（平王東遷春秋之際）", "西元前 1 世紀", "西元四世紀"],
+    ans: 1, // B
+    exp: "西元前 8 世紀西周滅亡、平王東遷（西元前 770 年），中原諸侯在周室衰微之際興起「尊王攘夷」，自稱「華夏」，區隔周邊戎狄[cite: 34]。"
+  },
+  {
+    q: "下列關於「漢帝國」與「唐帝國」對外關係與民族統治相似處的敘述，何者正確？",
+    opts: [
+      "都為胡漢融合血統建立的政權",
+      "都與草原北方民族始終維持單純武力對抗",
+      "都曾將整個朝鮮半島全境納入郡縣版圖",
+      "對外都曾採取和親政策以籠絡外族"
+    ],
+    ans: 3, // D
+    exp: "漢初因國力不足對匈奴採取和親（如昭君出塞）；唐朝亦曾對吐蕃（文成公主、金城公主）及回紇採取和親政策以求和平[cite: 34]。(A)唐為胡漢關隴集團，漢為漢人建立政權。"
+  },
+  {
+    q: "商、周兩國主要根據地示意圖中，甲位於黃河中下游河南一帶（殷、亳），乙位於渭水流域（鎬京）。下列相關敘述何者「有誤」？",
+    svg: `<svg class="svg-diagram" viewBox="0 0 340 120">
+      <ellipse cx="230" cy="50" rx="40" ry="25" fill="#cbd5e1"/>
+      <text x="220" y="55" font-size="12" font-weight="bold">甲 (殷/亳)</text>
+      <ellipse cx="90" cy="65" rx="35" ry="25" fill="#fef08a"/>
+      <text x="80" y="70" font-size="12" font-weight="bold">乙 (鎬京)</text>
+    </svg>`,
+    opts: [
+      "甲應為商國中心，乙應為周國根據地",
+      "甲和乙曾同時並存發展過一段時間",
+      "乙（周）在興起過程中曾臣服為甲（商）的西陲諸侯",
+      "乙是在甲完全滅亡之後，才突然從西部興起建立"
+    ],
+    ans: 3, // D
+    exp: "周人長期生活於渭水流域（乙），在商代晚期即已強盛並臣屬為西方諸侯（西伯昌），於武王牧野之戰推翻商朝（甲），並非商滅亡後才興起[cite: 34]。"
+  },
+  {
+    q: "玄奘大師即民間傳說中的「唐三藏」，關於其歷史成就與貢獻，下列何者正確？",
+    opts: [
+      "隋代時西行至印度求法",
+      "冒險西行印度取經，大幅促進中外文化與宗教思想交流",
+      "回國後融合道家獨創本土道教宗派",
+      "自東方日本攜回大批佛經，並致力於翻譯工作"
+    ],
+    ans: 1, // B
+    exp: "唐太宗時玄奘克服萬難西行天竺（印度）求取佛經真諦，歷時十餘載返國主持譯經大業，為中印文化交流之先驅[cite: 34]。"
+  },
+  {
+    q: "在早期古代國家中，商與周皆透過分封或結盟形式治理。關於其統治關係之比較，下列敘述何者「有誤」？",
+    opts: [
+      "商人靠著封建體系與周邊方國民族建立了長期極其穩定的和睦關係",
+      "周人克商後，以緊密的宗法血緣或姻親同盟維繫列國諸侯關係",
+      "諸侯受封後可在領地派官治理，領地人民需向諸侯納稅",
+      "周的先祖在商代曾是商王朝的臣屬諸侯之一"
+    ],
+    ans: 0, // A
+    exp: "商代與周邊方國或羌方等民族關係極不穩定，常動員武力征伐討伐，並無周代以宗法維繫的穩定封建秩序[cite: 34]。"
+  },
+  {
+    q: "漢代大儒韋賢精通儒術擔任丞相，其子韋玄成亦身居丞相要職，民間因而盛傳：「遺子黃金滿籝，不如一經。」此現象反映了漢代以後何種歷史現象的成形？",
+    opts: [
+      "禮樂宗法體系的崩壞衰退",
+      "官學太學教育的廢弛",
+      "經學傳家與「世家大族（門閥世族）」的形成",
+      "科舉功名考試制度的普及盛行"
+    ],
+    ans: 2, // C
+    exp: "漢代獨尊儒術後，經學成為入仕官途最有效途徑，家族累世鑽研同一部經書、代代公卿，促成了魏晉世家大族之根基[cite: 34]。"
+  },
+  {
+    q: "關於唐代高僧玄奘大師的具體行誼與佛學成就，下列何者完全正確？",
+    opts: [
+      "唐玄宗開元盛世時奉旨西行留學",
+      "出資興建了中國第一座官方佛教寺院白馬寺",
+      "回國後結合中國本土思想獨創禪宗南宗",
+      "歷經艱辛攜回大量梵文佛經，並在長安大慈恩寺譯經院致力翻譯"
+    ],
+    ans: 3, // D
+    exp: "玄奘於唐太宗貞觀年間西行天竺，攜回 657 部梵文經典，返國後全力主持翻譯出 1300 餘卷佛經[cite: 34]。(A)唐太宗時期；(B)東漢明帝建白馬寺；(C)玄奘創立法相唯識宗。"
+  }
+];
+
+function renderQuiz() {
+  const container = document.getElementById('quiz-container');
+  container.innerHTML = quizData.map((item, idx) => `
+    <div class="card" id="q_card_${idx}">
+      <div class="q-title">${idx + 1}. ${item.q}</div>
+      ${item.svg || ''}
+      <div class="options">
+        ${item.opts.map((opt, oIdx) => `
+          <label class="opt-label" id="label_${idx}_${oIdx}">
+            <input type="radio" name="q_${idx}" value="${oIdx}">
+            <span>(${['A','B','C','D'][oIdx]})${opt}</span>
+          </label>
+        `).join('')}
+      </div>
+      <div class="explanation" id="exp_${idx}"></div>
+    </div>
+  `).join('');
+}
+
+function submitQuiz() {
+  let score = 0;
+  let unanswered = 0;
+
+  quizData.forEach((item, idx) => {
+    const selected = document.querySelector(`input[name="q_${idx}"]:checked`);
+    const expBox = document.getElementById(`exp_${idx}`);
+    expBox.style.display = 'block';
+
+    if (!selected) {
+      unanswered++;
+      expBox.className = 'explanation exp-wrong';
+      expBox.innerHTML = `⚠️ <strong>未作答</strong>。正確答案為 <strong>(${['A','B','C','D'][item.ans]})</strong>。<br>解析：${item.exp}`;
+    } else if (parseInt(selected.value) === item.ans) {
+      score += 4;
+      expBox.className = 'explanation exp-correct';
+      expBox.innerHTML = `✓ <strong>回答正確！</strong><br>解析：${item.exp}`;
+    } else {
+      expBox.className = 'explanation exp-wrong';
+      expBox.innerHTML = `✗ <strong>回答錯誤</strong>。正確答案為 <strong>(${['A','B','C','D'][item.ans]})</strong>。<br>解析：${item.exp}`;
+    }
+  });
+
+  if (unanswered > 0) {
+    if (!confirm(`您還有 ${unanswered} 題尚未作答，確定要送出交卷嗎？`)) return;
+  }
+
+  const banner = document.getElementById('scoreBanner');
+  const finalScoreEl = document.getElementById('finalScore');
+  banner.style.display = 'block';
+  finalScoreEl.textContent = `${score} 分`;
+  finalScoreEl.style.color = score >= 60 ? 'var(--primary)' : 'var(--danger)';
+
+  // 儲存至 LocalStorage (對應首頁八年級歷史)
+  const record = {
+    score: score,
+    date: new Date().toLocaleDateString('zh-TW', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+  };
+  localStorage.setItem('quiz_g8_history', JSON.stringify(record));
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function resetQuiz() {
+  if (confirm('確定要清除目前答案並重新測驗嗎？')) {
+    location.reload();
+  }
+}
+
+renderQuiz();
+</script>
+</body>
+</html>

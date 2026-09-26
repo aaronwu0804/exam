@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>八上地理 一段範圍複習測驗（適康、南版）</title>
+  <style>
+    :root {
+      --primary: #0284c7;
+      --primary-hover: #0369a1;
+      --bg: #f0f9ff;
+      --card: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --border: #bae6fd;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding: 16px; line-height: 1.6; }
+    .container { max-width: 840px; margin: 0 auto; }
+
+    .nav-bar { margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
+    .nav-btn { text-decoration: none; color: var(--primary); font-weight: 600; font-size: 0.95rem; }
+    .badge { font-size: 0.8rem; padding: 3px 10px; border-radius: 999px; background: #e0f2fe; color: #0369a1; font-weight: 600; }
+
+    header { background: var(--card); padding: 22px; border-radius: 14px; border: 1px solid var(--border); margin-bottom: 20px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.03); }
+    header h1 { font-size: 1.5rem; color: #075985; margin-bottom: 6px; }
+    header p { font-size: 0.9rem; color: var(--text-muted); }
+
+    .score-banner {
+      display: none;
+      background: #e0f2fe;
+      border: 1px solid #7dd3fc;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    .score-banner h2 { font-size: 2.2rem; color: var(--primary); margin-bottom: 6px; }
+
+    .card { background: var(--card); padding: 20px; border-radius: 14px; border: 1px solid #e2e8f0; margin-bottom: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+    .q-title { font-size: 1.05rem; font-weight: 600; margin-bottom: 12px; color: #0f172a; line-height: 1.6; }
+    .svg-diagram { width: 100%; max-width: 440px; display: block; margin: 12px auto; background: #ffffff; border-radius: 8px; border: 1px solid #cbd5e1; }
+
+    .table-box { width: 100%; max-width: 520px; margin: 12px auto; border-collapse: collapse; font-size: 0.88rem; }
+    .table-box th, .table-box td { border: 1px solid #cbd5e1; padding: 6px 8px; text-align: center; }
+    .table-box th { background: #f1f5f9; }
+
+    .options { display: flex; flex-direction: column; gap: 8px; }
+    .opt-label { display: flex; align-items: flex-start; padding: 10px 14px; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer; font-size: 0.95rem; transition: background 0.15s; }
+    .opt-label:hover { background-color: #f0f9ff; }
+    .opt-label input { margin-right: 12px; margin-top: 4px; }
+
+    .explanation { display: none; margin-top: 14px; padding: 12px 16px; border-radius: 8px; font-size: 0.92rem; line-height: 1.5; }
+    .exp-correct { background-color: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; }
+    .exp-wrong { background-color: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
+
+    .btn-group { display: flex; gap: 12px; margin: 28px 0 50px; }
+    .btn { flex: 1; padding: 14px; border-radius: 10px; border: none; font-size: 1rem; font-weight: 700; cursor: pointer; }
+    .btn-submit { background: var(--primary); color: #fff; }
+    .btn-submit:hover { background: var(--primary-hover); }
+    .btn-reset { background: #e2e8f0; color: var(--text); }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="nav-bar">
+    <a href="../index.html" class="nav-btn">⬅ 返回首頁儀表板</a>
+    <span class="badge">適康、南版 八上地理 一段複習</span>
+  </div>
+
+  <header>
+    <h1>八上地理－一段範圍複習練習卷</h1>
+    <p>全卷共 25 題單選題，每題 4 分，滿分 100 分。完成後請點選下方送出交卷。</p>
+  </header>
+
+  <div class="score-banner" id="scoreBanner">
+    <h2 id="finalScore">0 分</h2>
+    <p id="scoreMsg">測驗完成！成績已自動儲存至儀表板。</p>
+  </div>
+
+  <div id="quiz-container"></div>
+
+  <div class="btn-group">
+    <button class="btn btn-submit" onclick="submitQuiz()">送出交卷</button>
+    <button class="btn btn-reset" onclick="resetQuiz()">重新測驗</button>
+  </div>
+</div>
+
+<script>
+const quizData = [
+  {
+    q: "附圖為中國某人口問題示意圖（西半部占面積 57%、人口僅 6%；東半部占面積 43%、人口占 94%）。關於此圖的判讀，下列敘述何者正確？",
+    svg: `<svg class="svg-diagram" viewBox="0 0 320 120">
+      <rect x="20" y="30" width="150" height="60" fill="#cbd5e1" stroke="#475569"/>
+      <text x="35" y="55" font-size="12">面積 57%</text>
+      <text x="35" y="75" font-size="11" font-weight="bold">西半部 (人口 6%)</text>
+      <rect x="170" y="30" width="130" height="60" fill="#93c5fd" stroke="#0284c7"/>
+      <text x="185" y="55" font-size="12">面積 43%</text>
+      <text x="185" y="75" font-size="11" font-weight="bold">東半部 (人口 94%)</text>
+    </svg>`,
+    opts: [
+      "性別比嚴重失衡，男多於女",
+      "扶養比攀升，壯年人口負擔重",
+      "老化速度快，已邁入高齡社會",
+      "人口分布不均，呈現東密西疏"
+    ],
+    ans: 3, // D
+    exp: "此圖僅能判讀出中國人口「分布不均」的東密西疏問題，與性別比、扶養比無關[cite: 23]。"
+  },
+  {
+    q: "中國近年來提出的口號標語：「一個女兒一片天」、「生男生女都一樣，優生優育是關鍵」。這類的標語凸顯出中國面臨哪一項人口問題？",
+    opts: ["人口數量過多", "性別比失衡", "人口素質不均", "流動人口龐大"],
+    ans: 1, // B
+    exp: "傳統重男輕女觀念加上一胎化政策，使大部分家庭偏好男嬰，產生男多於女的「性別比失衡」問題[cite: 23]。"
+  },
+  {
+    q: "1979 年起中國為了達成下列何種人口目標，曾一度積極實施「一胎化政策」？",
+    opts: ["降低出生率", "減少移出率", "平衡區域發展", "增加人力資源"],
+    ans: 0, // A
+    exp: "「一胎化政策」規定一對夫妻只能生育一胎，藉由大幅降低出生率以控制人口總量[cite: 23]。"
+  },
+  {
+    q: "小名敘述中國某地區的地形如下：「海拔高度極高，數千公尺的高度令人望之畏懼。然而登上最高處後，乍然發現上面是一片廣大平坦的草原。」請根據小名的敘述加以判斷，該地區的地形最可能為下列何者？",
+    opts: ["平原", "盆地", "高原", "山地"],
+    ans: 2, // C
+    exp: "地勢高且頂部開闊平坦的地形為「高原」（如內蒙古高原、青藏高原）[cite: 23]。"
+  },
+  {
+    q: "中國西北半部環境負載力較低，過去人口較集中於武威、敦煌、酒泉等綠洲、河谷都市，最主要原因為何？",
+    opts: ["水源較豐富", "盛產葡萄，製酒業發達", "礦產豐富", "帝王避暑勝地，觀光業發達"],
+    ans: 0, // A
+    exp: "武威、敦煌、酒泉等都市位於河西走廊，氣候乾燥，人口集中於能引高山融雪水源發展綠洲農業之處[cite: 23]。"
+  },
+  {
+    q: "中國地形複雜多樣，若依位置而言，其西南部地區以哪一種地形的分布為主？",
+    opts: ["高原", "丘陵", "盆地", "平原"],
+    ans: 0, // A
+    exp: "中國西南部主要由世界屋脊「青藏高原」及雲貴高原所構成[cite: 23]。"
+  },
+  {
+    q: "中國地勢第三級（低階梯）階梯農業發達、人口稠密。請問：該階梯的地形區中，「不包括」下列何者？",
+    opts: ["嶺南丘陵", "雲貴高原", "長江中下游平原", "東北平原"],
+    ans: 1, // B
+    exp: "低階梯地形以平原與丘陵為主；雲貴高原屬於第二級（中階梯）地形[cite: 23]。"
+  },
+  {
+    q: "中國西北部新疆一帶的少數民族，地處邊疆，文化與中亞相近，居民會到清真寺禮拜。請問此區族群主要信仰哪一宗教？",
+    opts: ["佛教", "道教", "神道教", "伊斯蘭教"],
+    ans: 3, // D
+    exp: "到清真寺禮拜為「伊斯蘭教（回教）」的典型宗教活動[cite: 23]。"
+  },
+  {
+    q: "中國的人口總數龐大。自實施一胎化政策後，下列哪一張圖示最能說明中國人口「出生率」隨年代推進的變化趨勢？",
+    opts: [
+      "(A) 出生率水平維持不變",
+      "(B) 出生率垂直暴增",
+      "(C) 出生率逐年上升",
+      "(D) 出生率逐年大幅下降"
+    ],
+    ans: 3, // D
+    exp: "實施計畫生育及一胎化政策後，中國的出生率與自然增加率呈現逐年大幅下降趨勢[cite: 23]。"
+  },
+  {
+    q: "逢年過節，在中國工作的臺商會回臺灣與家人團聚。依據臺商遷移的空間與時間屬性，臺商前往中國工作屬於哪一種人口遷移型態？",
+    table: `
+      <table class="table-box">
+        <tr><th>時間＼空間</th><th>國內遷移</th><th>國際遷移</th></tr>
+        <tr><td>永久性</td><td>甲</td><td>丙</td></tr>
+        <tr><td>暫時性</td><td>乙</td><td>丁</td></tr>
+      </table>
+    `,
+    opts: ["甲", "乙", "丙", "丁"],
+    ans: 3, // D
+    exp: "臺商赴海外或兩岸經貿工作，通常未入籍且週期性返臺，屬於跨越國境的「暫時性國際遷移（丁）」[cite: 23]。"
+  },
+  {
+    q: "「高齡化社會」通常出現在先進國家，但中國卻在 2000 年就達到高齡化社會標準（高於 7%），其主因與下列何者最有關係？〔99.第1次基測〕",
+    opts: [
+      "國民所得的金額逐年增加",
+      "勞動力大量流入鄰近國家",
+      "社會資源多偏向老人福利",
+      "實行嚴厲的計畫生育（一胎化）政策"
+    ],
+    ans: 3, // D
+    exp: "中國自 1979 年起嚴格推行一胎化政策，使出生率急速下降、幼年人口比率銳減，相對使老年人口比例快速拉高，提早步入高齡化[cite: 23]。"
+  },
+  {
+    q: "中國各地氣候受地理位置影響顯著。下列四個地區的氣候圖中，何者「年降水量極低（小於200mm）且年溫差大」，最可能位於中國最西邊的內陸？",
+    opts: [
+      "(A) 年降水 600mm，夏季集中",
+      "(B) 年降水 450mm，溫帶半乾旱",
+      "(C) 年降水量極其稀少（幾乎無雨），為極端溫帶乾燥氣候",
+      "(D) 年降水超過 1000mm，雨量豐沛"
+    ],
+    ans: 2, // C
+    exp: "最西邊的新疆、塔里木盆地距海遙遠且地形封閉，水氣無法到達，年降水量極度稀少（小於200mm），屬於典型溫帶乾燥沙漠氣候[cite: 23]。"
+  },
+  {
+    q: "1942 年中國對外陸路被日軍切斷，開闢了由印度阿薩姆邦經緬北運送戰略物資至雲南昆明的「駝峰航線」。該航線地勢險阻、山谷高低起伏。此航線越過了下列哪一山脈？〔110.會考〕",
+    opts: ["天山山脈", "青藏高原", "橫斷山脈", "內蒙古高原"],
+    ans: 2, // C
+    exp: "雲南西部與中緬邊界為南北走向、山高谷深的「橫斷山脈」，航線穿梭於險峻山谷間因而得名[cite: 23]。"
+  },
+  {
+    q: "氣象圖中陸地蒙古一帶形成 1042 百帕的強大冷高壓中心，風由陸地吹向海洋。下列民眾的說法何者較正確？",
+    svg: `<svg class="svg-diagram" viewBox="0 0 320 110">
+      <ellipse cx="140" cy="55" rx="75" ry="40" fill="#fef08a" stroke="#ca8a04"/>
+      <circle cx="140" cy="55" r="3" fill="#dc2626"/>
+      <text x="120" y="50" font-size="11" font-weight="bold">高壓中心 1042</text>
+      <path d="M 170 70 L 250 95" stroke="#2563eb" stroke-width="2" marker-end="url(#arr)"/>
+      <text x="210" y="75" font-size="10" fill="#2563eb">冬季陸風</text>
+    </svg>`,
+    opts: [
+      "阿輝伯：「風從海洋吹向陸地。」",
+      "水蓮姨：「吹來的風是溼潤的。」",
+      "小馬哥：「此時中國氣候普遍溫暖。」",
+      "宋叔叔：「此時為冬季，太陽直射南半球。」"
+    ],
+    ans: 3, // D
+    exp: "陸地形成強烈冷高壓、吹乾燥寒冷的冬季風，表示正值北半球冬季，此時太陽直射南半球[cite: 23]。"
+  },
+  {
+    q: "「中國西北內陸是草原民族主要生活區，經濟活動以牧業為主，水草豐美之處放牧，擅長騎射……」上文所描述地區的氣候特徵為何？",
+    opts: [
+      "年降水量大於 500 毫米",
+      "屬於高地氣候區",
+      "年溫差及日溫差均大",
+      "氣候溫和溼潤"
+    ],
+    ans: 2, // C
+    exp: "西北溫帶草原與乾燥區降水少、地表缺乏植被水分調節，具備「年溫差大、日溫差亦大」之大陸性氣候特徵[cite: 23]。"
+  },
+  {
+    q: "青藏高原地形剖面圖中，北側為崑崙山，南側為世界第一高峰喜馬拉雅山。若剖面箭頭朝向喜馬拉雅山一側，其所指方位為何？",
+    svg: `<svg class="svg-diagram" viewBox="0 0 320 110">
+      <path d="M 20 85 L 60 45 L 200 45 L 260 15 L 300 95" fill="none" stroke="#16a34a" stroke-width="2"/>
+      <text x="45" y="40" font-size="10">崑崙山</text>
+      <text x="120" y="40" font-size="10">青藏高原</text>
+      <text x="235" y="15" font-size="10" font-weight="bold">喜馬拉雅山</text>
+      <text x="280" y="25" font-size="14" fill="#dc2626">➔</text>
+    </svg>`,
+    opts: ["東方", "西方", "南方", "北方"],
+    ans: 2, // C
+    exp: "喜馬拉雅山位於青藏高原的南緣（與印度、尼泊爾交界），故箭頭所指為南方[cite: 23]。"
+  },
+  {
+    q: "附表為中國某城市長期平均氣候資料：1 月均溫 -2.7°C，7 月均溫僅 15.1°C，年溫差小且夏溫涼爽，年降水量約 400mm 且集中於夏季。由此判斷該城市最可能位於哪一個地理區？",
+    table: `
+      <table class="table-box">
+        <tr><th>月份</th><th>1月</th><th>4月</th><th>7月</th><th>10月</th></tr>
+        <tr><td>均溫(°C)</td><td>-2.7</td><td>8.2</td><td style="color:#2563eb;font-weight:bold;">15.1</td><td>8.2</td></tr>
+        <tr><td>降水(mm)</td><td>0.3</td><td>5.5</td><td>130.5</td><td>7.9</td></tr>
+      </table>
+    `,
+    opts: ["東北平原", "長江三角洲", "珠江三角洲", "青藏高原"],
+    ans: 3, // D
+    exp: "最熱月（7月）均溫僅約 15°C，具備「夏涼」的高原特徵，為典型青藏高原高地氣候[cite: 23]。"
+  },
+  {
+    q: "中國位於海陸交會地帶，以季風氣候為主。下列關於海陸熱力性質差異與季風成因的敘述，何者最為正確？",
+    opts: [
+      "陸地降溫較海洋快，冬季形成低氣壓",
+      "陸地增溫較海洋快，夏季增溫快形成低氣壓",
+      "陸地增溫較海洋慢，夏季易形成低氣壓",
+      "陸地降溫較海洋慢，冬季形成高氣壓"
+    ],
+    ans: 1, // B
+    exp: "陸地比熱小於海洋，夏季吸熱增溫快、空氣受熱膨脹上升，在地表形成熱低壓，吸引海洋暖濕氣流吹入[cite: 23]。"
+  },
+  {
+    q: "中國境內某氣候特色為「冬冷夏涼」，夏季氣溫涼爽，使許多地區成為夏季避暑的度假勝地。形成該地氣候特色的主因為何？",
+    opts: ["海陸位置", "緯度位置", "海拔高度", "季風風向"],
+    ans: 2, // C
+    exp: "高度每上升 1000 公尺氣溫約下降 6°C，地勢高聳使夏季無酷暑，呈現「冬冷夏涼」之高地氣候特色[cite: 23]。"
+  },
+  {
+    q: "地理課堂上同學討論中國面臨的人口問題，下列敘述何者「有誤」？",
+    opts: [
+      "人口總數龐大",
+      "性別比例嚴重失衡",
+      "東部與西部城鄉人口密度差異極大",
+      "人口自然增加率快速大幅上升"
+    ],
+    ans: 3, // D
+    exp: "中國人口自然增加率在過去數十年政策調控下呈現快速「下降」並趨近於零甚至負成長，而非快速上升[cite: 23]。"
+  },
+  {
+    q: "圖表顯示 2016 年中國人口出生率約為 13‰，死亡率約為 7‰，自然增加率為 6‰。以總人口約 14 億計算，該年淨增加人口約為多少人？",
+    opts: ["8400 萬", "840 萬", "1.4 億", "1600 萬"],
+    ans: 1, // B
+    exp: "增加人口 = 總人口 × 自然增加率 = 1,400,000,000 × 6‰ (0.006) = 8,400,000（840 萬人）[cite: 23]。"
+  },
+  {
+    q: "氣候圖資料顯示：最冷月均溫約 20°C，年均溫 24.8°C，年降水量 1588mm 且集中於 5~9 月。此熱帶季風氣候區居民的生活寫照何者較合理？",
+    opts: [
+      "以種植水蜜桃等溫帶水果為主",
+      "夏季受西南季風吹拂，放風箏多飄往東北方",
+      "冬季寒冷，與朋友在結冰的湖面溜冰",
+      "夏季氣溫涼爽，為著名的避暑勝地"
+    ],
+    ans: 1, // B
+    exp: "熱帶季風氣候區（如海南島、雷州半島）夏季盛行「西南季風」，風由西南吹向東北，故風箏會朝向東北方飄動[cite: 23]。"
+  },
+  {
+    q: "影響中國一月等溫線呈現「東西延伸、由南向北遞減」的最主要因素（緯度），和下列哪一個氣候現象的成因相同？",
+    opts: [
+      "廣州夏季降水量多",
+      "青藏高原夏季低溫",
+      "哈爾濱緯度高，冬季嚴寒導致年溫差大",
+      "烏魯木齊深居內陸氣候乾燥"
+    ],
+    ans: 2, // C
+    exp: "冬季等溫線主要受「緯度」高低影響；哈爾濱因緯度高造成冬寒夏熱、年溫差極大，同受緯度因素主導[cite: 23]。"
+  },
+  {
+    q: "氣候資料顯示：1 月月均溫為 -3.7°C（最冷月小於0°C），7 月月均溫 26.2°C，年降水量約 600mm 且集中於夏季。該地屬於何種氣候類型？",
+    opts: ["高地氣候", "溫帶草原氣候", "熱帶季風氣候", "溫帶季風氣候"],
+    ans: 3, // D
+    exp: "最冷月均溫低於 0°C、夏季高溫多雨、年雨量介於 500~750mm 之間，為典型「溫帶季風氣候」[cite: 23]。"
+  },
+  {
+    q: "九世紀海上絲路帆船滿載中國的紙張、絲綢、瓷器，乘著盛行風前往波斯灣（西亞）進行貿易。根據貨物出發地與季風風向判斷，該帆船航行的描述何者正確？",
+    svg: `<svg class="svg-diagram" viewBox="0 0 320 120">
+      <path d="M 260 40 Q 230 100 170 95 T 80 30" fill="none" stroke="#0284c7" stroke-width="2"/>
+      <circle cx="260" cy="40" r="4" fill="#dc2626"/><text x="245" y="30" font-size="11" font-weight="bold">甲 (中國港口)</text>
+      <circle cx="80" cy="30" r="4" fill="#16a34a"/><text x="60" y="22" font-size="11" font-weight="bold">乙 (波斯灣)</text>
+    </svg>`,
+    opts: [
+      "於夏季由甲地（中國）出發",
+      "於冬季由甲地（中國）出發，順著東北季風向南及西南航行",
+      "於夏季由乙地（波斯灣）出發",
+      "於冬季由乙地（波斯灣）出發"
+    ],
+    ans: 1, // B
+    exp: "船隻載滿中國貨物，起點為甲地；欲由東亞南下穿越南海與印度洋前往波斯灣，需順著「冬季東北季風」啟航航行[cite: 23]。"
+  }
+];
+
+function renderQuiz() {
+  const container = document.getElementById('quiz-container');
+  container.innerHTML = quizData.map((item, idx) => `
+    <div class="card" id="q_card_${idx}">
+      <div class="q-title">${idx + 1}. ${item.q}</div>
+      ${item.svg || ''}
+      ${item.table || ''}
+      <div class="options">
+        ${item.opts.map((opt, oIdx) => `
+          <label class="opt-label" id="label_${idx}_${oIdx}">
+            <input type="radio" name="q_${idx}" value="${oIdx}">
+            <span>(${['A','B','C','D'][oIdx]})${opt}</span>
+          </label>
+        `).join('')}
+      </div>
+      <div class="explanation" id="exp_${idx}"></div>
+    </div>
+  `).join('');
+}
+
+function submitQuiz() {
+  let score = 0;
+  let unanswered = 0;
+
+  quizData.forEach((item, idx) => {
+    const selected = document.querySelector(`input[name="q_${idx}"]:checked`);
+    const expBox = document.getElementById(`exp_${idx}`);
+    expBox.style.display = 'block';
+
+    if (!selected) {
+      unanswered++;
+      expBox.className = 'explanation exp-wrong';
+      expBox.innerHTML = `⚠️ <strong>未作答</strong>。正確答案為 <strong>(${['A','B','C','D'][item.ans]})</strong>。<br>解析：${item.exp}`;
+    } else if (parseInt(selected.value) === item.ans) {
+      score += 4;
+      expBox.className = 'explanation exp-correct';
+      expBox.innerHTML = `✓ <strong>回答正確！</strong><br>解析：${item.exp}`;
+    } else {
+      expBox.className = 'explanation exp-wrong';
+      expBox.innerHTML = `✗ <strong>回答錯誤</strong>。正確答案為 <strong>(${['A','B','C','D'][item.ans]})</strong>。<br>解析：${item.exp}`;
+    }
+  });
+
+  if (unanswered > 0) {
+    if (!confirm(`您還有 ${unanswered} 題尚未作答，確定要送出交卷嗎？`)) return;
+  }
+
+  const banner = document.getElementById('scoreBanner');
+  const finalScoreEl = document.getElementById('finalScore');
+  banner.style.display = 'block';
+  finalScoreEl.textContent = `${score} 分`;
+  finalScoreEl.style.color = score >= 60 ? 'var(--primary)' : 'var(--danger)';
+
+  // 儲存至 LocalStorage (對應首頁八年級地理)
+  const record = {
+    score: score,
+    date: new Date().toLocaleDateString('zh-TW', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+  };
+  localStorage.setItem('quiz_g8_geography', JSON.stringify(record));
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function resetQuiz() {
+  if (confirm('確定要清除目前答案並重新作答嗎？')) {
+    location.reload();
+  }
+}
+
+renderQuiz();
+</script>
+</body>
+</html>

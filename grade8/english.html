@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>八上英文 B3 L2下 測驗（適南版）</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --border: #e2e8f0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding: 16px; line-height: 1.6; }
+    .container { max-width: 840px; margin: 0 auto; }
+
+    .nav-bar { margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
+    .nav-btn { text-decoration: none; color: var(--primary); font-weight: 600; font-size: 0.95rem; }
+    .badge { font-size: 0.8rem; padding: 3px 10px; border-radius: 999px; background: #e0e7ff; color: #4338ca; font-weight: 600; }
+
+    header { background: var(--card); padding: 22px; border-radius: 14px; border: 1px solid var(--border); margin-bottom: 20px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.03); }
+    header h1 { font-size: 1.5rem; color: #1e3a8a; margin-bottom: 6px; }
+    header p { font-size: 0.9rem; color: var(--text-muted); }
+
+    .score-banner {
+      display: none;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    .score-banner h2 { font-size: 2.2rem; color: var(--primary); margin-bottom: 6px; }
+
+    .sec-header { font-size: 1.2rem; font-weight: 700; color: #1e40af; margin: 24px 0 12px 4px; border-left: 4px solid var(--primary); padding-left: 10px; }
+    .card { background: var(--card); padding: 20px; border-radius: 14px; border: 1px solid #e2e8f0; margin-bottom: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+    .q-title { font-size: 1rem; font-weight: 600; margin-bottom: 10px; color: #1e293b; line-height: 1.6; }
+
+    .options { display: flex; flex-direction: column; gap: 8px; }
+    .opt-label { display: flex; align-items: flex-start; padding: 9px 13px; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer; font-size: 0.95rem; transition: background 0.15s; }
+    .opt-label:hover { background-color: #f1f5f9; }
+    .opt-label input { margin-right: 12px; margin-top: 4px; }
+
+    .text-input { width: 100%; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.98rem; margin-top: 8px; color: #0f172a; }
+    .text-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
+
+    .explanation { display: none; margin-top: 14px; padding: 12px 16px; border-radius: 8px; font-size: 0.92rem; line-height: 1.5; }
+    .exp-correct { background-color: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; }
+    .exp-wrong { background-color: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
+
+    .btn-group { display: flex; gap: 12px; margin: 28px 0 50px; }
+    .btn { flex: 1; padding: 14px; border-radius: 10px; border: none; font-size: 1rem; font-weight: 700; cursor: pointer; }
+    .btn-submit { background: var(--primary); color: #fff; }
+    .btn-submit:hover { background: var(--primary-hover); }
+    .btn-reset { background: #e2e8f0; color: var(--text); }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="nav-bar">
+    <a href="../index.html" class="nav-btn">⬅ 返回首頁儀表板</a>
+    <span class="badge">適南版 八上英文 B3 L2下</span>
+  </div>
+
+  <header>
+    <h1>八上英文－B3 L2下 課堂練習卷</h1>
+    <p>包含文法測驗、句型改寫與整句翻譯（滿分 100 分）。完成後請點擊下方交卷按鈕。</p>
+  </header>
+
+  <div class="score-banner" id="scoreBanner">
+    <h2 id="finalScore">0 分</h2>
+    <p id="scoreMsg">測驗完成！成績已自動儲存至儀表板。</p>
+  </div>
+
+  <div class="sec-header">一、文法測驗（共 16 題，每題 3 分）</div>
+  <div id="grammar-container"></div>
+
+  <div class="sec-header">二、依提示回答問題（共 7 題，每題 5 分）</div>
+  <div id="rewrite-container"></div>
+
+  <div class="sec-header">三、整句式翻譯（共 3 題，共 17 分）</div>
+  <div id="trans-container"></div>
+
+  <div class="btn-group">
+    <button class="btn btn-submit" onclick="submitExam()">送出交卷</button>
+    <button class="btn btn-reset" onclick="resetExam()">重新測驗</button>
+  </div>
+</div>
+
+<script>
+// 一、文法測驗資料庫
+const gData = [
+  {
+    q: "1. Lily: When will Uncle Tom come to see me?<br>Mom: He will visit us this weekend. He ＿＿＿ me that by e-mail.",
+    opts: ["told", "tells", "will tell", "was going to tell"],
+    ans: "A",
+    exp: "由母親的回答可知她已經知道湯姆叔叔何時要來，表示叔叔之前已用電子郵件告知，動詞須用過去式 told[cite: 25, 26]。"
+  },
+  {
+    q: "2. A: Why ＿＿＿ Sam come to my party?<br>B: He ＿＿＿ go to your party because he had a fever.",
+    opts: ["did; didn't", "doesn't; doesn't", "didn't; doesn't", "didn't; didn't"],
+    ans: "D",
+    exp: "由 had a fever 可知是在談論過去的事，且沒有去派對，故兩空格皆用 didn't[cite: 25, 26]。"
+  },
+  {
+    q: "3. My grandmother believes that young children in big cities get sick easily ＿＿＿ the air is dirty.【93基測】",
+    opts: ["because", "before", "but", "whether"],
+    ans: "A",
+    exp: "because 引導原因副詞子句，用來說明前面的 get sick easily（容易生病）的原因[cite: 25, 26]。"
+  },
+  {
+    q: "4. A: Why ＿＿＿ Andy run away when he saw you?<br>B: ＿＿＿ he was afraid of my dog.",
+    opts: ["didn't; Because", "does; So", "did; Because", "did; So"],
+    ans: "C",
+    exp: "由 saw 可知詢問過去的事，用助動詞 did；詢問 why 要用 Because 回答原因[cite: 25, 26]。"
+  },
+  {
+    q: "5. A: Why did James rush to the bookstore?<br>B: ＿＿＿ his favorite writer ＿＿＿ there now.",
+    opts: ["Because; was", "Because; is", "So; was", "So; is"],
+    ans: "B",
+    exp: "由問句 Why 可知以 Because 回答；由時間副詞 now 可知第二格用現在式 be 動詞 is[cite: 25, 26]。"
+  },
+  {
+    q: "6. Vicky ＿＿＿ yesterday because she ＿＿＿ a bad cold.",
+    opts: ["doesn't swim; has", "swims; has", "didn't swim; had", "swam; had"],
+    ans: "C",
+    exp: "由 yesterday 可知為過去式；語意為「因為重感冒所以昨天沒有去游泳」，用 didn't swim; had[cite: 25, 26]。"
+  },
+  {
+    q: "7. Donna was sad ＿＿＿ she ＿＿＿ enough money for the shoes.",
+    opts: ["so; had", "because; had", "so; didn't have", "because; didn't have"],
+    ans: "D",
+    exp: "Donna 很傷心是因為「沒有足夠的錢買鞋」，前句為結果、後句為原因，故用 because 引導否定子句[cite: 25, 26]。"
+  },
+  {
+    q: "8. Let's not visit Apple Town. The traffic is heavy ＿＿＿ the air is dirty, ＿＿＿ I don't like it.",
+    opts: ["and; so", "because; and", "but; so", "because; so"],
+    ans: "A",
+    exp: "交通壅塞與空氣髒亂皆為不喜歡該鎮的並列原因，用 and 連接；後方帶出結果用 so（所以）[cite: 25, 26]。"
+  },
+  {
+    q: "9. I have to cook for my brothers ＿＿＿ my parents are out of town today.",
+    opts: ["so", "because", "or", "but"],
+    ans: "B",
+    exp: "「父母今天出城不在」是「我必須為兄弟煮飯」的原因，填入 because[cite: 25, 26]。"
+  },
+  {
+    q: "10. James had a bad toothache last night, ＿＿＿ he didn't sleep all night. No wonder he has dark circles under his eyes.",
+    opts: ["Because; so", "＿＿＿; so", "So; ＿＿＿", "＿＿＿; because"],
+    ans: "B",
+    exp: "牙痛是因，整晚沒睡是果；因果句中 because 與 so 不能同時出現在同一組主從句中，故前空不填，後空填 so[cite: 25, 26]。"
+  },
+  {
+    q: "11. A: Why ＿＿＿ your friend ＿＿＿ run in the race?<br>B: He can't because he ＿＿＿ in PE class and got hurt yesterday.",
+    opts: ["didn't; fell", "did; fell", "can't; fell", "can't; falls"],
+    ans: "C",
+    exp: "由答句 He can't 可知問句詢問「為何不能跑步」用 can't；由 yesterday 可知跌倒用過去式 fell[cite: 25, 26]。"
+  },
+  {
+    q: "12. Sorry, I'm late. I ＿＿＿ my cellphone at home, ＿＿＿ I wasn't able to call you on my way to the station.",
+    opts: ["leave; so", "left; because", "leave; because", "left; so"],
+    ans: "D",
+    exp: "由 wasn't able 可知為過去發生的事，leave 過去式為 left；手機忘在家為因，無法打電話為果，用 so 連接[cite: 25, 26]。"
+  },
+  {
+    q: "13. A: Why ＿＿＿ Meg go to the movies with Peggy the night before?<br>B: Because she ＿＿＿ very tired after work yesterday, and she needed a good rest.",
+    opts: ["did; isn't", "didn't; was", "did; wasn't", "didn't; is"],
+    ans: "B",
+    exp: "由 needed a good rest 可知 Meg 沒去看電影，第一格用 didn't；tired 為形容詞，過去式搭配 was[cite: 25, 26]。"
+  },
+  {
+    q: "14. Jane: Did you get up early this morning?<br>Tina: No, I didn't, but my brother ＿＿＿. He gets up early every day.【93基測】",
+    opts: ["does", "is", "did", "was"],
+    ans: "C",
+    exp: "簡答過去式一般動詞 got up early this morning，應用助動詞過去式 did 代替[cite: 25, 26]。"
+  },
+  {
+    q: "15. A: Why ＿＿＿ you answer my phone this morning? I called you many times.<br>B: Sorry, I ＿＿＿ in a meeting.",
+    opts: ["didn't; am", "didn't; was", "did; wasn't", "didn't; wasn't"],
+    ans: "B",
+    exp: "詢問「今早為何沒接電話」用 didn't answer；道歉解釋當時正在開會用 was in a meeting[cite: 25, 26]。"
+  },
+  {
+    q: "16. John will be an hour late. He ＿＿＿ up late, ＿＿＿ he didn't catch the first train.",
+    opts: ["gets; so", "got; because", "got; so", "gets; because"],
+    ans: "C",
+    exp: "由 didn't catch 可知起晚了用過去式 got；起晚是因，沒趕上車是果，連接詞用 so[cite: 25, 26]。"
+  }
+];
+
+// 二、依提示回答問題
+const rData = [
+  {
+    q: "1. wasn't / , so I / The story / didn't / funny / laugh.（重組句子）",
+    valid: ["The story wasn't funny, so I didn't laugh.", "The story wasn't funny so I didn't laugh"],
+    exp: "The story wasn't funny, so I didn't laugh.（故事不好笑，所以我沒有笑。）[cite: 25, 26]"
+  },
+  {
+    q: "2. The kids didn't leave their trash on the seats.（改為肯定句）",
+    valid: ["The kids left their trash on the seats.", "The kids left their trash on the seats"],
+    exp: "leave 的過去式為 left，肯定句為：The kids left their trash on the seats.[cite: 25, 26]"
+  },
+  {
+    q: "3. Mandy cried yesterday. / Mandy watched a sad movie.（用 because 合併句子）",
+    valid: [
+      "Mandy cried yesterday because she watched a sad movie.",
+      "Because Mandy watched a sad movie, she cried yesterday.",
+      "Mandy cried yesterday because Mandy watched a sad movie."
+    ],
+    exp: "Mandy cried yesterday because she watched a sad movie.[cite: 25, 26]"
+  },
+  {
+    q: "4. The smell of mangoes was good. / We ate a lot of mangoes.（用 so 合併句子）",
+    valid: [
+      "The smell of mangoes was good, so we ate a lot of mangoes.",
+      "The smell of mangoes was good so we ate a lot of mangoes."
+    ],
+    exp: "The smell of mangoes was good, so we ate a lot of mangoes.[cite: 25, 26]"
+  },
+  {
+    q: "5. Jolin practiced very hard. / Jolin sang and danced well.（以 so 合併句子）",
+    valid: [
+      "Jolin practiced very hard, so she sang and danced well.",
+      "Jolin practiced very hard so she sang and danced well.",
+      "Jolin practiced very hard, so Jolin sang and danced well."
+    ],
+    exp: "Jolin practiced very hard, so she sang and danced well.[cite: 25, 26]"
+  },
+  {
+    q: "6. I don't have much money, so I can't buy a house.（以 because 改寫句子）",
+    valid: [
+      "I can't buy a house because I don't have much money.",
+      "Because I don't have much money, I can't buy a house."
+    ],
+    exp: "I can't buy a house because I don't have much money.[cite: 25, 26]"
+  },
+  {
+    q: "7. why / do / Vicky / run / to / school / this / morning（完成句子）",
+    valid: [
+      "Why did Vicky run to school this morning?",
+      "Why did Vicky run to school this morning"
+    ],
+    exp: "this morning 指過去時間，助動詞用 did：Why did Vicky run to school this morning?[cite: 25, 26]"
+  }
+];
+
+// 三、整句式翻譯
+const tData = [
+  {
+    q: "1. Kelly 一整夜坐在她媽媽身邊。（5 分）",
+    valid: [
+      "Kelly sat by her mother's side all night.",
+      "Kelly sat by her mothers side all night.",
+      "Kelly sat beside her mother all night.",
+      "Kelly sat next to her mother all night."
+    ],
+    exp: "Kelly sat by her mother's side all night.（by one's side 表在身邊，sit 過去式為 sat）[cite: 25, 26]"
+  },
+  {
+    q: "2. Ted 昨天幫助我。他人真好。（6 分）",
+    valid: [
+      "Ted helped me yesterday. It was nice of him.",
+      "Ted helped me yesterday. It was very nice of him.",
+      "Ted helped me yesterday. He was very nice.",
+      "Ted helped me yesterday. He was so nice."
+    ],
+    exp: "Ted helped me yesterday. It was (very) nice of him.[cite: 25, 26]"
+  },
+  {
+    q: "3. A: 為什麼 Mary 今天上學遲到？<br>B: 因為她今天早上沒有在七點起床。（6 分）",
+    sub1: {
+      prompt: "A (問句):",
+      valid: [
+        "Why was Mary late for school today?",
+        "Why was Mary late for school today"
+      ]
+    },
+    sub2: {
+      prompt: "B (答句):",
+      valid: [
+        "Because she didn't get up at seven this morning.",
+        "Because she didn't get up at 7 this morning.",
+        "Because she didn't wake up at seven this morning."
+      ]
+    },
+    exp: "A: Why was Mary late for school today?<br>B: Because she didn't get up at seven this morning.[cite: 25, 26]"
+  }
+];
+
+// 智慧文字比對清理
+function clean(str) {
+  return (str || '')
+    .toLowerCase()
+    .replace(/[.,?!'’"]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function render() {
+  // 一、文法
+  document.getElementById('grammar-container').innerHTML = gData.map((d, i) => `
+    <div class="card" id="g_card_${i}">
+      <div class="q-title">${d.q}</div>
+      <div class="options">
+        ${['A','B','C','D'].map((op, oi) => `
+          <label class="opt-label">
+            <input type="radio" name="g_${i}" value="${op}">
+            <span>(${op})${d.opts[oi]}</span>
+          </label>
+        `).join('')}
+      </div>
+      <div class="explanation" id="g_exp_${i}"></div>
+    </div>
+  `).join('');
+
+  // 二、依提示回答
+  document.getElementById('rewrite-container').innerHTML = rData.map((d, i) => `
+    <div class="card" id="r_card_${i}">
+      <div class="q-title">${d.q}</div>
+      <input type="text" class="text-input" id="r_ans_${i}" placeholder="請在此輸入英文答案...">
+      <div class="explanation" id="r_exp_${i}"></div>
+    </div>
+  `).join('');
+
+  // 三、整句式翻譯
+  document.getElementById('trans-container').innerHTML = `
+    <div class="card" id="t_card_0">
+      <div class="q-title">${tData[0].q}</div>
+      <input type="text" class="text-input" id="t_ans_0" placeholder="請輸入英文翻譯...">
+      <div class="explanation" id="t_exp_0"></div>
+    </div>
+    <div class="card" id="t_card_1">
+      <div class="q-title">${tData[1].q}</div>
+      <input type="text" class="text-input" id="t_ans_1" placeholder="請輸入英文翻譯...">
+      <div class="explanation" id="t_exp_1"></div>
+    </div>
+    <div class="card" id="t_card_2">
+      <div class="q-title">${tData[2].q}</div>
+      <div style="margin-top:6px;">
+        <label style="font-size:0.9rem;font-weight:600;color:#475569;">A (問句)：</label>
+        <input type="text" class="text-input" id="t_ans_2a" placeholder="Why was Mary...">
+      </div>
+      <div style="margin-top:8px;">
+        <label style="font-size:0.9rem;font-weight:600;color:#475569;">B (答句)：</label>
+        <input type="text" class="text-input" id="t_ans_2b" placeholder="Because she didn't...">
+      </div>
+      <div class="explanation" id="t_exp_2"></div>
+    </div>
+  `;
+}
+
+function submitExam() {
+  let score = 0;
+  let unfilled = 0;
+
+  // 1. 文法批改 (16 題，每題 3 分，共 48 分)
+  gData.forEach((d, i) => {
+    const selected = document.querySelector(`input[name="g_${i}"]:checked`);
+    const expBox = document.getElementById(`g_exp_${i}`);
+    expBox.style.display = 'block';
+
+    if (!selected) {
+      unfilled++;
+      expBox.className = 'explanation exp-wrong';
+      expBox.innerHTML = `⚠️ <strong>未作答</strong>。正確答案：(${d.ans})<br>解析：${d.exp}`;
+    } else if (selected.value === d.ans) {
+      score += 3;
+      expBox.className = 'explanation exp-correct';
+      expBox.innerHTML = `✓ <strong>答對！</strong><br>解析：${d.exp}`;
+    } else {
+      expBox.className = 'explanation exp-wrong';
+      expBox.innerHTML = `✗ <strong>錯誤</strong>。正確答案：(${d.ans})<br>解析：${d.exp}`;
+    }
+  });
+
+  // 2. 句型改寫批改 (7 題，每題 5 分，共 35 分)
+  rData.forEach((d, i) => {
+    const val = clean(document.getElementById(`r_ans_${i}`).value);
+    const expBox = document.getElementById(`r_exp_${i}`);
+    expBox.style.display = 'block';
+
+    if (!val) unfilled++;
+
+    const isCorrect = d.valid.some(ans => clean(ans) === val);
+    if (isCorrect) {
+      score += 5;
+      expBox.className = 'explanation exp-correct';
+      expBox.innerHTML = `✓ <strong>答對！</strong><br>參考答案：${d.valid[0]}`;
+    } else {
+      expBox.className = 'explanation exp-wrong';
+      expBox.innerHTML = `✗ <strong>需訂正</strong>。參考答案：${d.valid[0]}<br>解析：${d.exp}`;
+    }
+  });
+
+  // 3. 整句翻譯批改 (共 17 分)
+  // 第 1 題 (5 分)
+  const t0Val = clean(document.getElementById('t_ans_0').value);
+  const t0Exp = document.getElementById('t_exp_0');
+  t0Exp.style.display = 'block';
+  if (!t0Val) unfilled++;
+  if (tData[0].valid.some(ans => clean(ans) === t0Val)) {
+    score += 5;
+    t0Exp.className = 'explanation exp-correct';
+    t0Exp.innerHTML = `✓ <strong>答對！</strong><br>參考答案：${tData[0].valid[0]}`;
+  } else {
+    t0Exp.className = 'explanation exp-wrong';
+    t0Exp.innerHTML = `✗ <strong>需訂正</strong>。參考答案：${tData[0].valid[0]}<br>解析：${tData[0].exp}`;
+  }
+
+  // 第 2 題 (6 分)
+  const t1Val = clean(document.getElementById('t_ans_1').value);
+  const t1Exp = document.getElementById('t_exp_1');
+  t1Exp.style.display = 'block';
+  if (!t1Val) unfilled++;
+  if (tData[1].valid.some(ans => clean(ans) === t1Val)) {
+    score += 6;
+    t1Exp.className = 'explanation exp-correct';
+    t1Exp.innerHTML = `✓ <strong>答對！</strong><br>參考答案：${tData[1].valid[0]}`;
+  } else {
+    t1Exp.className = 'explanation exp-wrong';
+    t1Exp.innerHTML = `✗ <strong>需訂正</strong>。參考答案：${tData[1].valid[0]}<br>解析：${tData[1].exp}`;
+  }
+
+  // 第 3 題 (6 分，各 3 分)
+  const t2aVal = clean(document.getElementById('t_ans_2a').value);
+  const t2bVal = clean(document.getElementById('t_ans_2b').value);
+  const t2Exp = document.getElementById('t_exp_2');
+  t2Exp.style.display = 'block';
+  if (!t2aVal || !t2bVal) unfilled++;
+
+  const sub1Correct = tData[2].sub1.valid.some(ans => clean(ans) === t2aVal);
+  const sub2Correct = tData[2].sub2.valid.some(ans => clean(ans) === t2bVal);
+
+  if (sub1Correct) score += 3;
+  if (sub2Correct) score += 3;
+
+  if (sub1Correct && sub2Correct) {
+    t2Exp.className = 'explanation exp-correct';
+    t2Exp.innerHTML = `✓ <strong>答對！</strong><br>參考答案：<br>A: ${tData[2].sub1.valid[0]}<br>B: ${tData[2].sub2.valid[0]}`;
+  } else {
+    t2Exp.className = 'explanation exp-wrong';
+    t2Exp.innerHTML = `✗ <strong>需訂正</strong>。<br>參考答案：<br>A: ${tData[2].sub1.valid[0]}<br>B: ${tData[2].sub2.valid[0]}<br>解析：${tData[2].exp}`;
+  }
+
+  if (unfilled > 0) {
+    if (!confirm(`尚有 ${unfilled} 題尚未作答，確定要送出交卷嗎？`)) return;
+  }
+
+  // 成果展示
+  const banner = document.getElementById('scoreBanner');
+  const finalScoreEl = document.getElementById('finalScore');
+  banner.style.display = 'block';
+  finalScoreEl.textContent = `${score} 分`;
+  finalScoreEl.style.color = score >= 60 ? 'var(--primary)' : 'var(--danger)';
+
+  // 存入 LocalStorage 同步至首頁
+  const record = {
+    score: score,
+    date: new Date().toLocaleDateString('zh-TW', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+  };
+  localStorage.setItem('quiz_g8_english', JSON.stringify(record));
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function resetExam() {
+  if (confirm('確定要清除目前所有答案並重新作答嗎？')) {
+    location.reload();
+  }
+}
+
+render();
+</script>
+</body>
+</html>
