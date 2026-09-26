@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>七上生物 第一次段考複習測驗</title>
+  <style>
+    :root {
+      --primary: #059669;
+      --primary-hover: #047857;
+      --bg: #f0fdf4;
+      --card: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --border: #e2e8f0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding: 16px; line-height: 1.6; }
+    .container { max-width: 860px; margin: 0 auto; }
+
+    .nav-bar { margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
+    .nav-btn { text-decoration: none; color: var(--primary); font-weight: 600; font-size: 0.95rem; }
+    .badge { font-size: 0.8rem; padding: 3px 10px; border-radius: 999px; background: #dcfce7; color: #166534; font-weight: 600; }
+
+    header { background: var(--card); padding: 22px; border-radius: 14px; border: 1px solid var(--border); margin-bottom: 20px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.03); }
+    header h1 { font-size: 1.5rem; color: #064e3b; margin-bottom: 6px; }
+    header p { font-size: 0.9rem; color: var(--text-muted); }
+
+    .score-banner {
+      display: none;
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    .score-banner h2 { font-size: 2.2rem; color: var(--primary); margin-bottom: 6px; }
+
+    .card { background: var(--card); padding: 22px; border-radius: 14px; border: 1px solid var(--border); margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+    .group-title { font-size: 1.15rem; font-weight: 700; color: #065f46; margin-bottom: 12px; border-left: 4px solid var(--primary); padding-left: 10px; }
+    .article-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px; margin-bottom: 16px; font-size: 0.95rem; color: #334155; }
+    .svg-diagram { width: 100%; max-width: 600px; display: block; margin: 14px auto; background: #fff; border-radius: 8px; border: 1px solid #e2e8f0; }
+
+    .sub-q { margin-top: 18px; padding-top: 14px; border-top: 1px dashed var(--border); }
+    .sub-q:first-of-type { border-top: none; margin-top: 0; padding-top: 0; }
+    .q-text { font-size: 1rem; font-weight: 600; margin-bottom: 10px; color: #1e293b; }
+
+    .options { display: flex; flex-direction: column; gap: 8px; }
+    .opt-label { display: flex; align-items: flex-start; padding: 9px 12px; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 0.93rem; }
+    .opt-label:hover { background-color: #f0fdf4; }
+    .opt-label input { margin-right: 10px; margin-top: 4px; }
+
+    .fill-input { width: 110px; padding: 5px 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.95rem; text-align: center; margin: 0 4px; }
+
+    .explanation { display: none; margin-top: 12px; padding: 10px 14px; border-radius: 8px; font-size: 0.9rem; line-height: 1.5; }
+    .exp-correct { background-color: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; }
+    .exp-wrong { background-color: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
+
+    .table-box { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 0.9rem; }
+    .table-box th, .table-box td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: center; }
+    .table-box th { background: #f1f5f9; }
+
+    .btn-group { display: flex; gap: 12px; margin: 28px 0 50px; }
+    .btn { flex: 1; padding: 14px; border-radius: 10px; border: none; font-size: 1rem; font-weight: 700; cursor: pointer; }
+    .btn-submit { background: var(--primary); color: #fff; }
+    .btn-submit:hover { background: var(--primary-hover); }
+    .btn-reset { background: #e2e8f0; color: #334155; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="nav-bar">
+    <a href="../index.html" class="nav-btn">⬅ 返回首頁儀表板</a>
+    <span class="badge">全版本 七上生物 一段複習</span>
+  </div>
+
+  <header>
+    <h1>七上生物－第一次段考全單元題組複習</h1>
+    <p>全卷共 10 大題組、20 個小題（每題 5 分，滿分 100 分）。完成後請點擊下方交卷按鈕。</p>
+  </header>
+
+  <div class="score-banner" id="scoreBanner">
+    <h2 id="finalScore">0 分</h2>
+    <p id="scoreMsg">測驗完成！成績已自動同步更新至首頁儀表板。</p>
+  </div>
+
+  <!-- 題組 1 -->
+  <div class="card">
+    <div class="group-title">題組 1：物質通過細胞膜</div>
+    <p>如圖為物質通過細胞膜情形的示意圖，其中甲、乙為某些特定物質進出細胞的通道。試回答下列問題：</p>
+    <!-- SVG 細胞膜示意圖 -->
+    <svg class="svg-diagram" viewBox="0 0 500 180">
+      <defs>
+        <linearGradient id="mem" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fef08a"/><stop offset="100%" stop-color="#fde047"/></linearGradient>
+      </defs>
+      <text x="20" y="30" font-size="14" fill="#64748b" font-weight="bold">細胞外</text>
+      <text x="20" y="160" font-size="14" fill="#64748b" font-weight="bold">細胞內</text>
+      <!-- 磷脂雙分子層模擬 -->
+      <rect x="15" y="60" width="470" height="60" rx="6" fill="url(#mem)" opacity="0.6"/>
+      <!-- 通道蛋白甲與乙 -->
+      <path d="M 160 50 C 145 75 145 105 160 130 C 175 105 175 75 160 50 Z" fill="#93c5fd" stroke="#2563eb" stroke-width="2"/>
+      <text x="155" y="150" font-size="13" font-weight="bold" fill="#1e3a8a">甲</text>
+      <path d="M 330 50 C 310 75 310 105 330 130 C 350 105 350 75 330 50 Z" fill="#93c5fd" stroke="#2563eb" stroke-width="2"/>
+      <text x="325" y="150" font-size="13" font-weight="bold" fill="#1e3a8a">乙</text>
+      <!-- 符號標示：水分子直接穿透與走通道 -->
+      <circle cx="80" cy="30" r="8" fill="#38bdf8"/>
+      <path d="M 80 40 L 70 140" stroke="#0284c7" stroke-dasharray="3,3" marker-end="url(#arrow)"/>
+      <circle cx="160" cy="25" r="8" fill="#38bdf8"/>
+      <path d="M 160 35 L 160 120" stroke="#0284c7" marker-end="url(#arrow)"/>
+      <text x="75" y="18" font-size="11" fill="#0284c7">▲/●</text>
+      <!-- 大分子蛋白質無法進入 -->
+      <rect x="420" y="20" width="18" height="18" fill="#f97316"/>
+      <path d="M 425 45 Q 430 65 410 60" stroke="#ea580c" stroke-width="2" fill="none"/>
+      <text x="445" y="34" font-size="12" fill="#ea580c">大分子(如澱粉)</text>
+    </svg>
+
+    <div class="sub-q">
+      <div class="q-text">(1) 圖中可透過膜上蛋白質通道進出，又可直接穿透脂質雙層的物質，最可能為下列何者？</div>
+      <div class="options">
+        <label class="opt-label"><input type="radio" name="q_1_1" value="A">(A) 葡萄糖</label>
+        <label class="opt-label"><input type="radio" name="q_1_1" value="B">(B) 澱粉</label>
+        <label class="opt-label"><input type="radio" name="q_1_1" value="C">(C) 二氧化碳</label>
+        <label class="opt-label"><input type="radio" name="q_1_1" value="D">(D) 水</label>
+      </div>
+      <div class="explanation" id="exp_1_1"></div>
+    </div>
+
+    <div class="sub-q">
+      <div class="q-text">(2) 圖中完全無法通過細胞膜進入細胞內部的物質，最可能為下列何者？</div>
+      <div class="options">
+        <label class="opt-label"><input type="radio" name="q_1_2" value="A">(A) 葡萄糖</label>
+        <label class="opt-label"><input type="radio" name="q_1_2" value="B">(B) 澱粉</label>
+        <label class="opt-label"><input type="radio" name="q_1_2" value="C">(C) 二氧化碳</label>
+        <label class="opt-label"><input type="radio" name="q_1_2" value="D">(D) 水</label>
+      </div>
+      <div class="explanation" id="exp_1_2"></div>
+    </div>
+  </div>
+
+  <!-- 題組 2 -->
+  <div class="card">
+    <div class="group-title">題組 2：紅樓夢飲食與生物構造</div>
+    <div class="article-box">
+      《紅樓夢》全書約有 1/3 篇幅描寫飲食文化，包含多達 186 種食品。試回答下列與植物器官及細胞構造相關問題：
+    </div>
+    <div class="sub-q">
+      <div class="q-text">(1) 第十一回中的點心「棗泥餡山藥糕」，食材包含大棗、山藥、糯米、桂花蜜。請問以上食材何者「不是」器官？</div>
+      <div class="options">
+        <label class="opt-label"><input type="radio" name="q_2_1" value="A">(A) 大棗</label>
+        <label class="opt-label"><input type="radio" name="q_2_1" value="B">(B) 山藥</label>
+        <label class="opt-label"><input type="radio" name="q_2_1" value="C">(C) 糯米</label>
+        <label class="opt-label"><input type="radio" name="q_2_1" value="D">(D) 桂花蜜</label>
+      </div>
+      <div class="explanation" id="exp_2_1"></div>
+    </div>
+    <div class="sub-q">
+      <div class="q-text">(2) 第三十四回提及飲品「玫瑰滷子」：鮮玫瑰花瓣去澀汁後加入高濃度白糖醃製。下列敘述何者正確？</div>
+      <div class="options">
+        <label class="opt-label"><input type="radio" name="q_2_2" value="A">(A) 玫瑰花瓣的色素主要存於細胞壁中</label>
+        <label class="opt-label"><input type="radio" name="q_2_2" value="B">(B) 澀汁中的主要成分應該是葉綠素</label>
+        <label class="opt-label"><input type="radio" name="q_2_2" value="C">(C) 加入高濃度白糖醃製可以藉由滲透作用脫水順便防腐殺菌</label>
+        <label class="opt-label"><input type="radio" name="q_2_2" value="D">(D) 玫瑰花瓣不具有輸導組織</label>
+      </div>
+      <div class="explanation" id="exp_2_2"></div>
+    </div>
+  </div>
+
+  <!-- 題組 3 -->
+  <div class="card">
+    <div class="group-title">題組 3：紅血球與滲透作用</div>
+    <p>有三瓶溶液：(甲) 濃食鹽水；(乙) 生理食鹽水；(丙) 蒸餾水。將紅血球分別置於以上三種溶液中，30 分鐘後觀察變化：</p>
+    <div class="sub-q">
+      <div class="q-text">(1) 在哪一瓶溶液中，紅血球會萎縮？</div>
+      <div class="options">
+        <label class="opt-label"><input type="radio" name="q_3_1" value="A">(A) 甲</label>
+        <label class="opt-label"><input type="radio" name="q_3_1" value="B">(B) 乙</label>
+        <label class="opt-label"><input type="radio" name="q_3_1" value="C">(C) 丙</label>
+        <label class="opt-label"><input type="radio" name="q_3_1" value="D">(D) 三者皆不變</label>
+      </div>
+      <div class="explanation" id="exp_3_1"></div>
+    </div>
+    <div class="sub-q">
+      <div class="q-text">(2) 填空：細胞內外物質進出是依賴 <input type="text" class="fill-input" id="fill_3_2a" placeholder="填作用"> 作用；若進出的物質特指水，則稱為 <input type="text" class="fill-input" id="fill_3_2b" placeholder="填作用"> 作用。</div>
+      <div class="explanation" id="exp_3_2"></div>
+    </div>
+    <div class="sub-q">
+      <div class="q-text">(3) 填空：擴散作用是分子由濃度 <input type="text" class="fill-input" id="fill_3_3a" placeholder="高/低"> 往濃度 <input type="text" class="fill-input" id="fill_3_3b" placeholder="高/低"> 的地方自然移動的現象。</div>
+      <div class="explanation" id="exp_3_3"></div>
+    </div>
+  </div>
+
+  <!-- 題組 4 -->
+  <div class="card">
+    <div class="group-title">題組 4：顯微鏡視野與細胞尺度比較</div>
+    <p>圖中單胞藻照片之比例尺為 60 µm，人體血液照片之比例尺為 20 µm。請回答下列問題：</p>
+    <svg class="svg-diagram" viewBox="0 0 500 130">
+      <rect x="20" y="20" width="200" height="90" fill="#f8fafc" stroke="#cbd5e1" rx="6"/>
+      <text x="30" y="40" font-size="12" font-weight="bold" fill="#15803d">單胞藻視野 (比例尺 60 µm)</text>
+      <circle cx="80" cy="75" r="16" fill="#86efac" stroke="#15803d"/>
+      <circle cx="140" cy="70" r="15" fill="#86efac" stroke="#15803d"/>
+      <line x1="30" y1="98" x2="110" y2="98" stroke="#000" stroke-width="2"/>
+      <text x="45" y="112" font-size="10">60 µm</text>
+
+      <rect x="260" y="20" width="220" height="90" fill="#f8fafc" stroke="#cbd5e1" rx="6"/>
+      <text x="270" y="40" font-size="12" font-weight="bold" fill="#b91c1c">人體血液視野 (比例尺 20 µm)</text>
+      <circle cx="330" cy="72" r="10" fill="#fca5a5" stroke="#b91c1c"/>
+      <circle cx="370" cy="75" r="11" fill="#fca5a5" stroke="#b91c1c"/>
+      <circle cx="410" cy="68" r="10" fill="#fca5a5" stroke="#b91c1c"/>
+      <line x1="270" y1="98" x2="350" y2="98" stroke="#000" stroke-width="2"/>
+      <text x="285" y="112" font-size="10">20 µm</text>
+    </svg>
+    <div class="sub-q">
+      <div class="q-text">(1) 根據比例尺換算，一個單胞藻與一個紅血球細胞的實際大小比較，下列敘述何者合理？</div>
+      <div class="options">
+        <label class="opt-label"><input type="radio" name="q_4_1" value="A">(A) 單胞藻較大</label>
+        <label class="opt-label"><input type="radio" name="q_4_1" value="B">(B) 人體血球較大</label>
+        <label class="opt-label"><input type="radio" name="q_4_1" value="C">(C) 兩者大小相同</label>
+        <label class="opt-label"><input type="radio" name="q_4_1" value="D">(D) 比例尺不同，無法比較</label>
+      </div>
+      <div class="explanation" id="exp_4_1"></div>
+    </div>
+    <div class="sub-q">
+      <div class="q-text">(2) 血球細胞直徑約為 7~8 µm，參考生物尺度表，此血液玻片標本通常是使用何種儀器觀察到的？</div>
+      <div class="options">
+        <label class="opt-label"><input type="radio" name="q_4_2" value="A">(A) 電子顯微鏡</label>
+        <label class="opt-label"><input type="radio" name="q_4_2" value="B">(B) 複式光學顯微鏡</label>
+        <label class="opt-label"><input type="radio" name="q_4_2" value="C">(C) 望遠鏡</label>
+        <label class="opt-label"><input type="radio" name="q_4_2" value="D">(D) 肉眼可直接看清，但解剖顯微鏡更清楚</label>
+      </div>
+      <div class="explanation" id="exp_4_2"></div>
+    </div>
+  </div>
+
+  <!-- 題組 5 -->
+  <div class="card">
+    <div class="group-title">題組 5：生物圈的範圍與環境適應</div>
+    <p>地球垂直分層示意圖中，海平面以上至聖母峰頂（約 8848 公尺）為 C 區，上方為臭氧層（B、A）；海平面以下至海溝深處（約 10000 公尺深）為 F 區。</p>
+    <div class="sub-q">
+      <div class="q-text">(1) 目前地球上有生物生存及活動的「生物圈範圍」，約涵蓋在圖中哪一區段？</div>
+      <div class="options">
+        <label class="opt-label"><input type="radio" name="q_5_1" value="A">(A) A ~ F</label>
+        <label class="opt-label"><input type="radio" name="q_5_1" value="B">(B) B ~ F</label>
+        <label class="opt-label"><input type="radio" name="q_5_1" value="C">(C) C ~ F（海平面上下各約 10,000 公尺）</label>
+        <label class="opt-label"><input type="radio" name="q_5_1" value="D">(D) D ~ E</label>
+      </div>
+      <div class="explanation" id="exp_5_1"></div>
+    </div>
+    <div class="sub-q">
+      <div class="q-text">(2) 現象：(甲) 仙人掌具有針狀葉；(乙) 萬米深海處無綠色植物生存；(丙) 北極熊具有厚皮下脂肪。導致上述結果的原因，依 (甲→乙→丙) 順序排列為？</div>
+      <div class="options">
+        <label class="opt-label"><input type="radio" name="q_5_2" value="A">(A) 溫度 → 陽光 → 溫度</label>
+        <label class="opt-label"><input type="radio" name="q_5_2" value="B">(B) 水分 → 陽光 → 溫度</label>
+        <label class="opt-label"><input type="radio" name="q_5_2" value="C">(C) 空氣 → 陽光 → 溫度</label>
+        <label class="opt-label"><input type="radio" name="q_5_2" value="D">(D) 水分 → 溫度 → 空氣</label>
+      </div>
+      <div class="explanation" id="exp_5_2"></div>
+    </div>
+  </div>
+
+  <!-- 題組 6 -->
+  <div class="card">
+    <div class="group-title">題組 6：科學探究與實驗變因（會考補考題）</div>
+    <div class="article-box">
+      小庭初步觀察：放有一元硬幣的水盆裡沒有孑孓生存，但無硬幣的水盆卻有。<br>
+      提出假說：含有一元硬幣的水可能會促使孑孓死亡。<br>
+      實驗步驟：準備甲、乙兩相同水盆與等量純水，甲組放入 10 枚硬幣，乙組無。兩組皆放入 30 隻孑孓並提供相同食物，一週後統計存活率。
+      <table class="table-box">
+        <tr><th>組別</th><th>實驗設計</th><th>孑孓存活率</th></tr>
+        <tr><td>甲組</td><td>純水 + 孑孓 + 10枚一元硬幣</td><td>43.3%</td></tr>
+        <tr><td>乙組</td><td>純水 + 孑孓（無硬幣）</td><td>40.0%</td></tr>
+      </table>
+    </div>
+    <div class="sub-q">
+      <div class="q-text">(1) 根據上述步驟，小庭設計的實驗中，何者為「操作（操縱）變因」？</div>
+      <div class="options">
+        <label class="opt-label"><input type="radio" name="q_6_1" value="A">(A) 水盆材質</label>
+        <label class="opt-label"><input type="radio" name="q_6_1" value="B">(B) 純水量</label>
+        <label class="opt-label"><input type="radio" name="q_6_1" value="C">(C) 孑孓數量</label>
+        <label class="opt-label"><input type="radio" name="q_6_1" value="D">(D) 一元硬幣的有無</label>
+      </div>
+      <div class="explanation" id="exp_6_1"></div>
+    </div>
+    <div class="sub-q">
+      <div class="q-text">(2) 關於小庭的實驗結果是否支持他所提出的假說，何者最合理？</div>
+      <div class="options">
+        <label class="opt-label"><input type="radio" name="q_6_2" value="A">(A) 支持，因為甲組孑孓的存活率沒有比乙組低</label>
+        <label class="opt-label"><input type="radio" name="q_6_2" value="B">(B) 支持，因為甲、乙兩組孑孓的存活率皆低於 50%</label>
+        <label class="opt-label"><input type="radio" name="q_6_2" value="C">(C) 不支持，因為甲組孑孓存活率並未顯著低於乙組（反而略高）</label>
+        <label class="opt-label"><input type="radio" name="q_6_2" value="D">(D) 不支持，因為兩組存活率皆未達 100%</label>
+      </div>
+      <div class="explanation" id="exp_6_2"></div>
+    </div>
+  </div>
+
+  <!-- 題組 7 -->
+  <div class="card">
+    <div class="group-title">題組 7：細胞吸水膨脹實驗</div>
+    <p>觀察：(甲) 口腔皮膜細胞；(乙) 洋蔥鱗葉表皮細胞；(丙) 風車草葉片下表皮細胞。</p>
+    <div class="sub-q">
+      <div class="q-text">(1) 若將以上三種細胞同時置於純水中，何者吸水後「不會」破裂？</div>
+      <div class="options">
+        <label class="opt-label"><input type="radio" name="q_7_1" value="A">(A) 甲丙</label>
+        <label class="opt-label"><input type="radio" name="q_7_1" value="B">(B) 甲乙</label>
+        <label class="opt-label"><input type="radio" name="q_7_1" value="C">(C) 乙丙</label>
+        <label class="opt-label"><input type="radio" name="q_7_1" value="D">(D) 僅乙</label>
+      </div>
+      <div class="explanation" id="exp_7_1"></div>
+    </div>
+    <div class="sub-q">
+      <div class="q-text">(2) 承上題，這是因為植物細胞均具有何種構造提供保護與支撐？</div>
+      <div class="options">
+        <label class="opt-label"><input type="radio" name="q_7_2" value="A">(A) 大型液胞</label>
+        <label class="opt-label"><input type="radio" name="q_7_2" value="B">(B) 細胞壁</label>
+        <label class="opt-label"><input type="radio" name="q_7_2" value="C">(C) 葉綠體</label>
+        <label class="opt-label"><input type="radio" name="q_7_2" value="D">(D) 細胞質</label>
+      </div>
+      <div class="explanation" id="exp_7_2"></div>
+    </div>
+  </div>
+
+  <!-- 題組 8 -->
+  <div class="card">
+    <div class="group-title">題組 8：深海生態與適應</div>
+    <div class="article-box">
+      馬里亞納海溝最深處達 11,034 公尺。居住在此的角高體金眼鯛體長約 15 公分，因口中具有可怕大牙而被稱為「尖牙」。深海漆黑、高壓且水溫接近零度，生物種類稀少，「尖牙」主要以海洋上層沉降的生物碎屑為食。
+    </div>
+    <div class="sub-q">
+      <div class="q-text">(1) 在水深超過 200 公尺的深海中，最缺乏下列哪一種生物生存所需的重要資源？</div>
+      <div class="options">
+        <label class="opt-label"><input type="radio" name="q_8_1" value="A">(A) 陽光</label>
+        <label class="opt-label"><input type="radio" name="q_8_1" value="B">(B) 空氣</label>
+        <label class="opt-label"><input type="radio" name="q_8_1" value="C">(C) 水</label>
+        <label class="opt-label"><input type="radio" name="q_8_1" value="D">(D) 養分</label>
+      </div>
+      <div class="explanation" id="exp_8_1"></div>
+    </div>
+    <div class="sub-q">
+      <div class="q-text">(2) 有關角高體金眼鯛與深海環境的敘述，下列何者正確？</div>
+      <div class="options">
+        <label class="opt-label"><input type="radio" name="q_8_2" value="A">(A) 其食物主要為海洋深處的大型綠色藻類</label>
+        <label class="opt-label"><input type="radio" name="q_8_2" value="B">(B) 此魚因頭頂長有尖刺而得名「尖牙」</label>
+        <label class="opt-label"><input type="radio" name="q_8_2" value="C">(C) 深海環境雖無光、壓力極大，但依舊有特化生物生存</label>
+        <label class="opt-label"><input type="radio" name="q_8_2" value="D">(D) 深海魚類多具備適應高壓高溫的特殊生理結構</label>
+      </div>
+      <div class="explanation" id="exp_8_2"></div>
+    </div>
+  </div>
+
+  <!-- 題組 9 -->
+  <div class="card">
+    <div class="group-title">題組 9：葉片表皮與氣孔構造</div>
+    <p>如圖是小瑜觀察葉片下表皮所看到的顯微影像，甲為不規則表皮細胞，乙為半月形成對的保衛細胞，丙為氣孔：</p>
+    <svg class="svg-diagram" viewBox="0 0 320 160">
+      <!-- 表皮細胞甲 -->
+      <polygon points="40,20 110,15 130,50 80,70 30,50" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+      <polygon points="110,15 210,15 230,55 130,50" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+      <polygon points="30,50 80,70 70,130 20,110" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+      <polygon points="230,55 280,60 290,120 220,130" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+      <text x="50" y="45" font-size="13" font-weight="bold" fill="#475569">甲 (表皮細胞)</text>
+      <!-- 保衛細胞乙與氣孔丙 -->
+      <path d="M 130,50 C 110,75 110,105 130,130 C 145,105 145,75 130,50 Z" fill="#86efac" stroke="#16a34a" stroke-width="2"/>
+      <path d="M 170,50 C 185,75 185,105 170,130 C 155,105 155,75 170,50 Z" fill="#86efac" stroke="#16a34a" stroke-width="2"/>
+      <circle cx="126" cy="80" r="3" fill="#15803d"/>
+      <circle cx="130" cy="100" r="3" fill="#15803d"/>
+      <circle cx="174" cy="80" r="3" fill="#15803d"/>
+      <circle cx="170" cy="100" r="3" fill="#15803d"/>
+      <text x="100" y="148" font-size="12" font-weight="bold" fill="#166534">乙 (保衛細胞)</text>
+      <text x="142" y="93" font-size="11" font-weight="bold" fill="#0284c7">丙</text>
+    </svg>
+    <div class="sub-q">
+      <div class="q-text">(1) 下列何種胞器「可以用來區分」甲細胞（表皮細胞）與乙細胞（保衛細胞）？</div>
+      <div class="options">
+        <label class="opt-label"><input type="radio" name="q_9_1" value="A">(A) 粒線體</label>
+        <label class="opt-label"><input type="radio" name="q_9_1" value="B">(B) 細胞壁</label>
+        <label class="opt-label"><input type="radio" name="q_9_1" value="C">(C) 細胞膜</label>
+        <label class="opt-label"><input type="radio" name="q_9_1" value="D">(D) 葉綠體</label>
+      </div>
+      <div class="explanation" id="exp_9_1"></div>
+    </div>
+    <div class="sub-q">
+      <div class="q-text">(2) 下列關於乙細胞（保衛細胞）的敘述，何者「錯誤」？</div>
+      <div class="options">
+        <label class="opt-label"><input type="radio" name="q_9_2" value="A">(A) 兩兩成對出現</label>
+        <label class="opt-label"><input type="radio" name="q_9_2" value="B">(B) 含有葉綠體，可行光合作用</label>
+        <label class="opt-label"><input type="radio" name="q_9_2" value="C">(C) 呈半月形，膨脹或萎縮可控制氣孔開閉</label>
+        <label class="opt-label"><input type="radio" name="q_9_2" value="D">(D) 陸生植物通常主要分布於葉的上表皮</label>
+      </div>
+      <div class="explanation" id="exp_9_2"></div>
+    </div>
+  </div>
+
+  <!-- 題組 10 -->
+  <div class="card">
+    <div class="group-title">題組 10：生物體的組成層次</div>
+    <p>組成層次架構：甲（細胞）➔ 乙（組織）➔ 丙（器官）➔ 丁（器官系統）➔ 戊（個體）。</p>
+    <div class="sub-q">
+      <div class="q-text">(1) 榕樹中的何種構造，其組成層次相當於圖中「乙（組織）」的部分？</div>
+      <div class="options">
+        <label class="opt-label"><input type="radio" name="q_10_1" value="A">(A) 葉綠體</label>
+        <label class="opt-label"><input type="radio" name="q_10_1" value="B">(B) 氣根</label>
+        <label class="opt-label"><input type="radio" name="q_10_1" value="C">(C) 形成層</label>
+        <label class="opt-label"><input type="radio" name="q_10_1" value="D">(D) 樹幹</label>
+      </div>
+      <div class="explanation" id="exp_10_1"></div>
+    </div>
+    <div class="sub-q">
+      <div class="q-text">(2) 綠色開花植物（如茉莉花）的組成層次中，缺少圖中的哪一項？</div>
+      <div class="options">
+        <label class="opt-label"><input type="radio" name="q_10_2" value="A">(A) 甲（細胞）</label>
+        <label class="opt-label"><input type="radio" name="q_10_2" value="B">(B) 乙（組織）</label>
+        <label class="opt-label"><input type="radio" name="q_10_2" value="C">(C) 丙（器官）</label>
+        <label class="opt-label"><input type="radio" name="q_10_2" value="D">(D) 丁（器官系統）</label>
+      </div>
+      <div class="explanation" id="exp_10_2"></div>
+    </div>
+  </div>
+
+  <!-- 按鈕區 -->
+  <div class="btn-group">
+    <button class="btn btn-submit" onclick="submitExam()">送出交卷</button>
+    <button class="btn btn-reset" onclick="resetExam()">重新作答</button>
+  </div>
+</div>
+
+<script>
+// 標準答案與解析資料庫
+const standardAnswers = {
+  // 選擇題 (每小題 5 分)
+  q_1_1: { ans: "D", exp: "能通過膜上專屬蛋白質通道，亦能直接穿透磷脂質雙分子層進出者，僅有水分子具備此特性[cite: 10]。" },
+  q_1_2: { ans: "B", exp: "澱粉為多醣類大分子，無法直接穿過細胞膜或一般蛋白質通道進入細胞[cite: 10]。" },
+  q_2_1: { ans: "D", exp: "(A)大棗為果實(生殖器官)；(B)山藥為塊莖(營養器官)；(C)糯米為種子(生殖器官)；(D)桂花蜜為工蜂採集花蜜釀製之分泌物，並非植物器官[cite: 10]。" },
+  q_2_2: { ans: "C", exp: "(A)植物色素存於液泡；(B)花瓣通常不含葉綠素；(C)高糖環境滲透壓極高，使微生物脫水萎縮抑制生長；(D)花瓣仍具有葉脈(維管束輸導組織)[cite: 10]。" },
+  q_3_1: { ans: "A", exp: "濃食鹽水濃度高於細胞質，水分滲出細胞大於滲入，導致紅血球脫水萎縮[cite: 10]。" },
+  q_4_1: { ans: "A", exp: "依據比例尺估算，單胞藻直徑約 20 µm，人體紅血球約 7~8 µm，因此單胞藻大於人體血球[cite: 10]。" },
+  q_4_2: { ans: "B", exp: "血球細胞直徑約數微米(µm)，落在光學顯微鏡(40~1000倍)之可見範圍[cite: 10]。" },
+  q_5_1: { ans: "C", exp: "生物圈一般指海平面上下各約 10,000 公尺(10公里)之範圍，涵蓋 C(聖母峰)至 F(深海海溝)[cite: 10]。" },
+  q_5_2: { ans: "B", exp: "(甲)針狀葉防止水分散失；(乙)深海無陽光無法行光合作用；(丙)皮下脂肪用於禦寒維持體溫[cite: 10]。" },
+  q_6_1: { ans: "D", exp: "實驗組(甲)與對照組(乙)唯一的差異在於「有無放入一元硬幣」，故為操作變因[cite: 10]。" },
+  q_6_2: { ans: "C", exp: "甲組存活率(43.3%)反而高於乙組(40.0%)，無法證明硬幣促使孑孓死亡，故不支持假說[cite: 10]。" },
+  q_7_1: { ans: "C", exp: "洋蔥表皮細胞與風車草下表皮細胞為植物細胞，具細胞壁保護，置於純水中膨脹而不破裂[cite: 10]。" },
+  q_7_2: { ans: "B", exp: "細胞壁主要成分為纖維素，具備支持與防止過度吸水破裂的功能[cite: 10]。" },
+  q_8_1: { ans: "A", exp: "海水約深於 200 公尺後陽光難以穿透，形成漆黑環境[cite: 10]。" },
+  q_8_2: { ans: "C", exp: "深海高壓無光但仍有特化生物生存；其食物來源為上層沉降之生物碎屑，深海溫度接近 0°C 而非高溫[cite: 10]。" },
+  q_9_1: { ans: "D", exp: "表皮細胞(甲)無葉綠體無色透明；保衛細胞(乙)含有葉綠體可行光合作用[cite: 10]。" },
+  q_9_2: { ans: "D", exp: "陸生植物為減少水分過度散失，氣孔與保衛細胞通常多分布於「葉的下表皮」[cite: 10]。" },
+  q_10_1: { ans: "C", exp: "形成層屬於分生「組織」；葉綠體為胞器，氣根與樹幹為「器官」[cite: 10]。" },
+  q_10_2: { ans: "D", exp: "植物體之組成層次為：細胞 ➔ 組織 ➔ 器官 ➔ 個體，缺少動物所具有的「器官系統」[cite: 10]。" }
+};
+
+function submitExam() {
+  let score = 0;
+  let allAnswered = true;
+
+  // 1. 批改選擇題 (17 小題，每題 5 分)
+  for (const [key, item] of Object.entries(standardAnswers)) {
+    const selected = document.querySelector(`input[name="${key}"]:checked`);
+    const expBox = document.getElementById(`exp_${key.replace('q_', '')}`);
+    expBox.style.display = 'block';
+
+    if (!selected) {
+      allAnswered = false;
+      expBox.className = 'explanation exp-wrong';
+      expBox.innerHTML = `⚠️ <strong>未作答</strong>。正確答案：(${item.ans})<br>解析：${item.exp}`;
+    } else if (selected.value === item.ans) {
+      score += 5;
+      expBox.className = 'explanation exp-correct';
+      expBox.innerHTML = `✓ <strong>正確！</strong><br>解析：${item.exp}`;
+    } else {
+      expBox.className = 'explanation exp-wrong';
+      expBox.innerHTML = `✗ <strong>錯誤</strong>。正確答案：(${item.ans})<br>解析：${item.exp}`;
+    }
+  }
+
+  // 2. 批改題組 3 之填空題 (3 小題，每題 5 分)
+  // (2) 擴散 / 滲透
+  const f32a = document.getElementById('fill_3_2a').value.trim();
+  const f32b = document.getElementById('fill_3_2b').value.trim();
+  const exp32 = document.getElementById('exp_3_2');
+  exp32.style.display = 'block';
+  if (f32a.includes('擴散') && f32b.includes('滲透')) {
+    score += 5;
+    exp32.className = 'explanation exp-correct';
+    exp32.innerHTML = `✓ <strong>正確！</strong>（填入：擴散 / 滲透）`;
+  } else {
+    exp32.className = 'explanation exp-wrong';
+    exp32.innerHTML = `✗ <strong>需訂正</strong>。正確答案為：擴散 / 滲透[cite: 10]`;
+  }
+
+  // (3) 高 / 低
+  const f33a = document.getElementById('fill_3_3a').value.trim();
+  const f33b = document.getElementById('fill_3_3b').value.trim();
+  const exp33 = document.getElementById('exp_3_3');
+  exp33.style.display = 'block';
+  if (f33a === '高' && f33b === '低') {
+    score += 5;
+    exp33.className = 'explanation exp-correct';
+    exp33.innerHTML = `✓ <strong>正確！</strong>（分子由高濃度往低濃度移動）`;
+  } else {
+    exp33.className = 'explanation exp-wrong';
+    exp33.innerHTML = `✗ <strong>需訂正</strong>。正確答案為：高 / 低[cite: 10]`;
+  }
+
+  if (!allAnswered) {
+    if (!confirm('尚有題目未作答，確定要交卷統計成績嗎？')) return;
+  }
+
+  // 顯示分數
+  const banner = document.getElementById('scoreBanner');
+  const finalScoreEl = document.getElementById('finalScore');
+  banner.style.display = 'block';
+  finalScoreEl.textContent = `${score} 分`;
+  finalScoreEl.style.color = score >= 60 ? 'var(--primary)' : 'var(--danger)';
+
+  // 寫入 LocalStorage 同步至首頁
+  const record = {
+    score: score,
+    date: new Date().toLocaleDateString('zh-TW', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+  };
+  localStorage.setItem('quiz_g7_biology', JSON.stringify(record));
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function resetExam() {
+  if (confirm('確定要清空答案重新測驗嗎？')) {
+    location.reload();
+  }
+}
+</script>
+</body>
+</html>

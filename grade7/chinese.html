@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>七上國文 標點符號使用法測驗（全版本）</title>
+  <style>
+    :root {
+      --primary: #b91c1c;
+      --primary-hover: #991b1b;
+      --bg: #fef2f2;
+      --card: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --border: #fee2e2;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding: 16px; line-height: 1.6; }
+    .container { max-width: 840px; margin: 0 auto; }
+
+    .nav-bar { margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
+    .nav-btn { text-decoration: none; color: var(--primary); font-weight: 600; font-size: 0.95rem; }
+    .badge { font-size: 0.8rem; padding: 3px 10px; border-radius: 999px; background: #fee2e2; color: #991b1b; font-weight: 600; }
+
+    header { background: var(--card); padding: 22px; border-radius: 14px; border: 1px solid var(--border); margin-bottom: 20px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.03); }
+    header h1 { font-size: 1.5rem; color: #7f1d1d; margin-bottom: 6px; }
+    header p { font-size: 0.9rem; color: var(--text-muted); }
+
+    .score-banner {
+      display: none;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    .score-banner h2 { font-size: 2.2rem; color: var(--primary); margin-bottom: 6px; }
+
+    .card { background: var(--card); padding: 20px; border-radius: 14px; border: 1px solid #e2e8f0; margin-bottom: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+    .q-title { font-size: 1.05rem; font-weight: 600; margin-bottom: 12px; color: #0f172a; line-height: 1.6; }
+    .reading-box { background: #f8fafc; border-left: 4px solid var(--primary); padding: 14px 16px; margin: 10px 0 16px; font-size: 0.95rem; line-height: 1.8; color: #334155; border-radius: 0 8px 8px 0; }
+
+    .options { display: flex; flex-direction: column; gap: 8px; }
+    .opt-label { display: flex; align-items: flex-start; padding: 10px 14px; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer; font-size: 0.95rem; transition: background 0.15s; }
+    .opt-label:hover { background-color: #fef2f2; }
+    .opt-label input { margin-right: 12px; margin-top: 4px; }
+
+    .explanation { display: none; margin-top: 14px; padding: 12px 16px; border-radius: 8px; font-size: 0.92rem; line-height: 1.5; }
+    .exp-correct { background-color: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; }
+    .exp-wrong { background-color: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
+
+    .btn-group { display: flex; gap: 12px; margin: 28px 0 50px; }
+    .btn { flex: 1; padding: 14px; border-radius: 10px; border: none; font-size: 1rem; font-weight: 700; cursor: pointer; }
+    .btn-submit { background: var(--primary); color: #fff; }
+    .btn-submit:hover { background: var(--primary-hover); }
+    .btn-reset { background: #e2e8f0; color: var(--text); }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="nav-bar">
+    <a href="../index.html" class="nav-btn">⬅ 返回首頁儀表板</a>
+    <span class="badge">全版本 七上國文 標點符號</span>
+  </div>
+
+  <header>
+    <h1>七上國文－標點符號使用法練習卷</h1>
+    <p>全卷共 25 題單選題，每題 4 分，滿分 100 分。完成後點選最下方送出。</p>
+  </header>
+
+  <div class="score-banner" id="scoreBanner">
+    <h2 id="finalScore">0 分</h2>
+    <p id="scoreMsg">測驗完成！成績已自動儲存至儀表板。</p>
+  </div>
+
+  <div id="quiz-container"></div>
+
+  <div class="btn-group">
+    <button class="btn btn-submit" onclick="submitQuiz()">送出交卷</button>
+    <button class="btn btn-reset" onclick="resetQuiz()">重新測驗</button>
+  </div>
+</div>
+
+<script>
+const quizData = [
+  {
+    q: "「為人處世，如果以嚴厲的態度□倨傲的性格對待別人，就會招致別人的怨恨，引來不滿。如此，於人於己都不利，何必呢□正所謂□利人就是利己，虧人就是虧己，容人就是容己，害人就是害己。所以說：君子以容人為上策。」根據文意脈絡，文中缺空處，依序應填入下列何組標點符號？",
+    opts: [
+      "： ； ？",
+      "、 ？ ：",
+      "， ； ；",
+      "； 、 ："
+    ],
+    ans: 1, // B
+    exp: "第一空為詞語並列（態度、性格），用頓號「、」；第二空為反問修辭，用問號「？」；第三空引出下文俗諺，用冒號「：」。故選 (B)。"
+  },
+  {
+    q: "下列「」中的字，何者讀音「有誤」？",
+    opts: [
+      "「頒」布：ㄈㄣ",
+      "「刪」節號：ㄕㄢ",
+      "破「折」號：ㄓㄜˊ",
+      "驚「嘆」號：ㄊㄢˋ"
+    ],
+    ans: 0, // A
+    exp: "(A)「頒」布讀音為 ㄅㄢ。"
+  },
+  {
+    q: "「如果愛情是標點符號，熱戀的天空一定布滿了愉悅的符號『驚嘆號』！可惜當現實中產生種種磨合時，卻忽然發現『問號』怎麼應接不暇？或許這根本就是一場錯誤，偏偏甩不開想不通，就像『刪節號』那樣沒完沒了……。」關於這段文字的理解，下列說明何者正確？",
+    opts: [
+      "熱戀通常充滿快樂與驚喜",
+      "情侶間的衝突通常源自經濟壓力",
+      "失去信任將導致愛情幻滅",
+      "不理性分手的情侶必會藕斷絲連"
+    ],
+    ans: 0, // A
+    exp: "由「熱戀的天空一定布滿了愉悅的符號『驚嘆號』！」可推知熱戀充滿驚喜與愉悅。(B)(C)文中未提及；(D)文中僅指糾結心境，非必然之因果。"
+  },
+  {
+    q: "「下雨是好事還是壞事□下雨的時候，出門要撐傘，仍難免淋溼，不便逛街□不能去爬山□郊遊。」（謝鵬雄《國語日報》），以上這段文字缺空處依序應填入哪些標點符號？",
+    opts: [
+      "， ？ 。 、",
+      "， ！ ， ，",
+      "， 。 ， ，",
+      "， ？ ， 、"
+    ],
+    ans: 3, // D
+    exp: "第一空句中稍作停頓用逗號「，」；第二空為設問疑問句用問號「？」；第三空為短暫停頓用逗號「，」；第四空為同類活動並列（爬山、郊遊）用頓號「、」。故選 (D)。"
+  },
+  {
+    q: "下列文句，何者標點符號的使用最恰當？〔96.第二次基測〕",
+    opts: [
+      "先進國家投入大量資源，讓圖書館充滿溫馨與知性，成為孩童汲取知識，製造快樂記憶的泉源，放眼未來：臺灣該如何急起直追？",
+      "先進國家投入大量資源，讓圖書館充滿溫馨與知性。成為孩童汲取知識、製造快樂記憶的泉源，放眼未來：臺灣該如何急起直追？",
+      "先進國家投入大量資源，讓圖書館充滿溫馨與知性，成為孩童汲取知識、製造快樂記憶的泉源。放眼未來，臺灣該如何急起直追？",
+      "先進國家投入大量資源，讓圖書館充滿溫馨與知性；成為孩童汲取知識，製造快樂記憶的泉源。放眼未來，臺灣該如何急起直追？"
+    ],
+    ans: 2, // C
+    exp: "(A)(B)冒號多用於總起或分述補充說明，「臺灣該如何急起直追」與「放眼未來」為前後承接，應用逗號；(D)前後文意緊密相連，不宜用分號斷開。「汲取知識」與「製造快樂記憶」為並列片語，中間宜用頓號「、」。故 (C) 最恰當。"
+  },
+  {
+    q: "「凝眸注視生活，觀察□思索□歸納□分析後形諸文字的過程，不但讓學生咀嚼了生命的滋味，也開發了情意。」以上缺空處適宜填入下列何種標點符號？",
+    opts: ["，", "、", "：", "。"],
+    ans: 1, // B
+    exp: "「觀察、思索、歸納、分析」為同性質的連續動詞詞語並列，應用頓號「、」隔開。"
+  },
+  {
+    q: "「是喜是憂各方自有評說誰好誰差百姓拭目以待」以上這段文字若加上正確標點符號，共用了幾種標點符號？",
+    opts: ["二種", "三種", "四種", "五種"],
+    ans: 1, // B
+    exp: "完整標點為：「是喜？是憂？各方自有評說；誰好？誰差？百姓拭目以待。」共使用了「問號（？）」、「分號（；）」、「句號（。）」三種標點符號。"
+  },
+  {
+    q: "有個刁鑽廚師和刻薄東家訂約，寫明待遇是：「無魚肉也可無雞鴨也可/清茶淡飯不可少薪水也不要。」兩人都同意這個約定，請問刻薄東家心中的意思為何？",
+    opts: [
+      "無魚，肉也可；無雞，鴨也可。清茶淡飯不可少，薪水也不要",
+      "無魚肉也可，無雞鴨也可；清茶淡飯不可少，薪水也不要",
+      "無魚，肉也可；無雞，鴨也可。清茶淡飯不可，少薪水也不要",
+      "無魚肉也可，無雞鴨也可，清茶淡飯不可，少薪水也不要"
+    ],
+    ans: 1, // B
+    exp: "刻薄東家為了省錢，斷句為：「無魚肉也可，無雞鴨也可；清茶淡飯不可少，薪水也不要。」（只要吃菜不用給魚肉，也不給薪水）。廚師則解讀為「無魚，肉也可……少薪水，也不要」。"
+  },
+  {
+    q: "「網際網路的便利性，深入家庭□爸爸利用它買賣貨物，哥哥利用它增廣見聞□家中有電腦，真是沒煩惱□」根據文意脈絡，文中缺空的標點符號依序應填入下列何者？",
+    opts: [
+      "， …… ！",
+      "： 。 ！",
+      "—— ； 。",
+      "。 ， ……"
+    ],
+    ans: 1, // B
+    exp: "第一空用冒號「：」引出下文對家庭便利性的具體分述；第二空分述完畢語意完整，用句號「。」；第三空為感嘆讚美語氣，用驚嘆號「！」。故選 (B)。"
+  },
+  {
+    q: "「在國內的醫療系統，所謂的安寧照護還是偏重於生理層面□如何讓一個人在生病與往生過程中不要受到太多生理折磨。然而，一個即將往生□面臨生命最後一段歲月的人，他們的心理狀態是如何？我們如何從身心靈成長的角度幫助這樣的人？這種心理層面上的考慮更是必要。」這段文字中的標點符號，依序填入下列何者最恰當？〔106.會考〕",
+    opts: [
+      "—— ，",
+      "—— 、",
+      "； ——",
+      "。 ："
+    ],
+    ans: 1, // B
+    exp: "第一空「如何讓一個人……不要受到太多生理折磨」為補充說明「生理層面」的內涵，宜用破折號「——」；第二空「即將往生」與「面臨生命最後一段歲月」為詞義並列，宜用頓號「、」。故選 (B)。"
+  },
+  {
+    q: "下列各句標點符號的使用，何者完全正確？〔95.第二次基測〕",
+    opts: [
+      "孔子曾說：「有朋自遠方來，不亦樂乎？」這句話告訴我們：交友是一件令人欣喜的事。",
+      "孔子曾說「有朋自遠方來，不亦樂乎？」這句話告訴我們：交友是一件令人欣喜的事。",
+      "孔子曾說「有朋自遠方來，不亦樂乎？」這句話告訴我們：「交友是一件令人欣喜的事。」",
+      "孔子曾說：「有朋自遠方來，不亦樂乎？」這句話告訴我們：「交友是一件令人欣喜的事」。"
+    ],
+    ans: 0, // A
+    exp: "(B)(C)「曾說」為提示話語，後方需加冒號；(C)(D)「交友是一件令人欣喜的事」為轉述心得，非直接引用原文，不應加引號。故 (A) 完全正確。"
+  },
+  {
+    q: "下列何人的名字若使用「間隔號」會更容易閱讀？",
+    opts: ["張菲", "麥可喬丹", "李民浩", "言承旭"],
+    ans: 1, // B
+    exp: "外國人名音譯時，姓氏與名字之間常使用間隔號，如「麥可・喬丹」，可區分名與姓，增進閱讀理解。"
+  },
+  {
+    q: "使用標點符號的好處「不包括」下列何者？",
+    opts: [
+      "幫助讀者了解文意",
+      "節省閱讀時間",
+      "增加讀者閱讀的負擔",
+      "避免閱讀時的誤會"
+    ],
+    ans: 2, // C
+    exp: "標點符號的作用是斷句、辨義、傳神，能減輕讀者負擔而非增加負擔。"
+  },
+  {
+    q: "就標點符號的使用而言，下列何者最能表達層次分明的排比映襯效果？",
+    opts: [
+      "慘象，已使我目不忍視，流言，更使我耳不忍聞。",
+      "慘象，已使我目不忍視。流言，更使我耳不忍聞。",
+      "慘象已使我目不忍視，流言更使我耳不忍聞。",
+      "慘象，已使我目不忍視；流言，更使我耳不忍聞。"
+    ],
+    ans: 3, // D
+    exp: "分號用於區隔兩個結構對稱的並列分句，內部已有逗號停頓時，兩大分句間以分號「；」隔開最能展現分明層次。"
+  },
+  {
+    q: "「我寫這封信只是想讓你知道□我很喜歡你這樣做。」（《父親的信》）缺空的標點符號宜填入下列何者？",
+    opts: ["；", "，", "——", "："],
+    ans: 3, // D
+    exp: "冒號具有「提示下文」之作用，用在「想讓你知道」之後引出具體內容最恰當。"
+  },
+  {
+    q: "「自己的生活，無論食、衣、住、行，一切都要照著新生活的六項原則——整齊、清潔、簡單、樸素、迅速、確實——切實做到。」其中兩個「——」是指何種標點符號？",
+    opts: ["夾注號", "刪節號", "破折號", "專名號"],
+    ans: 0, // A
+    exp: "此處是以兩條橫線作為「夾注號」（甲式為括弧，乙式為破折線形式的夾注號），用以補充說明六項原則的細節。"
+  },
+  {
+    q: "法國文豪雨果把《悲慘世界》的稿子寄給出版社時，信裡只有一個「？」，意思是「我的稿子怎麼樣？」不久出版社回信也只寫了一個標點符號，表示稿子內容精彩極了。請問回信中最可能是下列何者？",
+    opts: ["！", "？", "、", "……"],
+    ans: 0, // A
+    exp: "驚嘆號「！」用來表達強烈的情感、讚嘆或驚喜，最符合「精彩極了」的情境。"
+  },
+  {
+    q: "下列文句中驚嘆號的使用，何者屬於「命令用法」？",
+    opts: [
+      "唉！你為何總是這麼粗心！",
+      "你看！班上的同學多認真啊！",
+      "同學們！考試時要謹慎作答喔！",
+      "各位選手！這場比賽絕對不可以作弊，若被發現就直接淘汰！"
+    ],
+    ans: 3, // D
+    exp: "(A)感嘆傷感語氣；(B)讚嘆驚異語氣；(C)叮嚀提醒語氣；(D)明令嚴禁作弊與違者處分，為典型命令語氣。"
+  },
+  {
+    q: "媒婆替大平作媒，介紹信上寫著：「我保證烏黑的頭髮沒有麻子腳不大正常」，大平高興迎娶後掀開蓋頭大失所望，怒告媒婆。請問媒婆要如何加點標點符號方能替自己脫罪？",
+    opts: [
+      "我保證烏黑的頭髮沒，有麻子，腳不大正常。",
+      "我保證烏黑的頭髮，沒有麻子腳，不大，正常。",
+      "我保證烏黑的頭髮。沒有麻子腳不？大正常。",
+      "我保證烏黑的頭髮，沒有麻子，腳不大，正常。"
+    ],
+    ans: 0, // A
+    exp: "大平原以為是「烏黑的頭髮，沒有麻子，腳不大，正常」；媒婆辯解則斷句為：「我保證烏黑的頭髮沒（沒有黑髮），有麻子（臉上有麻子），腳不大正常（行動不便）。」"
+  },
+  {
+    q: "「我寧願去品嘗辛辣的憤怒，憤怒潑辣中仍不失狂放的熱情□我也寧願去深深咀嚼苦味，苦味中還有深沉的傷痛與悲哀，可以痛定思痛，有猛省的作用□唯獨酸腐，只有餿臭敗壞一途，是生命最無意義的浪費啊□」文中缺空處，依序填入哪一組標點符號最恰當？〔107.會考〕",
+    opts: [
+      "， ： ——",
+      "， ； ……",
+      "； 。 ！",
+      "； ， ？"
+    ],
+    ans: 2, // C
+    exp: "「我寧願……」與「我也寧願……」為兩組結構平行的分句，第一空宜用分號「；」；「有猛省的作用」語意完整完結，第二空宜用句號「。」；末句「浪費啊」帶有感嘆語氣，第三空宜用驚嘆號「！」。故選 (C)。"
+  },
+  {
+    q: "「嗚——嗚——嗚，警報的聲音又響起了。」缺空處的「——」標點符號是下列何者？",
+    opts: ["，", "破折號（聲音的延續）", "、", "；"],
+    ans: 1, // B
+    exp: "破折號（——）在此處用來表示「聲音的延續與拉長」。"
+  },
+  {
+    q: "閱讀下列文章後作答：<br>根據本文內容，下列說明何者正確？",
+    reading: `去年我在義大利的米蘭，在語言學校中學習了半年的義大利語。在某一堂課中，老師發了一張講義，上頭畫了12個卡通人物比著各種手勢。大家看了一眼，便紛紛笑了起來。「這堂課我們要來學手勢喔！」老師高聲宣布。沒錯，義大利手勢也是語言不可分割的一部分！<br><br>
+    義大利人講話時的身體語言非常豐富，其中最特別的，當然就是只有義大利人才懂的手勢了！日本有個電視節目——「日本太太好吃驚」，曾經在義大利街頭做實驗，請幾個受訪者接下來講話的時候手都不准動。結果，受訪者講話頓時變得支支吾吾，渾身不對勁，竟然連話都講不下去了。<br><br>
+    為什麼在義大利文化中，手勢成為語言表達中如此不可或缺的一部分，並沒有個明確的原因。有研究猜測，可能是因為很久以前，當古希臘文明曾佔領南義大利時，將這個文化傳了過去——當時在南義大利吵鬧、人聲鼎沸的街道上，他們需要靠手勢來吸引別人的注意力。也有人認為，是因為義大利一直到十九世紀才有統一的官方語言，所以在那之前，不同地區的人需要靠手勢才能了解彼此。<br>
+    （節錄自換日線網站 惜音〈講話若不能「動手」，簡直是要義大利人的命！〉）`,
+    opts: [
+      "義大利人自古以來就非常重視手勢的使用，是因為民族性格天生浪漫",
+      "義大利人若不比手勢就無法把話說好，在當地是較罕見的特例現象",
+      "手勢是義大利人用來幫助表達自己想法或意見的一種重要輔助",
+      "十九世紀統一官方語言之後，義大利人就從此不再藉由手勢傳達心意"
+    ],
+    ans: 2, // C
+    exp: "(A)手勢起源據猜測與街頭吵鬧需吸引注意力或早期語言未統一有關，非單純民族性格；(B)實驗顯示受訪者不比手勢便渾身不對勁，是普遍現象而非罕見；(C)手勢已深植文化，作為表達溝通不可分割之輔助；(D)語言統一後手勢依然被廣泛保留與使用。"
+  },
+  {
+    q: "下列文句「刪節號（……）」的使用，何者最正確？",
+    opts: [
+      "小惠在課堂上忍不住打瞌睡……無法專心",
+      "喜歡閱讀……是我段考拿高分的主因之一",
+      "給你機會，一次、兩次……，你仍不願改善",
+      "「反正我還年輕」的念頭……是我們偷懶的理由"
+    ],
+    ans: 2, // C
+    exp: "刪節號用於「節錄原文或語句的省略」，「一次、兩次……」表示次數省略，用法正確。(A)(D)宜用逗號；(B)宜用破折號或逗號。"
+  },
+  {
+    q: "小丸子與幾位同學想在校慶當天向校方申請舉辦派對，下列校方的回覆何者的意思是「可以舉辦」？",
+    opts: [
+      "同學等，不得於校慶日舉辦派對。",
+      "同學等不得於校慶日，舉辦派對。",
+      "同學等，不得於校慶日，舉辦派對。",
+      "同學，等不得，於校慶日舉辦派對。"
+    ],
+    ans: 3, // D
+    exp: "(A)(B)(C)中的「等」指「等人」，「不得」皆指「禁止舉辦」；(D)將「等不得」作為獨立詞，意思轉為「同學等不及了，請於校慶日舉辦派對」，表示同意舉辦。"
+  },
+  {
+    q: "中文傳統書信在「提稱語」後須加入一個標點符號，例如：「父親大人膝下□」。此缺空處須填入哪一個標點符號？",
+    opts: ["破折號", "逗號", "句號", "冒號"],
+    ans: 3, // D
+    exp: "書信開頭在稱謂與提稱語之後，標準格式須加「冒號（：）」，用以提引下文的問候與正文。"
+  }
+];
+
+function renderQuiz() {
+  const container = document.getElementById('quiz-container');
+  container.innerHTML = quizData.map((item, idx) => `
+    <div class="card" id="q_card_${idx}">
+      <div class="q-title">${idx + 1}. ${item.q}</div>
+      ${item.reading ? `<div class="reading-box">${item.reading}</div>` : ''}
+      <div class="options">
+        ${item.opts.map((opt, oIdx) => `
+          <label class="opt-label" id="label_${idx}_${oIdx}">
+            <input type="radio" name="q_${idx}" value="${oIdx}">
+            <span>(${['A','B','C','D'][oIdx]})${opt}</span>
+          </label>
+        `).join('')}
+      </div>
+      <div class="explanation" id="exp_${idx}"></div>
+    </div>
+  `).join('');
+}
+
+function submitQuiz() {
+  let score = 0;
+  let unanswered = 0;
+
+  quizData.forEach((item, idx) => {
+    const selected = document.querySelector(`input[name="q_${idx}"]:checked`);
+    const expBox = document.getElementById(`exp_${idx}`);
+    expBox.style.display = 'block';
+
+    if (!selected) {
+      unanswered++;
+      expBox.className = 'explanation exp-wrong';
+      expBox.innerHTML = `⚠️ <strong>未作答</strong>。正確答案為 <strong>(${['A','B','C','D'][item.ans]})</strong>。<br>解析：${item.exp}`;
+    } else if (parseInt(selected.value) === item.ans) {
+      score += 4;
+      expBox.className = 'explanation exp-correct';
+      expBox.innerHTML = `✓ <strong>回答正確！</strong><br>解析：${item.exp}`;
+    } else {
+      expBox.className = 'explanation exp-wrong';
+      expBox.innerHTML = `✗ <strong>回答錯誤</strong>。正確答案為 <strong>(${['A','B','C','D'][item.ans]})</strong>。<br>解析：${item.exp}`;
+    }
+  });
+
+  if (unanswered > 0) {
+    if (!confirm(`您還有 ${unanswered} 題尚未作答，確定要送出交卷嗎？`)) return;
+  }
+
+  const banner = document.getElementById('scoreBanner');
+  const finalScoreEl = document.getElementById('finalScore');
+  banner.style.display = 'block';
+  finalScoreEl.textContent = `${score} 分`;
+  finalScoreEl.style.color = score >= 60 ? 'var(--primary)' : 'var(--danger)';
+
+  // 儲存至 LocalStorage (對應首頁七年級國文)
+  const record = {
+    score: score,
+    date: new Date().toLocaleDateString('zh-TW', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+  };
+  localStorage.setItem('quiz_g7_chinese', JSON.stringify(record));
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function resetQuiz() {
+  if (confirm('確定要清除目前答案並重新作答嗎？')) {
+    location.reload();
+  }
+}
+
+renderQuiz();
+</script>
+</body>
+</html>

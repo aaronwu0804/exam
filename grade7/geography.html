@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>七上地理 一段範圍複習測驗（全版本）</title>
+  <style>
+    :root {
+      --primary: #0284c7;
+      --primary-hover: #0369a1;
+      --bg: #f0f9ff;
+      --card: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --border: #e2e8f0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding: 16px; line-height: 1.6; }
+    .container { max-width: 840px; margin: 0 auto; }
+
+    .nav-bar { margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
+    .nav-btn { text-decoration: none; color: var(--primary); font-weight: 600; font-size: 0.95rem; }
+    .badge { font-size: 0.8rem; padding: 3px 10px; border-radius: 999px; background: #e0f2fe; color: #0369a1; font-weight: 600; }
+
+    header { background: var(--card); padding: 22px; border-radius: 14px; border: 1px solid var(--border); margin-bottom: 20px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.03); }
+    header h1 { font-size: 1.5rem; color: #0c4a6e; margin-bottom: 6px; }
+    header p { font-size: 0.9rem; color: var(--text-muted); }
+
+    .score-banner {
+      display: none;
+      background: #e0f2fe;
+      border: 1px solid #bae6fd;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    .score-banner h2 { font-size: 2.2rem; color: var(--primary); margin-bottom: 6px; }
+
+    .card { background: var(--card); padding: 20px; border-radius: 14px; border: 1px solid var(--border); margin-bottom: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+    .q-title { font-size: 1.05rem; font-weight: 600; margin-bottom: 12px; color: #0f172a; }
+    .svg-diagram { width: 100%; max-width: 480px; display: block; margin: 12px auto; background: #ffffff; border-radius: 8px; border: 1px solid var(--border); }
+    
+    .poem-box { background: #f8fafc; border-left: 4px solid var(--primary); padding: 12px 16px; margin: 10px 0 14px; font-family: "PingFang TC", "Microsoft JhengHei", serif; font-size: 0.95rem; line-height: 1.8; color: #334155; }
+
+    .options { display: flex; flex-direction: column; gap: 8px; }
+    .opt-label { display: flex; align-items: flex-start; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 0.95rem; transition: background 0.15s; }
+    .opt-label:hover { background-color: #f0f9ff; }
+    .opt-label input { margin-right: 12px; margin-top: 4px; }
+
+    .explanation { display: none; margin-top: 14px; padding: 12px 16px; border-radius: 8px; font-size: 0.92rem; line-height: 1.5; }
+    .exp-correct { background-color: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; }
+    .exp-wrong { background-color: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
+
+    .btn-group { display: flex; gap: 12px; margin: 28px 0 50px; }
+    .btn { flex: 1; padding: 14px; border-radius: 10px; border: none; font-size: 1rem; font-weight: 700; cursor: pointer; }
+    .btn-submit { background: var(--primary); color: #fff; }
+    .btn-submit:hover { background: var(--primary-hover); }
+    .btn-reset { background: #e2e8f0; color: var(--text); }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="nav-bar">
+    <a href="../index.html" class="nav-btn">⬅ 返回首頁儀表板</a>
+    <span class="badge">全版本 七上地理 一段複習</span>
+  </div>
+
+  <header>
+    <h1>七上地理－第一次段考全單元複習卷</h1>
+    <p>全卷共 25 題單選題，每題 4 分，滿分 100 分。完成後點選最下方送出。</p>
+  </header>
+
+  <div class="score-banner" id="scoreBanner">
+    <h2 id="finalScore">0 分</h2>
+    <p id="scoreMsg">測驗完成！成績已自動儲存至儀表板。</p>
+  </div>
+
+  <div id="quiz-container"></div>
+
+  <div class="btn-group">
+    <button class="btn btn-submit" onclick="submitQuiz()">送出交卷</button>
+    <button class="btn btn-reset" onclick="resetQuiz()">重新測驗</button>
+  </div>
+</div>
+
+<script>
+const quizData = [
+  {
+    q: "當英國倫敦（經度 0°）時間是正午 12 時，美國舊金山（120°W）當地的時間是幾時？",
+    opts: ["4時", "8時", "12時", "20時"],
+    ans: 0,
+    exp: "經度差 120°，時差為 120° ÷ 15° = 8 小時。西經時間較慢（西方較晚），故 12時 - 8小時 = 4時。"
+  },
+  {
+    q: "阿欣和阿毛看到某座橋的實際長度為 400 公尺，而地圖中的比例尺為 1：2,000，此橋在地圖上應有幾公分？",
+    opts: ["8公分", "15公分", "20公分", "25公分"],
+    ans: 2,
+    exp: "400 公尺 = 40,000 公分。圖上距離 = 實際距離 × 比例尺 = 40,000 × (1 / 2,000) = 20 公分。"
+  },
+  {
+    q: "小君每天一大早就在家門口前的空地做早操，因為這裡可以直接看到太陽冉冉升起，讓他覺得活力十足。吃完早餐後，步行前往位於家裡左方約 1 公里處的學校上課。依上文描述，學校與小君家的相對方位為何？",
+    opts: ["學校位於小君家的北方", "學校位於小君家的南方", "小君家位於學校的東方", "小君家位於學校的西方"],
+    ans: 0,
+    exp: "面向東方看日出時，左方即為北方；學校在家裡左方，故學校位於小君家的北方。"
+  },
+  {
+    q: "下列詩句摘錄自某首描述臺東的新詩，詩中關於「太陽」的敘述，主要是與當地哪一項環境特性有關？〔100.第一次基測〕",
+    extra: `<div class="poem-box">
+      城比臺北是矮一點，天比臺北卻高得多；<br>
+      人比西岸是稀一點，山比西岸卻密得多；<br>
+      報紙送到是晚一點，太陽起來卻早得多；<br>
+      無論地球怎麼轉，臺東永遠在前面。
+    </div>`,
+    opts: ["都市化程度低", "鄰近北回歸線", "位於臺灣東岸", "為板塊交接帶"],
+    ans: 2,
+    exp: "受地球自西向東自轉影響，太陽「東升西落」，位置愈偏東的地方愈早迎來日出。臺東位於臺灣東部，故「太陽起來卻早得多」。"
+  },
+  {
+    q: "由下列經緯度位置判斷，何者與「臺灣島」位置最相近？",
+    svg: `<svg class="svg-diagram" viewBox="0 0 460 130">
+      <rect x="10" y="10" width="95" height="110" fill="#f8fafc" stroke="#cbd5e1"/>
+      <text x="50" y="30" font-size="12" font-weight="bold">甲</text>
+      <text x="18" y="55" font-size="10">40°N~50°N</text><text x="18" y="75" font-size="10">100°E~110°E</text>
+
+      <rect x="125" y="10" width="95" height="110" fill="#f8fafc" stroke="#cbd5e1"/>
+      <text x="165" y="30" font-size="12" font-weight="bold">乙</text>
+      <text x="133" y="55" font-size="10">50°S~60°S</text><text x="133" y="75" font-size="10">120°W~130°W</text>
+
+      <rect x="240" y="10" width="95" height="110" fill="#f8fafc" stroke="#cbd5e1"/>
+      <text x="280" y="30" font-size="12" font-weight="bold">丙</text>
+      <text x="248" y="55" font-size="10">20°S~30°S</text><text x="248" y="75" font-size="10">140°E~150°E</text>
+
+      <rect x="355" y="10" width="95" height="110" fill="#f8fafc" stroke="#0284c7" stroke-width="2"/>
+      <text x="395" y="30" font-size="12" font-weight="bold" fill="#0284c7">丁</text>
+      <text x="363" y="55" font-size="10">20°N~30°N</text><text x="363" y="75" font-size="10">120°E~130°E</text>
+    </svg>`,
+    opts: ["甲", "乙", "丙", "丁"],
+    ans: 3,
+    exp: "臺灣島本島位置約介於東經 120°E～122°E、北緯 22°N～25°N 之間，故丁島最為相近。"
+  },
+  {
+    q: "下列哪兩個地區之間「沒有」時差問題？",
+    opts: [
+      "(60°E, 30°N) 和 (60°W, 30°N)",
+      "(0°, 25°S) 和 (180°, 25°S)",
+      "(120°E, 50°N) 和 (120°E, 20°N)",
+      "(25°E, 30°S) 和 (60°W, 30°S)"
+    ],
+    ans: 2,
+    exp: "時差由經度決定，同一條經線上（相同經度）的地方地方時相同，無時差問題。選項 (C) 兩地皆位於 120°E。"
+  },
+  {
+    q: "「從臺北到亞松森來回一趟，就等於整整環繞地球一周的距離。」這句話說明亞松森位於臺北通過地球球心的對面（對蹠點）。依據上述可推測亞松森的位置在下列哪一地區？〔95.第一次基測〕",
+    opts: ["北半球、東半球", "北半球、西半球", "南半球、東半球", "南半球、西半球"],
+    ans: 3,
+    exp: "臺北位於北半球、東半球；其球心對稱點（對蹠點）必然位於相反的南半球、西半球。"
+  },
+  {
+    q: "冒險家魯夫到北極地區進行探勘，發現這一帶的氣溫十分嚴寒。請問造成這種現象的主要原因為何？",
+    opts: ["夏季晝短夜長", "地表較少植物覆蓋", "夏季整天不見太陽", "太陽終年呈斜射狀態"],
+    ans: 3,
+    exp: "高緯度地區因太陽入射角小（終年斜射），地表單位面積所獲得的太陽輻射熱能較少，故平均氣溫極低。"
+  },
+  {
+    q: "斯里蘭卡代表隊搭乘飛機從當地直飛臺灣參加排球賽，附圖為飛行路徑示意，其飛行方向大致為何？",
+    svg: `<svg class="svg-diagram" viewBox="0 0 320 150">
+      <rect x="0" y="0" width="320" height="150" fill="#f1f5f9"/>
+      <path d="M 50,110 Q 150,70 260,60" fill="none" stroke="#0284c7" stroke-width="3"/>
+      <polygon points="260,60 250,55 252,65" fill="#0284c7"/>
+      <circle cx="50" cy="110" r="5" fill="#ef4444"/>
+      <text x="35" y="130" font-size="11" font-weight="bold">斯里蘭卡</text>
+      <circle cx="260" cy="60" r="5" fill="#16a34a"/>
+      <text x="250" y="50" font-size="11" font-weight="bold">臺灣</text>
+    </svg>`,
+    opts: ["東北方", "東南方", "西北方", "西南方"],
+    ans: 0,
+    exp: "斯里蘭卡位於印度洋（約 80°E、7°N），臺灣位於東亞（約 121°E、23.5°N），往臺灣飛行方向為朝向東北方。"
+  },
+  {
+    q: "環宇航空公司接受包機委託，搭載乘客從臺北松山機場起飛，前往附圖海島（緯度 40°S～50°S，經度 30°E～40°E）。若以最短路徑規劃，飛行方向應為何？",
+    svg: `<svg class="svg-diagram" viewBox="0 0 240 130">
+      <defs><pattern id="grid10" width="40" height="30" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="#cbd5e1" stroke-width="1"/></pattern></defs>
+      <rect x="20" y="20" width="160" height="90" fill="url(#grid10)" stroke="#94a3b8"/>
+      <text x="18" y="15" font-size="10">30°E</text><text x="95" y="15" font-size="10">35°E</text><text x="175" y="15" font-size="10">40°E</text>
+      <text x="185" y="30" font-size="10">40°S</text><text x="185" y="65" font-size="10">45°S</text><text x="185" y="105" font-size="10">50°S</text>
+      <ellipse cx="100" cy="65" rx="35" ry="20" fill="#93c5fd" opacity="0.7"/>
+    </svg>`,
+    opts: ["東北方", "東南方", "西南方", "西北方"],
+    ans: 2,
+    exp: "臺北位於 (121°E, 25°N)，該島位於南半球（40°S~50°S）且經度（30°E~40°E）小於臺北，故位於臺灣的西南方。"
+  },
+  {
+    q: "下列哪一項關於「臺灣大學」位置的表示方法和其他三者不同？",
+    opts: [
+      "臺灣大學位於 121°E, 25°N",
+      "臺灣大學位於羅斯福路四段一號",
+      "臺灣大學位於新生南路與羅斯福路交叉口",
+      "臺大位於師大南方"
+    ],
+    ans: 3,
+    exp: "(A)(B)(C) 均為固定明確的「絕對位置」；(D) 以另一地標（師大）為基準來描述，屬於「相對位置」。"
+  },
+  {
+    q: "本初子午線通過格林威治天文臺。請問格林威治天文臺位於下列哪一個國家或城市？",
+    opts: ["英國倫敦", "法國巴黎", "中國北京", "美國華盛頓"],
+    ans: 0,
+    exp: "國際定義 0° 經線通過位於英國倫敦近郊的格林威治天文臺。"
+  },
+  {
+    q: "若遊覽車在臺糖成功站加油後，欲停在中華五路的停車場。根據地圖，下列敘述何者正確？",
+    svg: `<svg class="svg-diagram" viewBox="0 0 360 160">
+      <line x1="60" y1="10" x2="100" y2="150" stroke="#94a3b8" stroke-width="12"/>
+      <text x="30" y="90" font-size="10" fill="#64748b">成功二路</text>
+      <line x1="260" y1="10" x2="300" y2="150" stroke="#94a3b8" stroke-width="12"/>
+      <text x="305" y="90" font-size="10" fill="#64748b">中華五路</text>
+      <line x1="20" y1="75" x2="340" y2="75" stroke="#94a3b8" stroke-width="14"/>
+      <text x="150" y="70" font-size="11" font-weight="bold">時代大道</text>
+      <circle cx="85" cy="50" r="7" fill="#ef4444"/>
+      <text x="100" y="53" font-size="9">成功加油站</text>
+      <circle cx="265" cy="95" r="7" fill="#3b82f6"/>
+      <text x="210" y="110" font-size="9">中華五路停車場</text>
+    </svg>`,
+    opts: [
+      "直行至時代大道後右轉，就可以到中華五路",
+      "停車場位於高雄之眼摩天輪的西北方",
+      "中華五路停車場離成功加油站直線距離約 1200 公尺",
+      "車子開到時代大道時，在中華五路交叉口向東南方前進"
+    ],
+    ans: 3,
+    exp: "沿成功路南下至時代大道時應左轉朝東；至中華五路路口後轉向東南方進入停車區，故 (D) 最符合。"
+  },
+  {
+    q: "附表為四個地區的經緯度。在不考慮地形與距海遠近等條件下，哪一個地區氣候最寒冷？",
+    extra: `<div style="text-align:center;margin:10px 0;"><table style="margin:auto;border-collapse:collapse;border:1px solid #cbd5e1;font-size:0.9rem;">
+      <tr style="background:#f1f5f9;"><th style="border:1px solid #cbd5e1;padding:6px 12px;">代號</th><th style="border:1px solid #cbd5e1;padding:6px 12px;">甲</th><th style="border:1px solid #cbd5e1;padding:6px 12px;">乙</th><th style="border:1px solid #cbd5e1;padding:6px 12px;">丙</th><th style="border:1px solid #cbd5e1;padding:6px 12px;">丁</th></tr>
+      <tr><td style="border:1px solid #cbd5e1;padding:6px 12px;">緯度</td><td style="border:1px solid #cbd5e1;padding:6px 12px;">30°N</td><td style="border:1px solid #cbd5e1;padding:6px 12px;color:#dc2626;font-weight:bold;">70°S</td><td style="border:1px solid #cbd5e1;padding:6px 12px;">2°N</td><td style="border:1px solid #cbd5e1;padding:6px 12px;">23.5°S</td></tr>
+      <tr><td style="border:1px solid #cbd5e1;padding:6px 12px;">經度</td><td style="border:1px solid #cbd5e1;padding:6px 12px;">120°E</td><td style="border:1px solid #cbd5e1;padding:6px 12px;">50°W</td><td style="border:1px solid #cbd5e1;padding:6px 12px;">5°E</td><td style="border:1px solid #cbd5e1;padding:6px 12px;">150°W</td></tr>
+    </table></div>`,
+    opts: ["甲", "乙", "丙", "丁"],
+    ans: 1,
+    exp: "緯度愈高，年均溫愈低。乙地位於 70°S（高緯度極圈附近），氣候最為嚴寒。"
+  },
+  {
+    q: "李大衛為評估海外渡假村地點，準備前往亞洲島群考察。下列四個從臺北出發的目的地中，何者距離臺灣最遠、飛行時間最長？",
+    opts: [
+      "(A) 臺北 ➔ 琉球群島",
+      "(B) 臺北 ➔ 菲律賓群島",
+      "(C) 臺北 ➔ 日本主要島嶼",
+      "(D) 臺北 ➔ 阿留申群島"
+    ],
+    ans: 3,
+    exp: "選項均為東亞島弧群島，阿留申群島位於白令海峽南端、緊鄰阿拉斯加，距離臺灣最為遙遠。"
+  },
+  {
+    q: "小西瓜想要調查學校附近商圈的細部土地利用狀況，她應選擇下列哪一種比例尺的地圖最恰當？",
+    opts: ["1：1,000", "1：25,000", "1：50,000", "1：100,000"],
+    ans: 0,
+    exp: "調查範圍較小的生活商圈街道，需要涵蓋範圍小但內容最詳盡的「大比例尺」地圖，分母愈小比例尺愈大，故選 1：1,000。"
+  },
+  {
+    q: "大洋洲由數個島群組成。家瑜正在其中的「帛琉」度假，在世界海陸分布圖中，帛琉應位在哪一個大洋中？",
+    opts: ["甲（太平洋）", "乙（印度洋）", "丙（大西洋）", "丁（北極海）"],
+    ans: 0,
+    exp: "大洋洲與帛琉位於太平洋（圖中甲區塊）之熱帶海域。"
+  },
+  {
+    q: "「臺灣島嶼的位置位於北半球及東半球地區。」就以上敘述判斷，臺灣位於北極點的哪一個方向？",
+    opts: ["東南方", "西北方", "西南方", "正南方"],
+    ans: 3,
+    exp: "從地球的最北端「北極點」看地球上的任何一個地點，其方位必定都是「正南方」。"
+  },
+  {
+    q: "地球上一天為 24 小時，劃分為每一個時區間隔 15 度經度。請問這和下列哪一項因素關係最大？",
+    opts: ["地球公轉", "地軸傾斜", "地球自轉", "地心引力"],
+    ans: 2,
+    exp: "地球自轉一圈 360 度需耗時 24 小時，故 360° ÷ 24 = 15°，每相隔經度 15 度即差 1 小時。"
+  },
+  {
+    q: "小芳拿著比例尺 1：200,000 的地圖旅行，在地圖上量得離目的地尚有 3.5 公分，實際距離應該是多少公里？",
+    opts: ["7 km", "17 km", "71 km", "700 km"],
+    ans: 0,
+    exp: "實際距離 = 3.5 公分 × 200,000 = 700,000 公分 = 7,000 公尺 = 7 公里 (km)。"
+  },
+  {
+    q: "一般而言，地表一地氣溫的高低，和下列何者的關係呈現「正比」現象？",
+    opts: ["經度多寡", "降水量多少", "地表高度", "日照角度"],
+    ans: 3,
+    exp: "太陽照射地表的角度（太陽仰角）愈大，地面單位面積接收的能量愈多，氣溫愈高，兩者呈正比關係。"
+  },
+  {
+    q: "早晨搭乘遊覽車朝向「南方」行駛，陽光直射某一側窗戶曬得滿臉通紅。若以車頭為前方，被陽光直射的窗戶位於遊覽車的哪一邊？",
+    opts: ["前方", "後方", "左方", "右方"],
+    ans: 2,
+    exp: "早晨太陽位於東方。車頭朝向正南方時，左手邊即為東方，故左側窗戶會受到陽光直射。"
+  },
+  {
+    q: "參考臺灣天然植物垂直分布金字塔圖（700m以下為榕楠林與熱帶林、1800m為暖溫帶闊葉林、2500m為針闊葉混合林、3500m為針葉林、頂端為高山草原），下列敘述何者正確？",
+    svg: `<svg class="svg-diagram" viewBox="0 0 280 140">
+      <polygon points="140,10 60,130 220,130" fill="#e2e8f0" stroke="#64748b"/>
+      <line x1="80" y1="100" x2="200" y2="100" stroke="#0284c7" stroke-dasharray="2,2"/>
+      <text x="15" y="105" font-size="9">700m 闊葉林</text>
+      <line x1="100" y1="70" x2="180" y2="70" stroke="#0284c7" stroke-dasharray="2,2"/>
+      <text x="15" y="75" font-size="9">1800m 針闊混合</text>
+      <line x1="120" y1="40" x2="160" y2="40" stroke="#0284c7" stroke-dasharray="2,2"/>
+      <text x="15" y="45" font-size="9">3500m 針葉林/高山</text>
+    </svg>`,
+    opts: [
+      "緯度愈高，植物愈茂密",
+      "氣溫愈高，植物種類愈多",
+      "降水量愈多，植物種類愈多",
+      "海拔高度愈高，植物愈茂密"
+    ],
+    ans: 1,
+    exp: "低海拔地區氣溫高，植被茂密且種類繁複（熱帶、亞熱帶林）；海拔愈高氣溫愈低，植物種類逐漸減少特化為針葉林或苔蘚。"
+  },
+  {
+    q: "某公園實際長度 800 公尺、寬度 500 公尺，欲將全貌完整繪製在 50 公分 × 50 公分的圖紙上，下列哪一種比例尺「既能全部納入且最為詳盡」？",
+    opts: ["1 / 1,000", "1 / 1,200", "1 / 1,500", "1 / 1,800"],
+    ans: 3,
+    exp: "公園長度 800 公尺 = 80,000 公分。50 ÷ 80,000 = 1 / 1,600。為將長度完全納入 50 公分圖紙，比例尺必須小於或等於 1/1,600，故選項中以 1/1,800 最為適合。"
+  },
+  {
+    q: "由北極上空俯瞰的海陸分布圖中，位於歐洲、亞洲、北美洲三大陸塊所包圍的核心海域「甲」是指哪一個海洋？",
+    svg: `<svg class="svg-diagram" viewBox="0 0 240 140">
+      <circle cx="120" cy="70" r="60" fill="#e0f2fe" stroke="#0284c7" stroke-width="2"/>
+      <circle cx="120" cy="70" r="16" fill="#93c5fd"/>
+      <text x="114" y="75" font-size="13" font-weight="bold" fill="#0369a1">甲</text>
+      <text x="100" y="25" font-size="10">北美洲</text>
+      <text x="160" y="110" font-size="10">亞洲</text>
+      <text x="70" y="110" font-size="10">歐洲</text>
+    </svg>`,
+    opts: ["大西洋", "印度洋", "北極海", "太平洋"],
+    ans: 2,
+    exp: "位於歐、亞、北美三大洲北側包圍的極區海洋為「北極海」。"
+  }
+];
+
+function renderQuiz() {
+  const container = document.getElementById('quiz-container');
+  container.innerHTML = quizData.map((item, idx) => `
+    <div class="card" id="q_card_${idx}">
+      <div class="q-title">${idx + 1}. ${item.q}</div>
+      ${item.extra || ''}
+      ${item.svg || ''}
+      <div class="options">
+        ${item.opts.map((opt, oIdx) => `
+          <label class="opt-label" id="label_${idx}_${oIdx}">
+            <input type="radio" name="q_${idx}" value="${oIdx}">
+            <span>(${['A','B','C','D'][oIdx]})${opt}</span>
+          </label>
+        `).join('')}
+      </div>
+      <div class="explanation" id="exp_${idx}"></div>
+    </div>
+  `).join('');
+}
+
+function submitQuiz() {
+  let score = 0;
+  let unanswered = 0;
+
+  quizData.forEach((item, idx) => {
+    const selected = document.querySelector(`input[name="q_${idx}"]:checked`);
+    const expBox = document.getElementById(`exp_${idx}`);
+    expBox.style.display = 'block';
+
+    if (!selected) {
+      unanswered++;
+      expBox.className = 'explanation exp-wrong';
+      expBox.innerHTML = `⚠️ <strong>未作答</strong>。正確答案為 <strong>(${['A','B','C','D'][item.ans]})</strong>。<br>解析：${item.exp}`;
+    } else if (parseInt(selected.value) === item.ans) {
+      score += 4;
+      expBox.className = 'explanation exp-correct';
+      expBox.innerHTML = `✓ <strong>回答正確！</strong><br>解析：${item.exp}`;
+    } else {
+      expBox.className = 'explanation exp-wrong';
+      expBox.innerHTML = `✗ <strong>回答錯誤</strong>。正確答案為 <strong>(${['A','B','C','D'][item.ans]})</strong>。<br>解析：${item.exp}`;
+    }
+  });
+
+  if (unanswered > 0) {
+    if (!confirm(`您還有 ${unanswered} 題尚未作答，確定要送出交卷嗎？`)) return;
+  }
+
+  const banner = document.getElementById('scoreBanner');
+  const finalScoreEl = document.getElementById('finalScore');
+  banner.style.display = 'block';
+  finalScoreEl.textContent = `${score} 分`;
+  finalScoreEl.style.color = score >= 60 ? 'var(--success)' : 'var(--danger)';
+
+  // 儲存至 LocalStorage (對應首頁七年級地理)
+  const record = {
+    score: score,
+    date: new Date().toLocaleDateString('zh-TW', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+  };
+  localStorage.setItem('quiz_g7_geography', JSON.stringify(record));
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function resetQuiz() {
+  if (confirm('確定要清除目前答案並重新作答嗎？')) {
+    location.reload();
+  }
+}
+
+renderQuiz();
+</script>
+</body>
+</html>

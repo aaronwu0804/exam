@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>七上歷史 一段範圍複習測驗（適南版）</title>
+  <style>
+    :root {
+      --primary: #b45309;
+      --primary-hover: #92400e;
+      --bg: #fffbeb;
+      --card: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --border: #fde68a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding: 16px; line-height: 1.6; }
+    .container { max-width: 840px; margin: 0 auto; }
+
+    .nav-bar { margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
+    .nav-btn { text-decoration: none; color: var(--primary); font-weight: 600; font-size: 0.95rem; }
+    .badge { font-size: 0.8rem; padding: 3px 10px; border-radius: 999px; background: #fef3c7; color: #92400e; font-weight: 600; }
+
+    header { background: var(--card); padding: 22px; border-radius: 14px; border: 1px solid var(--border); margin-bottom: 20px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.03); }
+    header h1 { font-size: 1.5rem; color: #78350f; margin-bottom: 6px; }
+    header p { font-size: 0.9rem; color: var(--text-muted); }
+
+    .score-banner {
+      display: none;
+      background: #fef3c7;
+      border: 1px solid #fde68a;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    .score-banner h2 { font-size: 2.2rem; color: var(--primary); margin-bottom: 6px; }
+
+    .card { background: var(--card); padding: 20px; border-radius: 14px; border: 1px solid #e2e8f0; margin-bottom: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+    .q-title { font-size: 1.05rem; font-weight: 600; margin-bottom: 12px; color: #0f172a; line-height: 1.6; }
+    .quote-box { background: #f8fafc; border-left: 4px solid var(--primary); padding: 12px 16px; margin: 10px 0 14px; font-size: 0.95rem; color: #334155; border-radius: 0 8px 8px 0; }
+    
+    .table-box { width: 100%; max-width: 420px; margin: 12px 0; border-collapse: collapse; font-size: 0.92rem; }
+    .table-box th, .table-box td { border: 1px solid #cbd5e1; padding: 6px 12px; text-align: center; }
+    .table-box th { background: #f1f5f9; }
+
+    .options { display: flex; flex-direction: column; gap: 8px; }
+    .opt-label { display: flex; align-items: flex-start; padding: 10px 14px; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer; font-size: 0.95rem; transition: background 0.15s; }
+    .opt-label:hover { background-color: #fffbeb; }
+    .opt-label input { margin-right: 12px; margin-top: 4px; }
+
+    .explanation { display: none; margin-top: 14px; padding: 12px 16px; border-radius: 8px; font-size: 0.92rem; line-height: 1.5; }
+    .exp-correct { background-color: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; }
+    .exp-wrong { background-color: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
+
+    .btn-group { display: flex; gap: 12px; margin: 28px 0 50px; }
+    .btn { flex: 1; padding: 14px; border-radius: 10px; border: none; font-size: 1rem; font-weight: 700; cursor: pointer; }
+    .btn-submit { background: var(--primary); color: #fff; }
+    .btn-submit:hover { background: var(--primary-hover); }
+    .btn-reset { background: #e2e8f0; color: var(--text); }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="nav-bar">
+    <a href="../index.html" class="nav-btn">⬅ 返回首頁儀表板</a>
+    <span class="badge">適南版 七上歷史 一段複習</span>
+  </div>
+
+  <header>
+    <h1>七上歷史－一段範圍複習練習卷</h1>
+    <p>全卷共 25 題單選題，每題 4 分，滿分 100 分。完成後請點選下方送出交卷。</p>
+  </header>
+
+  <div class="score-banner" id="scoreBanner">
+    <h2 id="finalScore">0 分</h2>
+    <p id="scoreMsg">測驗完成！成績已自動儲存至儀表板。</p>
+  </div>
+
+  <div id="quiz-container"></div>
+
+  <div class="btn-group">
+    <button class="btn btn-submit" onclick="submitQuiz()">送出交卷</button>
+    <button class="btn btn-reset" onclick="resetQuiz()">重新測驗</button>
+  </div>
+</div>
+
+<script>
+const quizData = [
+  {
+    q: "荷蘭統治臺灣初期，曾經分別在各地成立「地方會議」（Landdag），要求各社選出長老，每年集會。其用意可能為何？",
+    opts: ["做為傳播政令機構", "做為徵收稅捐的機構", "做為傳播宗教的機構", "做為代表民意的機構"],
+    ans: 0, // A
+    exp: "荷蘭人的地方會議為傳播政令機構，藉由集會對臺灣原住民族進行間接控制。"
+  },
+  {
+    q: "小彩利用假期參觀某處史前文化遺址，參觀過程中記錄特徵如下表。這處遺址最可能為哪一史前文化？",
+    table: `
+      <table class="table-box">
+        <tr><th>發現位置</th><th>生活方式</th><th>器具</th></tr>
+        <tr><td>臺灣北部</td><td>漁獵、農耕</td><td>陶罐、鐵斧</td></tr>
+      </table>
+    `,
+    opts: ["長濱文化", "圓山文化", "大坌坑文化", "十三行文化"],
+    ans: 3, // D
+    exp: "使用「鐵斧」作為器具，代表已進入「金屬器時代」，分布於北部且出土鐵器者為十三行文化。"
+  },
+  {
+    q: "某個臺灣文化遺址頗富區域性色彩，如各種磨製大型石器；另有貝塚，保存了大量食用後棄置的貝殼、獸骨、魚骨等；而且從石器的類型可判斷當時已經有進步的農業。請問以上應為哪一文化遺址？",
+    opts: ["長濱文化", "大坌坑文化", "圓山文化", "十三行文化"],
+    ans: 2, // C
+    exp: "由大量食用後棄置的「貝塚」、磨製大型石器與進步農耕，可知為新石器時代晚期的圓山文化。"
+  },
+  {
+    q: "附表為西元 1640～1653 年「荷蘭人在臺財務收支表」，純益逐年大幅增長。請問當時荷蘭東印度公司在臺灣外銷獲利的主要物產為何？",
+    table: `
+      <table class="table-box">
+        <tr><th>年代</th><th>1640年</th><th>1641年</th><th>1643年</th><th>1649年</th><th>1653年</th></tr>
+        <tr><td>純益(荷盾)</td><td>13,000</td><td>16,000</td><td>83,000</td><td>467,000</td><td>338,000</td></tr>
+      </table>
+    `,
+    opts: ["茶葉、樟腦", "鹿皮、橡膠", "茶葉、香料", "鹿皮、蔗糖"],
+    ans: 3, // D
+    exp: "荷治時期臺灣主要出口貨品為鹿皮（主要銷往日本）與蔗糖（銷往日本與波斯等地）。"
+  },
+  {
+    q: "十七世紀時有封信函提到：「今年有兩艘船前往我們統治的雞籠，除了補給外，也負責購買中國商品運回我國的根據地馬尼拉，但船隻卻遲遲未回；且原先每年從中國與澳門前來馬尼拉貿易的船隻也還沒進港。我擔心若進口貨物不足，我們會蒙受許多的損失。」根據上文判斷，此封信函最可能是下列何者之間的通信？〔109.會考補考〕",
+    opts: ["葡萄牙使節給明朝皇帝", "鄭經給英國東印度公司", "臺灣長官給巴達維亞總督", "菲律賓總督給西班牙國王"],
+    ans: 3, // D
+    exp: "17 世紀西班牙以菲律賓「馬尼拉」為亞洲殖民根據地，曾佔領臺灣北部雞籠（基隆）與淡水，故為菲律賓總督向西班牙國王報告之信函。"
+  },
+  {
+    q: "大白預計在假期給自己安排一個考古之旅，他想依照「新石器早期 ➔ 新石器晚期 ➔ 金屬器時代」的時間先後安排旅行順序。請問依序代表這三個時期的縣市順序應為以下何者？<br>(甲)新石器早期：新北市八里區（大坌坑）或臺北市（圓山）<br>(乙)金屬器時代：新北市八里區（十三行）<br>(丙)新石器晚期：臺東縣（卑南）",
+    opts: ["丙甲乙", "甲丙乙", "甲乙丙", "乙丙甲"],
+    ans: 1, // B
+    exp: "時間順序分別為：(甲)新石器早期圓山/大坌坑文化 ➔ (丙)新石器晚期卑南文化 ➔ (乙)金屬器時代十三行文化，故為甲丙乙。"
+  },
+  {
+    q: "喬琪要寫一篇關於「圓山文化」人們生活的報告，為了符合史實，下列哪一項敘述「不應該」出現在報告中？",
+    opts: ["製作陶器", "種植穀物", "冶製鐵器", "生火煮食"],
+    ans: 2, // C
+    exp: "圓山文化屬於「新石器時代」，特徵包含磨製石器、製作陶器與農業出現；「冶製鐵器」是金屬器時代（如十三行文化）才有的特徵。"
+  },
+  {
+    q: "臺灣目前所發現的史前文化遺址眾多，下列哪一個臺灣史前文化遺址的「地理分布地區」與其他三者有明顯的不同？",
+    opts: ["卑南文化", "十三行文化", "大坌坑文化", "圓山文化"],
+    ans: 0, // A
+    exp: "卑南文化分布於臺灣東部（臺東縣）；十三行文化、大坌坑文化與圓山文化均主要分布於北部地區（臺北、新北）。"
+  },
+  {
+    q: "17 世紀西班牙人來臺灣時，除了佔領今日的淡水、基隆（雞籠）以外，還曾深入佔領了今日的何地？",
+    opts: ["宜蘭（蛤仔難）", "桃園", "新竹", "苗栗"],
+    ans: 0, // A
+    exp: "1626 年起，西班牙陸續佔領雞籠、淡水，並曾沿東北角進佔蛤仔難（今宜蘭）等地。"
+  },
+  {
+    q: "有位學者認為，十七世紀興盛的航海活動，是全球經濟網絡形成的第一步。在這波浪潮中，臺灣扮演了什麼樣的角色？〔95.第二次基測〕",
+    opts: ["中國對外通商的出口港", "東亞國際貿易的中繼站", "漢人移民南洋的轉運點", "英國對華交易的根據地"],
+    ans: 1, // B
+    exp: "17 世紀大航海時代，臺灣因位居東亞海運要衝，成為荷蘭、西班牙與各方商人轉口絲綢、瓷器、鹿皮、白銀的「東亞國際貿易轉口中繼站」。"
+  },
+  {
+    q: "顏思齊、鄭芝龍在 17 世紀前期到達臺灣，他們當時以下列哪些地方作為開墾拓殖的根據地？",
+    opts: ["新竹、苗栗", "淡水、基隆", "嘉義、雲林", "臺南、高雄"],
+    ans: 2, // C
+    exp: "顏思齊、鄭芝龍率眾自笨港（今雲林北港）登陸，以今日雲林、嘉義一帶作為招募漢人拓墾的根據地。"
+  },
+  {
+    q: "《臺灣通史》記載臺灣的開拓自顏思齊始，推崇他為「手拓臺灣之壯士」，今日在雲林北港建有紀念碑。當時顏思齊是以何種身分著稱於歷史？",
+    opts: ["倭寇", "海商（武裝海商集團）", "明朝將領", "航海家"],
+    ans: 1, // B
+    exp: "顏思齊為 17 世紀前期的武裝「海商」集團領袖，招募閩南沿海漢人來臺開墾墾荒。"
+  },
+  {
+    q: "明朝滅亡後，不少明朝遺臣相繼在中國南方擁立宗室為王（如弘光、隆武、永曆等），成立政權與清廷對抗。歷史上如何稱呼這段時期？",
+    opts: ["南朝時期", "鄭氏政權時期", "南宋時期", "南明時期"],
+    ans: 3, // D
+    exp: "明朝遺臣在南方延續明祚、擁立朱姓宗室抵抗清軍的政權統稱為「南明」。"
+  },
+  {
+    q: "歷史課堂上學生發問：「為何稱新石器『革命』呢？」歷史老師該如何舉例說明人類生活發生的最重大改變？",
+    opts: ["農業出現，由採集轉為生產", "改以採集為主要生活方式", "鐵製農具大量出現", "開始懂得敲打製作石器"],
+    ans: 0, // A
+    exp: "新石器時代最重大的變革是「農業的出現」與家畜飼養，使人類從食物的「採集者」轉變為「生產者」，定居聚落形成，故稱為新石器革命。"
+  },
+  {
+    q: "泰雅族（Atayal）傳說祖先起源有「石生」、「樹生」或「石樹合生」等說法，推測是早期移居臺灣的高山族群之一。由上述關於泰雅族的文獻記載，可以判斷出下列哪一個敘述？",
+    opts: [
+      "泰雅族無庸置疑是源自於臺灣本地血緣的原住民族",
+      "泰雅族杜撰多種不同的祖先起源傳說作為孩童的床邊故事",
+      "泰雅族流傳有巨石（石生）傳說的傳統文化",
+      "泰雅族有紋面的傳統習俗"
+    ],
+    ans: 2, // C
+    exp: "題幹明確提及泰雅族祖先起源包含「石生」等傳說，證實該族文化中保有巨石傳說之傳統。"
+  },
+  {
+    q: "亨利王子是國王若昂一世的第三子，建立了全世界首間航海學校、天文臺、圖書館與船廠，大力推廣航海使他的國家率先找到繞過非洲到達東方的新航路，並佔領中國澳門作為貿易據點。亨利王子是哪一國家的人？",
+    opts: ["西班牙", "葡萄牙", "印度", "日本"],
+    ans: 1, // B
+    exp: "葡萄牙的恩里克王子（亨利王子）致力推動大航海探險，葡萄牙人隨後開闢東方航線並取得澳門居留貿易權。"
+  },
+  {
+    q: "臺灣有一處一級古蹟，歷經荷蘭人築城、鄭氏三代居所（王城）、清代到日治時期的統治變遷，這個重要古蹟應為下列何者？",
+    opts: ["安平古堡（熱蘭遮城）", "孔廟", "延平郡王祠", "億載金城"],
+    ans: 0, // A
+    exp: "安平古堡原為荷蘭人於 1624 年起興建的「熱蘭遮城」，鄭成功驅逐荷蘭人後改稱安平城並設為王城居所。"
+  },
+  {
+    q: "戲劇社排演《1661 國姓來襲》，包含以下場景：<br>【場景一】甲：「父親，萬萬不可啊！自古只有父教子要盡忠報國，豈有教子貳心叛國的道理？」<br>【場景二】乙：「我欲平克臺灣，以為根本之地，安頓將領家眷，然後東征西討……」<br>【場景三】丙：「我方願意交出城堡，而你得讓我方所有人攜帶財物離開福爾摩沙。」<br>根據劇本內容，下列敘述何者正確？",
+    opts: [
+      "甲是鄭經，乙是鄭成功，丙是荷蘭人",
+      "甲「盡忠報國」、「貳心叛國」的『國』是指明朝",
+      "丙離開後要返回公司的根據地馬尼拉",
+      "丙要交出的是在淡水河口的紅毛城"
+    ],
+    ans: 1, // B
+    exp: "甲、乙均為鄭成功（痛責父親鄭芝龍降清叛明；欲平取臺灣抗清）。丙為荷蘭長官揆一，答應交出熱蘭遮城返回荷蘭巴達維亞（非西班牙馬尼拉），故 (B) 正確。"
+  },
+  {
+    q: "史料記載：「歲壬寅二月，忽有遷民之令……令濱海之民悉徙內地五十里，以絕接濟臺灣之患……民既盡遷，於是毀屋廬以作長城，掘墳塋而為深塹……民有越出咫尺者，執而誅戮。」這段史料是描述哪一時期的史事？",
+    opts: [
+      "清帝國領有臺灣後",
+      "荷蘭統治臺灣時期",
+      "顏思齊據有雲林、嘉義一帶時",
+      "鄭成功父子以臺灣為反清基地時"
+    ],
+    ans: 3, // D
+    exp: "此為清廷於順治、康熙年間為斷絕東南沿海對鄭成功、鄭經政權的物資接濟與走私，所嚴格實施的「遷界令（海禁政策）」。"
+  },
+  {
+    q: "地理大發現時期發現通往東方的新海路，造就西班牙、葡萄牙等國富強。然而下列何處或國家因傳統陸路貿易路線被取代，原有的貿易獨佔地位因而衰落？",
+    opts: ["葡萄牙", "西班牙", "土耳其（鄂圖曼帝國及地中海商人）", "荷蘭"],
+    ans: 2, // C
+    exp: "在大航海以前，東西貿易依賴經由地中海、阿拉伯與鄂圖曼土耳其控制之陸路與紅海商路；新航路開通後，陸路貿易地位隨之沒落。"
+  },
+  {
+    q: "如果想要研究臺灣「大航海時期（荷西荷鄭時期）」的歷史檔案，下列哪一本參考資料「最不可能」屬於該時期的文獻？",
+    opts: ["《熱蘭遮城日記》", "荷蘭聯合東印度公司檔案", "《巴達維亞日誌》", "《臺灣建省誌》"],
+    ans: 3, // D
+    exp: "《臺灣建省誌》是清朝晚期（光緒年間，劉銘傳治臺建省時期）才出現的官書文獻，不屬於 17 世紀大航海時代。"
+  },
+  {
+    q: "從下列四個人的生活方式描述來看，何人「並非」生存於新石器時代？",
+    opts: [
+      "潘帥：今晚把幾隻飼養的家畜烤來吃，滋味真不錯",
+      "宥嘉：每到收穫季節，我便帶著鐵刀到稻田裡去收割",
+      "宗緯：我的石矛上次捕獵時壞掉了，必須再磨製一把才行",
+      "小美：今年農作收成不錯，應該多準備一些陶器來儲存作物"
+    ],
+    ans: 1, // B
+    exp: "使用「鐵刀」為金屬器時代特徵。新石器時代已有家畜飼養、磨製石器與陶器製作。"
+  },
+  {
+    q: "博物館展示臺灣史前文化文物：(甲)繩紋陶罐、(乙)打製石斧、(丙)青銅刀柄、(丁)貝塚食餘、(戊)石板棺。圖中有哪些文物屬於「新石器時代」所特有或代表之文物？",
+    opts: ["甲丁戊", "丙丁戊", "甲乙戊", "乙丙丁"],
+    ans: 0, // A
+    exp: "(甲)大坌坑陶器、(丁)圓山貝塚、(戊)卑南石板棺皆為新石器時代文化；(乙)打製石器為舊石器時代；(丙)青銅器為金屬器時代。"
+  },
+  {
+    q: "臺灣知名民謠〈安平追想曲〉中有「身穿花紅長洋裝，風吹金髮思情郎」等歌詞。根據歌詞中的混血女主角「金髮」又穿「洋裝」，這首歌的歷史淵源可追溯至哪一統治背景？",
+    opts: [
+      "西班牙人統治下的淡水河畔",
+      "荷蘭人統治過後的安平港邊",
+      "鄭成功統治下的臺南海邊",
+      "日本人統治下的臺南海邊"
+    ],
+    ans: 1, // B
+    exp: "歌詞描寫臺南安平買辦商人之女與荷蘭籍金髮船醫相戀產下混血女子的淒美故事，地點為荷蘭統治核心熱蘭遮城所在的安平港。"
+  },
+  {
+    q: "17 世紀初期，臺灣西南部地區曾出現過日本移民與倭寇聚落，這個聚落出現的最主要原因為何？",
+    opts: [
+      "日本國內人口過剩，向外進行官方大規模移民",
+      "日本缺乏蔗糖，由幕府派兵來臺開墾甘蔗園",
+      "與荷蘭簽訂殖民條約，共同出資開發臺灣",
+      "因明朝海禁與日本鎖國，各方商船與倭寇以臺灣為據點進行走私貿易"
+    ],
+    ans: 3, // D
+    exp: "明朝實施海禁、日本江戶幕府推行鎖國政策，臺灣未受任何政權有效管轄，成為漢人海商與日本倭寇進行中繼走私與避難貿易的根據地。"
+  }
+];
+
+function renderQuiz() {
+  const container = document.getElementById('quiz-container');
+  container.innerHTML = quizData.map((item, idx) => `
+    <div class="card" id="q_card_${idx}">
+      <div class="q-title">${idx + 1}. ${item.q}</div>
+      ${item.table || ''}
+      <div class="options">
+        ${item.opts.map((opt, oIdx) => `
+          <label class="opt-label" id="label_${idx}_${oIdx}">
+            <input type="radio" name="q_${idx}" value="${oIdx}">
+            <span>(${['A','B','C','D'][oIdx]})${opt}</span>
+          </label>
+        `).join('')}
+      </div>
+      <div class="explanation" id="exp_${idx}"></div>
+    </div>
+  `).join('');
+}
+
+function submitQuiz() {
+  let score = 0;
+  let unanswered = 0;
+
+  quizData.forEach((item, idx) => {
+    const selected = document.querySelector(`input[name="q_${idx}"]:checked`);
+    const expBox = document.getElementById(`exp_${idx}`);
+    expBox.style.display = 'block';
+
+    if (!selected) {
+      unanswered++;
+      expBox.className = 'explanation exp-wrong';
+      expBox.innerHTML = `⚠️ <strong>未作答</strong>。正確答案為 <strong>(${['A','B','C','D'][item.ans]})</strong>。<br>解析：${item.exp}`;
+    } else if (parseInt(selected.value) === item.ans) {
+      score += 4;
+      expBox.className = 'explanation exp-correct';
+      expBox.innerHTML = `✓ <strong>回答正確！</strong><br>解析：${item.exp}`;
+    } else {
+      expBox.className = 'explanation exp-wrong';
+      expBox.innerHTML = `✗ <strong>回答錯誤</strong>。正確答案為 <strong>(${['A','B','C','D'][item.ans]})</strong>。<br>解析：${item.exp}`;
+    }
+  });
+
+  if (unanswered > 0) {
+    if (!confirm(`您還有 ${unanswered} 題尚未作答，確定要送出交卷嗎？`)) return;
+  }
+
+  const banner = document.getElementById('scoreBanner');
+  const finalScoreEl = document.getElementById('finalScore');
+  banner.style.display = 'block';
+  finalScoreEl.textContent = `${score} 分`;
+  finalScoreEl.style.color = score >= 60 ? 'var(--primary)' : 'var(--danger)';
+
+  // 儲存至 LocalStorage (對應首頁七年級歷史)
+  const record = {
+    score: score,
+    date: new Date().toLocaleDateString('zh-TW', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+  };
+  localStorage.setItem('quiz_g7_history', JSON.stringify(record));
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function resetQuiz() {
+  if (confirm('確定要清除目前答案並重新作答嗎？')) {
+    location.reload();
+  }
+}
+
+renderQuiz();
+</script>
+</body>
+</html>

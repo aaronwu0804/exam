@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>七上公民 一段範圍複習測驗（適南版）</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --border: #e2e8f0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding: 16px; line-height: 1.6; }
+    .container { max-width: 840px; margin: 0 auto; }
+    
+    /* 頂部導航 */
+    .nav-bar { margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
+    .nav-btn { text-decoration: none; color: var(--primary); font-weight: 600; font-size: 0.95rem; display: inline-flex; align-items: center; gap: 4px; }
+    .badge { font-size: 0.8rem; padding: 3px 8px; border-radius: 999px; background: #e0e7ff; color: #4338ca; font-weight: 600; }
+
+    header { background: var(--card); padding: 22px; border-radius: 14px; border: 1px solid var(--border); margin-bottom: 20px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.03); }
+    header h1 { font-size: 1.5rem; color: #0f172a; margin-bottom: 6px; }
+    header p { font-size: 0.9rem; color: var(--text-muted); }
+
+    /* 分數統計面板 (交卷後展開) */
+    .score-banner {
+      display: none;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    .score-banner h2 { font-size: 2rem; color: var(--primary); margin-bottom: 6px; }
+    .score-banner p { color: var(--text-muted); font-size: 0.95rem; }
+
+    /* 題目卡片 */
+    .card { background: var(--card); padding: 20px; border-radius: 14px; border: 1px solid var(--border); margin-bottom: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+    .q-title { font-size: 1.05rem; font-weight: 600; margin-bottom: 12px; color: #0f172a; }
+    .q-img { max-width: 100%; height: auto; margin: 10px 0 14px; border-radius: 8px; border: 1px solid var(--border); display: block; }
+
+    /* 選項設定 */
+    .options { display: flex; flex-direction: column; gap: 10px; }
+    .opt-label {
+      display: flex;
+      align-items: flex-start;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: all 0.15s ease;
+    }
+    .opt-label:hover { background-color: #f1f5f9; }
+    .opt-label input { margin-right: 12px; margin-top: 4px; }
+
+    /* 解析區塊 */
+    .explanation {
+      display: none;
+      margin-top: 14px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 0.92rem;
+      line-height: 1.5;
+    }
+    .exp-correct { background-color: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; }
+    .exp-wrong { background-color: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
+
+    /* 按鈕區 */
+    .btn-group { display: flex; gap: 12px; margin: 28px 0 50px; }
+    .btn { flex: 1; padding: 14px; border-radius: 10px; border: none; font-size: 1rem; font-weight: 700; cursor: pointer; transition: background 0.15s; }
+    .btn-submit { background: var(--primary); color: #fff; }
+    .btn-submit:hover { background: var(--primary-hover); }
+    .btn-reset { background: #e2e8f0; color: var(--text); }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="nav-bar">
+    <a href="../index.html" class="nav-btn">⬅ 返回首頁儀表板</a>
+    <span class="badge">適南版 七上公民 一段</span>
+  </div>
+
+  <header>
+    <h1>七上公民－一段範圍複習練習卷</h1>
+    <p>全卷共 25 題單選題，每題 4 分，滿分 100 分。完成後點選最下方送出。</p>
+  </header>
+
+  <!-- 成果看板 -->
+  <div class="score-banner" id="scoreBanner">
+    <h2 id="finalScore">0 分</h2>
+    <p id="scoreMsg">測驗完成！成績已自動儲存至儀表板。</p>
+  </div>
+
+  <!-- 測驗題目容器 -->
+  <div id="quiz-container"></div>
+
+  <!-- 按鈕區 -->
+  <div class="btn-group">
+    <button class="btn btn-submit" onclick="submitQuiz()">送出交卷</button>
+    <button class="btn btn-reset" onclick="resetQuiz()">重新測驗</button>
+  </div>
+</div>
+
+<script>
+// 完整 25 題題目資料庫（由 PDF 解析萃取）
+const quizData = [
+  {
+    id: 1,
+    q: "美國調查發現，雖然社會福利體系可支持短期流浪的人度過難關、回歸社會軌道，但對長期流浪的街友輔導成效一直不好。因這些長期流浪的街友多有酗酒、精神疾病等隱疾，街頭的惡劣環境使他們難以康復，更遑論回歸正常社會體系。針對此點，美國猶他州提倡了 house first 政策，就是先提供街友住所，才實施後續治療與輔導。這項政策不僅讓街友病情進步顯著，造成的公共支出也大幅縮減，長期流浪的人數則銳減 91%。猶他州更遊說議會批准經費，整合民間捐助、政府資金，期望在 10 年內建構一個沒有人被遺漏的街友處置體系。請問：透過文中所述，你認為最能幫助街友回歸社會體系的有效方式應為下列何者？",
+    opts: [
+      "幫街友主張權利不應受到侵害",
+      "多向國民宣導尊重街友的人權",
+      "國家介入落實弱勢族群的保障",
+      "針對街頭流浪的街友加以懲罰"
+    ],
+    ans: 1, // B
+    exp: "(A) 前文並無提及街友權利受到侵害一事。(C) 前文提及，社會福利措施雖然可以短期內幫助街友，但回歸社會需要的不只是落實弱勢族群的保障。(D) 街友問題可能包含疾病、經濟困難等各項因素，以懲罰方式不但毫無效益，反而會對街友生活更造成困難。"
+  },
+  {
+    id: 2,
+    q: "就讀國中的萱薇遇到問題不知該怎麼辦，在部落格發文：「我被學校的工友性騷擾了，怎麼辦？」請問下列網友的回答中，何者是最適當的作法？",
+    opts: [
+      "網友甲：雖然很難啟齒，但還是要立刻告訴家長或老師",
+      "網友乙：再多觀察一下，也許他只是在開玩笑",
+      "網友丙：這次就隱忍過去，盡量避免跟他有單獨接觸的機會",
+      "網友丁：警告他再這麼做，就用《性別工作平等法》告他"
+    ],
+    ans: 0, // A
+    exp: "遇到性騷擾事件，應勇於向父母或師長請求協助，必要時可依《性別平等教育法》處理，才能防止事件再發生。"
+  },
+  {
+    id: 3,
+    q: "「性別角色」是指社會對於男性或女性，應各自表現出什麼樣的行為，所抱持的一套標準和期望。下列有關性別角色的敘述，何者正確？",
+    opts: [
+      "性別角色是天生的",
+      "性別角色不受傳統觀念影響",
+      "性別角色不受性別刻板印象的塑造",
+      "從小就開始學習符合性別角色的行為"
+    ],
+    ans: 3, // D
+    exp: "性別角色在幼兒時期就形成，是後天學習而來的，受傳統刻板印象影響很深。"
+  },
+  {
+    id: 4,
+    q: "以前中國古代若家中有生男丁在恭賀時稱為「弄璋之喜」（璋指美玉），若是生下女兒則稱為「弄瓦之喜」（瓦指古時紡織時用的陶製紗錠），對男生期許他有美玉一般的品德，對女生則希望她將來擅長女紅。上述是指何種觀念？",
+    opts: [
+      "性別歧視",
+      "性別角色",
+      "自我發展",
+      "人性尊嚴"
+    ],
+    ans: 1, // B
+    exp: "社會對於不同性別的行為所抱持的標準或期望，稱為「性別角色」。"
+  },
+  {
+    id: 5,
+    q: "匈牙利修訂憲法時，強制街友及遊民住在收容所裡，只要在街上睡覺就是一種犯罪行為，警察有權進行驅趕，拒絕者可能依法逮捕、監禁甚至充公私人物品。匈牙利無家可歸者表示，收容所環境惡劣、壅擠且有蝨子，相較之下更喜歡以街頭為家。根據保障人權的角度，下列敘述何者最恰當？",
+    opts: [
+      "匈牙利的憲法修訂可以杜絕街頭上有無家可歸的人",
+      "政府透過法律的制定來落實人權保障",
+      "人人有權享有尊嚴的生活，無家者應有選擇的權利",
+      "享受充分自我發展才能實踐人性尊嚴"
+    ],
+    ans: 2, // C
+    exp: "匈牙利政府強制收容無家者，沒有給予選擇的自由，侵犯人權，違反人性尊嚴。"
+  },
+  {
+    id: 6,
+    q: "誠宏在收銀臺結帳時，聽到客人對孩子說：「你如果不用功讀書，將來只能像他一樣做這種低薪工作。」誠宏心裡很難過，認為職業不分貴賤自己一直很努力。身為家長應如何培養孩子正確的價值觀？",
+    opts: [
+      "鼓勵追求好成績，未來成就較高",
+      "人無高低之分，應學習尊重他人",
+      "人的價值，取決於工作收入多寡",
+      "教育程度低者，對社會較無貢獻"
+    ],
+    ans: 1, // B
+    exp: "每個人的人性尊嚴都應受他人尊重，不該被任意侵犯。"
+  },
+  {
+    id: 7,
+    q: "「性別」可以從兩個方面去了解，一是生理性別，一是性別角色。請問：下列何者是在形容「性別角色」？",
+    opts: [
+      "男兒有淚不輕彈",
+      "男性染色體是 XY，女性則是 XX",
+      "男性聲音較女性低沉",
+      "男女生的第二性徵有所不同"
+    ],
+    ans: 0, // A
+    exp: "(B)(C)(D) 皆是在形容生物天生的「生理性別」；「男兒有淚不輕彈」屬於社會對男性的文化期望與角色定義。"
+  },
+  {
+    id: 8,
+    q: "兒子向爸爸表示：「我想報考護理系。」爸爸疑惑問：「男生可以考嗎？」兒子回答：「根據法律規定，我可以報考。」請問對話中所提及的「法律」應是下列何者？",
+    opts: [
+      "《性別工作平等法》",
+      "《性別平等教育法》",
+      "《性騷擾防治法》",
+      "《公民投票法》"
+    ],
+    ans: 1, // B
+    exp: "學校入學、招生與受教權益相關之法律規範為《性別平等教育法》。"
+  },
+  {
+    id: 9,
+    q: "下列關於《人權兩公約》的敘述何者錯誤？",
+    opts: [
+      "包含《公民與政治權利國際公約》",
+      "包含《經濟社會文化權利國際公約》",
+      "包含《世界人權宣言》",
+      "均為聯合國所發布"
+    ],
+    ans: 2, // C
+    exp: "人權兩公約是指《公民與政治權利國際公約》與《經濟社會文化權利國際公約》兩者，並不包含《世界人權宣言》（《世界人權宣言》與兩公約合稱為「國際人權憲章」）。"
+  },
+  {
+    id: 10,
+    q: "婷婷在搭捷運時收到陌生人傳來的 AirDrop，點開居然是張男性生殖器的照片。請問下列關於此事件的敘述何者正確？",
+    opts: [
+      "因為不知道犯人是誰，所以婷婷無法報警",
+      "因為沒有實際被對方肢體或言語騷擾，所以婷婷無法報警",
+      "如果婷婷報警，此事件應根據《性騷擾防治法》處理",
+      "如果婷婷報警，此事件應根據《性別工作平等法》處理"
+    ],
+    ans: 2, // C
+    exp: "透過網路通訊隨機散布不雅照片已違反《性騷擾防治法》之規定，婷婷可以報警究責。"
+  },
+  {
+    id: 11,
+    q: "性別角色是指社會中對於不同性別的行為所抱持的各種標準與期望。請問：下列有關「性別角色」的敘述，何者正確？<br>(甲)社會雖有不同，但性別角色都一樣<br>(乙)同一個社會裡的性別角色是會變動的<br>(丙)性別角色的內涵，並不會隨著社會而有不同<br>(丁)不同的社會對性別角色的要求並不相同",
+    opts: [
+      "甲乙",
+      "甲丙",
+      "乙丙",
+      "乙丁"
+    ],
+    ans: 3, // D
+    exp: "性別角色並非全人類都一樣，其內涵會因不同文化、不同社會以及同一個社會隨時代演進而有所變動。"
+  },
+  {
+    id: 12,
+    q: "據報載，某公家單位職員對廠商實施教育訓練時，利用自己的職權，在上課時以言語對女性員工性騷擾。請問該職員的行為已觸犯下列何法？",
+    opts: [
+      "《性騷擾防治法》",
+      "《性別平等教育法》",
+      "《性別工作平等法》",
+      "《公民投票法》"
+    ],
+    ans: 2, // C
+    exp: "執行職務期間或職場環境中發生的性騷擾，依《性別工作平等法》（性別平等工作法）處理。"
+  },
+  {
+    id: 13,
+    q: "我們在出生時的性別是與生俱來的，但隨著年齡成長、表現於外的行為舉止，是經歷過「性別社會化」之後的表現。請問我們最早學習各種性別行為表現，是透過何種途徑？",
+    opts: [
+      "學校",
+      "家庭",
+      "大眾傳播媒體",
+      "同儕"
+    ],
+    ans: 1, // B
+    exp: "「家庭」是個人最早接觸、也是最早學習性別角色與社會化行為的場所。"
+  },
+  {
+    id: 14,
+    q: "英國政府發表『香港問題半年報告』，批評中國當局頒布的『港版國安法』條款模糊，實際上用以壓制不同政治觀點的表達，將政治異議人士引渡到大陸受審，令外界對香港法治失去信心。根據上文，下列敘述何者有誤？",
+    opts: [
+      "中國政府侵害香港人民的人權",
+      "香港人民的言論自由受到侵害",
+      "「實現自由」的價值受到威脅",
+      "「港版國安法」有助保障人權"
+    ],
+    ans: 3, // D
+    exp: "由題幹敘述可知，模糊的國安法條款打壓異議人士與言論自由，嚴重損害法治與人權保障，故(D)錯誤。"
+  },
+  {
+    id: 15,
+    q: "媒體或網友常對特定身分的人存有偏見，當新聞事件一出現就謾罵認定當事人有罪，這種未審先判的現象違反《世界人權宣言》中的哪一項原則？",
+    opts: [
+      "在證明有罪之前，人人應被視為無罪",
+      "任何人不得加以任意逮捕、拘禁或放逐",
+      "人人有權享有生命、自由和人身安全",
+      "人人有在其他國家尋求和享受庇護的權利"
+    ],
+    ans: 0, // A
+    exp: "此為「無罪推定原則」，受刑事控告者在未經依法公開審判證實有罪前，應視為無罪。"
+  },
+  {
+    id: 16,
+    q: "不同性別擔負的工作及家庭勞動事務與內容是否公平，是衡量性別差異是否公平的原則之一。例如女性即使有外出工作，仍多半承擔家中主要的家務勞動工作。請問這是哪一種檢視公平與否的原則？",
+    opts: [
+      "貢獻肯定",
+      "責任承擔",
+      "利益分配",
+      "需求滿足"
+    ],
+    ans: 1, // B
+    exp: "探討家務分工與家庭工作負擔的分配是否均衡，屬於「責任承擔」原則。"
+  },
+  {
+    id: 17,
+    q: "1861 年美國發生南北戰爭，北方要求解放黑人奴隸；南方要求黑人當奴隸使喚，最後北方獲得勝利，讓黑人可以選擇留在美國或是回到家鄉。上述給黑人自由選擇的機會，最符合下列哪一概念？",
+    opts: [
+      "性騷擾",
+      "性霸凌",
+      "人性尊嚴",
+      "刻板印象"
+    ],
+    ans: 2, // C
+    exp: "人性尊嚴保障每個人不論種族身分，都享有被當作自主主體、自由選擇生活方式的權利。"
+  },
+  {
+    id: 18,
+    q: "勞工團體與資方團體在協商「最低基本工資」時展開激烈攻防。勞工團體認為基本工資必須顧及物價通貨膨脹與現實生活的最低生活條件。因為最低基本工資顧及了什麼樣的考量因素？",
+    opts: [
+      "個人擁有自我決定的能力與機會",
+      "個人的身體與生命應該完整",
+      "個人應該享有人應有的生存條件",
+      "個人無須隱藏自己的真實樣貌"
+    ],
+    ans: 2, // C
+    exp: "基本工資是為了確保勞工及其家庭享有維持人性尊嚴所需之基本生存與生活條件。"
+  },
+  {
+    id: 19,
+    q: "父母對待兒女常有不同教育方式，男孩委屈哭泣時常被告誡「男生要勇敢！」，女孩哭泣則多半能得到安慰。對於男女不同的教育方式，屬於哪一種性別的認知區分方式？",
+    opts: [
+      "生理性別",
+      "性別偏見",
+      "社會性別",
+      "性別歧視"
+    ],
+    ans: 2, // C
+    exp: "社會文化中針對男女所賦予的角色期待與後天規範，屬於「社會性別（Gender）」。"
+  },
+  {
+    id: 20,
+    q: "《天線寶寶》播出時曾引起保守人士質疑「丁丁」頭上的倒三角形天線及身上紫色是同性戀象徵，拿女用紅色皮包也不合理。對於這些評論，我們該如何看待才客觀？",
+    opts: [
+      "應該在丁丁身上標示性別",
+      "禁止天線寶寶的播放",
+      "不該用符號去扭曲與發表不利同性戀的言論",
+      "在網路上散布丁丁是同性戀"
+    ],
+    ans: 2, // C
+    exp: "將特定的顏色、配件任意貼上標籤甚至予以歧視批判，屬於刻板印象，不應藉此發表偏頗或扭曲言論。"
+  },
+  {
+    id: 21,
+    q: "目前我國許多地方的男廁皆未加裝尿布臺，使得許多爸爸無法自行幫嬰兒更換尿布。上述情形是哪一層面的社會環境中存在著不公平？",
+    opts: [
+      "需求滿足",
+      "利益分配",
+      "責任承擔",
+      "貢獻肯定"
+    ],
+    ans: 0, // A
+    exp: "男性同樣具備照顧嬰兒、更換尿布的實際需要，未能提供相應設施屬於「需求滿足」層面的不均。"
+  },
+  {
+    id: 22,
+    q: "不同性別是否能夠依照個人的需求，發揮自身潛能、進而實現自我理想，是衡量性別公平的原則之一。例如有些男性在職場想要請育嬰假時容易遭到主管刁難。請問這是哪一種檢視公平與否的原則？",
+    opts: [
+      "利益分配",
+      "責任承擔",
+      "貢獻肯定",
+      "需求滿足"
+    ],
+    ans: 3, // D
+    exp: "男性申請育嬰假照顧家庭是合理生活需求，受阻礙即是「需求滿足」原則受到侵害。"
+  },
+  {
+    id: 23,
+    q: "2011 年諾貝爾和平獎頌詞提及：「除非女性能和男性一樣擁有影響社會各層面發展的機會，否則世界就無法實現民主與持久和平。」關於女性人權的敘述，下列何者正確？",
+    opts: [
+      "《世界人權宣言》尚未保障女性人權",
+      "聯合國將提升女性地位列為工作重點",
+      "各國皆明文保障婦女人權的相關措施",
+      "婦女人權僅包含經濟及社會層面權利"
+    ],
+    ans: 1, // B
+    exp: "(A)《世界人權宣言》開宗明義保障男女同等權利；(B)聯合國長年將促進性別平權與提升女性地位列為核心重點；(C)許多落後或戰亂國家尚未健全保障婦權；(D)婦權包含政治、人身、經濟等全面人權。"
+  },
+  {
+    id: 24,
+    q: "2020 年國際新冠肺炎疫情升溫，地方政府宣布禁止高中職以下師生出國。學生團體認為現行法律並未授權地方政府禁止人民出境，此舉侵害人民的何種自由？",
+    opts: [
+      "信仰宗教自由",
+      "言論自由",
+      "居住遷徙自由",
+      "集會結社自由"
+    ],
+    ans: 2, // C
+    exp: "憲法所保障的「居住遷徙自由」，即包含人民在國內遷徙以及自由遷徙出入境之權利。"
+  },
+  {
+    id: 25,
+    q: "小蘭醫學院畢業後擔任外科醫師，穿白袍時常被病人誤稱為「護士小姐」；護理師男同事阿金反而常被誤認為「醫生」。關於此現象，下列敘述何者正確？",
+    opts: [
+      "小蘭與阿金是因性別刻板印象而被病人誤稱",
+      "這種誤稱現象對促進女性權益有所幫助",
+      "多拍以女性從醫為主題的電視劇會增加此現象之發生",
+      "鼓勵女性接受高等教育可能加劇此情形"
+    ],
+    ans: 0, // A
+    exp: "認定穿白袍的男性為醫師、女性為護士，是標準的「性別刻板印象」導致的偏見認知。"
+  }
+];
+
+// 渲染試卷題目
+function renderQuiz() {
+  const container = document.getElementById('quiz-container');
+  container.innerHTML = quizData.map((item, idx) => `
+    <div class="card" id="q_card_${idx}">
+      <div class="q-title">${idx + 1}. ${item.q}</div>
+      <div class="options">
+        ${item.opts.map((opt, oIdx) => `
+          <label class="opt-label" id="label_${idx}_${oIdx}">
+            <input type="radio" name="q_${idx}" value="${oIdx}">
+            <span>(${['A','B','C','D'][oIdx]})${opt}</span>
+          </label>
+        `).join('')}
+      </div>
+      <div class="explanation" id="exp_${idx}"></div>
+    </div>
+  `).join('');
+}
+
+// 提交測驗
+function submitQuiz() {
+  let score = 0;
+  let unanswered = 0;
+
+  quizData.forEach((item, idx) => {
+    const selected = document.querySelector(`input[name="q_${idx}"]:checked`);
+    const expBox = document.getElementById(`exp_${idx}`);
+    expBox.style.display = 'block';
+
+    if (!selected) {
+      unanswered++;
+      expBox.className = 'explanation exp-wrong';
+      expBox.innerHTML = `⚠️ <strong>未作答</strong>。正確答案為 <strong>(${['A','B','C','D'][item.ans]})</strong>。<br>解析：${item.exp}`;
+    } else if (parseInt(selected.value) === item.ans) {
+      score += 4;
+      expBox.className = 'explanation exp-correct';
+      expBox.innerHTML = `✓ <strong>回答正確！</strong><br>解析：${item.exp}`;
+    } else {
+      expBox.className = 'explanation exp-wrong';
+      expBox.innerHTML = `✗ <strong>回答錯誤</strong>。正確答案為 <strong>(${['A','B','C','D'][item.ans]})</strong>。<br>解析：${item.exp}`;
+    }
+  });
+
+  if (unanswered > 0) {
+    if (!confirm(`您還有 ${unanswered} 題尚未作答，確定要送出交卷嗎？`)) {
+      return;
+    }
+  }
+
+  // 顯示得分看板
+  const banner = document.getElementById('scoreBanner');
+  const finalScoreEl = document.getElementById('finalScore');
+  banner.style.display = 'block';
+  finalScoreEl.textContent = `${score} 分`;
+  finalScoreEl.style.color = score >= 60 ? 'var(--success)' : 'var(--danger)';
+
+  // 儲存至 LocalStorage (對應首頁七年級公民)
+  const record = {
+    score: score,
+    date: new Date().toLocaleDateString('zh-TW', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+  };
+  localStorage.setItem('quiz_g7_civics', JSON.stringify(record));
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// 重新測驗
+function resetQuiz() {
+  if (confirm('確定要清除目前答案並重新作答嗎？')) {
+    location.reload();
+  }
+}
+
+// 頁面初始化
+renderQuiz();
+</script>
+</body>
+</html>
